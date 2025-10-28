@@ -33,7 +33,7 @@ dependencies:
   # Icons
   iconsax: ^0.0.8
 
-  # Firebase (optional — for auth / analytics later)
+  # Firebase (optional — enable later if needed)
   # firebase_core: ^3.5.0
   # firebase_auth: ^5.3.1
   # cloud_firestore: ^5.4.2
@@ -49,11 +49,3 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
-    - assets/lottie/
-
-  fonts:
-    - family: NotoSans
-      fonts:
-        - asset: assets/fonts/NotoSans-Regular.ttf
-        - asset: assets/fonts/NotoSans-Bold.ttf
-          weight: 700
