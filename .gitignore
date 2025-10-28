@@ -1,80 +1,52 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
+# =========================
+# Global Git Ignore
+# =========================
+# OS-specific files
 .DS_Store
-.atom/
-.buildlog/
-.history
-.svn/
+Thumbs.db
 
-# IntelliJ / Android Studio
-*.iml
-*.ipr
-*.iws
+# IDEs and editors
+.vscode/
 .idea/
-*.vscode/
+*.iml
 
-# Flutter specific
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.packages
-.pub-cache/
-.pub/
-build/
+# =========================
+# Flutter / Dart Specific
+# =========================
+flutter app/.dart_tool/
+flutter app/.packages
+flutter app/.flutter-plugins
+flutter app/.flutter-plugins-dependencies
+flutter app/.metadata
+flutter app/build/
+flutter app/ios/Flutter/Flutter.framework
+flutter app/ios/Flutter/Flutter.podspec
+flutter app/ios/.symlinks/
+flutter app/ios/Pods/
+flutter app/ios/Runner.xcworkspace/
+flutter app/macos/Flutter/ephemeral/
+flutter app/macos/Pods/
+flutter app/linux/flutter/
+flutter app/windows/flutter/
+flutter app/pubspec.lock
 
-# Symbolication files
-app.*.symbols
+# =========================
+# Generated files
+# =========================
+*.log
+*.tmp
+*.bak
+*.swp
 
-# Obfuscation related
-app.*.map.json
-
-# Android specific
-gradle-wrapper.jar
-.gradle/
-local.properties
-GeneratedPluginRegistrant.java
-**/android/app/debug
-**/android/app/profile
-**/android/app/release
-
-# iOS specific
-ios/Flutter/.last_build_id
-ios/Pods/
-ios/.symlinks/
-ios/Flutter/Flutter.framework/
-ios/Flutter/Flutter.podspec
-ios/ServiceDefinitions.json
-ios/Runner/GeneratedPluginRegistrant.*
-
-# Web specific
-lib/generated_plugin_registrant.dart
-
-# Linux
-linux/flutter/ephemeral/
-
-# macOS
-macos/Flutter/ephemeral/
-
-# Windows
-windows/flutter/ephemeral/
-
-# Coverage
+# =========================
+# Coverage and Reports
+# =========================
 coverage/
+reports/
+test-results/
 
-# Environment files
+# =========================
+# Environment / Secrets
+# =========================
 .env
-.env.*
-
-# Firebase / Google services
-google-services.json
-GoogleService-Info.plist
-
-# VS Code settings
-.vscode/*
-!.vscode/settings.json
-!.vscode/launch.json
-!.vscode/tasks.json
-!.vscode/extensions.json
+*.env.*
