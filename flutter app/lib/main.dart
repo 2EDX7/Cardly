@@ -3,7 +3,10 @@ import 'package:provider/provider.dart';
 import 'theme/themes.dart';
 import 'theme/theme_modifier.dart';
 import 'theme/theme_demonstration.dart';
-
+// import 'screens/addCard.dart';
+// import 'screens/fillcardinformations.dart';
+// import 'screens/addCardinformations.dart';
+// import 'screens/ScanCard.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
@@ -28,6 +31,14 @@ class CardlyApp extends StatelessWidget {
           darkTheme: AppTheme.darkTheme,
           themeMode: themeModifier.themeMode,
           home: const ThemeDemonstration(),
+          // routes: {
+          //   '/': (context) => const ThemeDemonstration(),
+          //   '/addCard': (context) => const AddCardScreen(),
+          //   '/addCard/information': (context) => const Addcardinformations(),
+          //   '/addCard/fillinformation': (context) => const FillCardInformationScreen(),
+          //   '/addCard/ScanCard': (context) => const ScanCardScreen(),
+          // },
+          // initialRoute: '/addCard/ScanCard',
         );
       },
     );
