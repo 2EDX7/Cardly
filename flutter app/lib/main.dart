@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'theme/themes.dart';
 import 'theme/theme_modifier.dart';
 import 'theme/theme_demonstration.dart';
+import 'package:cardly/screens/addcard/addCard.dart';
 
 void main() {
   runApp(
@@ -27,7 +28,7 @@ class CardlyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: themeModifier.themeMode,
-          home: const ThemeDemonstration(),
+          home: const AddCardScreen(),
         );
       },
     );
