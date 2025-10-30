@@ -4,9 +4,22 @@ import 'spacing.dart';
 import 'typography.dart';
 import 'theme_modifier.dart';
 
-/// Central theme configuration for light and dark modes
+/// ---------------------------------------------------------------------------
+///  AppTheme
+/// ---------------------------------------------------------------------------
+/// Centralized definition for the application's design system, providing
+/// consistent color, spacing, and typography rules for both light and dark
+/// modes.
+///
+/// Developers should only import this file:
+/// ```dart
+/// import 'package:your_app/theme/theme.dart';
+/// ```
+///
+/// This ensures all components use the same design tokens internally.
+/// ---------------------------------------------------------------------------
 class AppTheme {
-  // 🔹 Light Theme
+  /// Light mode configuration
   static ThemeData get lightTheme => _buildTheme(
         brightness: Brightness.light,
         primary: AppColors.primary,
@@ -21,7 +34,7 @@ class AppTheme {
         buttonBgColor: AppColors.primary,
       );
 
-  // 🔹 Dark Theme
+  /// Dark mode configuration
   static ThemeData get darkTheme => _buildTheme(
         brightness: Brightness.dark,
         primary: AppColors.primaryLight,
@@ -36,7 +49,9 @@ class AppTheme {
         buttonBgColor: AppColors.primaryLight,
       );
 
-  /// Private method to build theme with common configurations
+  /// -------------------------------------------------------------------------
+  ///  Private builder for shared configuration between light and dark themes.
+  /// -------------------------------------------------------------------------
   static ThemeData _buildTheme({
     required Brightness brightness,
     required Color primary,
@@ -52,55 +67,104 @@ class AppTheme {
   }) {
     return ThemeData(
       brightness: brightness,
+      useMaterial3: true,
+      scaffoldBackgroundColor: background,
+
+      // ---------------------------------------------------------------------
+      //  Color Scheme
+      // ---------------------------------------------------------------------
       colorScheme: ColorScheme(
         brightness: brightness,
-        primary: primary,
-        secondary: secondary,
-        onPrimary: onPrimary,
-        onSecondary: onSecondary,
-        error: AppColors.error,
+        primary: primary, // Brand color (used for main buttons, accents)
+        secondary: secondary, // Secondary UI highlights
+        onPrimary: onPrimary, // Text/icons appearing on primary color
+        onSecondary: onSecondary, // Text/icons on secondary color
+        error: AppColors.error, // Error or validation feedback
         onError: Colors.white,
-        surface: surface,
-        onSurface: onSurface,
+        surface: surface, // Cards, sheets, modals, elevated areas
+        onSurface: onSurface, // Text/icons on surface containers
       ),
-      scaffoldBackgroundColor: background,
-      useMaterial3: true,
+
+      // ---------------------------------------------------------------------
+      //  AppBar Theme
+      // ---------------------------------------------------------------------
       appBarTheme: AppBarTheme(
         backgroundColor: appBarBgColor,
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
+        // titleTextStyle: AppTextStyles.heading3(context).copyWith(
+        //   color: Colors.white,
+        //   fontWeight: FontWeight.w600,
+        // ),
       ),
+
+      // ---------------------------------------------------------------------
+      //  ElevatedButton Theme (filled primary button)
+      // ---------------------------------------------------------------------
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: buttonBgColor,
           foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 24),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+          padding: const EdgeInsets.symmetric(
+            vertical: AppSpacing.lg,
+            horizontal: AppSpacing.lg,
           ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSpacing.md),
           ),
         ),
       ),
+
+      // ---------------------------------------------------------------------
+      //  OutlinedButton Theme (bordered secondary button)
+      // ---------------------------------------------------------------------
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: ButtonStyle(
           foregroundColor: WidgetStateProperty.all(primary),
-          textStyle: WidgetStateProperty.all(
-            const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
+          side: WidgetStateProperty.all(
+            BorderSide(color: primary, width: 2),
+          ),
+          padding: WidgetStateProperty.all(
+            const EdgeInsets.symmetric(
+              vertical: AppSpacing.lg,
+              horizontal: AppSpacing.lg,
             ),
           ),
-          side: WidgetStateProperty.all(BorderSide(color: primary, width: 2)),
-          padding: WidgetStateProperty.all(
-            const EdgeInsets.symmetric(vertical: 22, horizontal: 24),
-          ),
           shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSpacing.md),
+            ),
           ),
+        ),
+      ),
+
+      // ---------------------------------------------------------------------
+      //  InputDecoration Theme (for TextField / TextFormField)
+      // ---------------------------------------------------------------------
+      inputDecorationTheme: InputDecorationTheme(
+        hintStyle: const TextStyle(
+          color: AppColors.darkBackground,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.md),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.md),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.md),
+          borderSide: BorderSide(color: AppColors.primary, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.md),
+          borderSide: BorderSide(color: AppColors.error, width: 1.5),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.md,
         ),
       ),
     );
