@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'colors.dart';
+import 'spacing.dart';
+import 'typography.dart';
+import 'theme_modifier.dart';
 
 /// Central theme configuration for light and dark modes
 class AppTheme {
