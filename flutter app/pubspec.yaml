@@ -10,6 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
+  url_launcher: ^6.2.2
 
   # UI & Fonts
   google_fonts: ^6.2.1
@@ -48,4 +50,5 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/business_card_backgrounds/
     - assets/icons/
