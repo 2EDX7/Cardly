@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// ChangeNotifier for managing theme state (Light/Dark mode toggle)
 class ThemeModifier extends ChangeNotifier {
-  ThemeMode _themeMode = ThemeMode.light;
+  ThemeMode _themeMode = ThemeMode.system;
 
   ThemeMode get themeMode => _themeMode;
 
