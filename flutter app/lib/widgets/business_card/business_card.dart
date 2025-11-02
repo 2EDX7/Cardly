@@ -50,7 +50,7 @@ class BusinessCard extends StatefulWidget {
     this.about,
     this.website,
     // Styling
-    this.width = 340,
+    this.width = 380,
     this.height,
     this.borderRadius = 24,
     this.textColor = Colors.white,
@@ -100,7 +100,7 @@ class _BusinessCardState extends State<BusinessCard> with SingleTickerProviderSt
 
   double _calculateHeight() {
     if (widget.height != null) return widget.height!;
-    return widget.compactCard ? 180 : 260;
+    return widget.compactCard ? 180 : 280;
   }
 
   @override
