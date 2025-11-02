@@ -32,7 +32,7 @@ class ProfileActionButtons extends StatelessWidget {
           ),
         ),
 
-        const SizedBox(height: AppSpacing.md),
+        const SizedBox(height: AppSpacing.sm),
 
         // Save Card Button (Filled)
         SizedBox(
