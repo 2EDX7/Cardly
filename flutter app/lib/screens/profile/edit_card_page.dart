@@ -331,7 +331,7 @@ class _EditCardPageState extends State<EditCardPage> {
               // Save Button
               SizedBox(
                 width: double.infinity,
-                height: 56,
+                // height: 56,
                 child: ElevatedButton(
                   onPressed: _saveChanges,
                   child: Text(

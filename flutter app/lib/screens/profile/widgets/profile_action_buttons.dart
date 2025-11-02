@@ -20,7 +20,7 @@ class ProfileActionButtons extends StatelessWidget {
         // Edit Card Button (Outlined)
         SizedBox(
           width: double.infinity,
-          height: 56,
+          // height: 56,
           child: OutlinedButton(
             onPressed: onEditPressed,
             child: Text(
@@ -37,7 +37,7 @@ class ProfileActionButtons extends StatelessWidget {
         // Save Card Button (Filled)
         SizedBox(
           width: double.infinity,
-          height: 56,
+          // height: 56,
           child: ElevatedButton(
             onPressed: onSavePressed,
             child: Text(
