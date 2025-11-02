@@ -32,13 +32,11 @@ class CardFront extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Header with Name and Logo
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Text(
+              Text(
                 name,
                 style: AppTextStyles.heading1(context).copyWith(
                   color: textColor,
@@ -47,17 +45,6 @@ class CardFront extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-            ),
-            if (logoText != null) ...[
-              const SizedBox(width: AppSpacing.md),
-              Text(
-                logoText!,
-                style: AppTextStyles.heading2(context).copyWith(
-                  color: textColor.withOpacity(0.9),
-                  fontSize: 28,
-                ),
-              ),
-            ],
           ],
         ),
 

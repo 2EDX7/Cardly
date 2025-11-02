@@ -50,7 +50,6 @@ class _IntroSplashState extends State<IntroSplash> {
                     about: 'Professor Bouchrika has been actively involved in launching a number of start-up companies in the IT and academic sectors. Motivated by feedback and recommendations from leading scientists around the world.',
                     website: 'www.google.com',
                     background: CardBackground.purple,
-                    compactCard: true,
                   ),
                 ),
               ),
