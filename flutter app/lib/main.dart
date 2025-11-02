@@ -8,6 +8,7 @@ import 'package:cardly/screens/addcard/addCard.dart';
 import 'package:cardly/screens/login/splash.dart';
 import 'package:cardly/screens/login/login.dart';
 import 'package:cardly/screens/login/signup.dart';
+import 'package:cardly/screens/home/home_page.dart';
 
 void main() {
   runApp(
@@ -32,7 +33,8 @@ class CardlyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: themeModifier.themeMode,
-          home: const ProfilePage(),
+          home: const HomePage(),
+
         );
       },
     );
