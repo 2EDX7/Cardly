@@ -2,13 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'theme/themes.dart';
 import 'theme/theme_modifier.dart';
-import "package:cardly/screens/profile/profilePage.dart";
-import 'theme/theme_demonstration.dart';
-import 'package:cardly/screens/addcard/addCard.dart';
-import 'package:cardly/screens/login/splash.dart';
-import 'package:cardly/screens/login/login.dart';
-import 'package:cardly/screens/login/signup.dart';
-import 'package:cardly/screens/home/home_page.dart';
+import 'routes/routes.dart';
 
 void main() {
   runApp(
@@ -33,8 +27,10 @@ class CardlyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: themeModifier.themeMode,
-          home: const HomePage(),
-
+          // Set initial route to splash screen
+          initialRoute: AppRoutes.splash,
+          // Use route generator for all navigation
+          onGenerateRoute: RouteGenerator.generateRoute,
         );
       },
     );

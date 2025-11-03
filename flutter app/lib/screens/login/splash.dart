@@ -4,7 +4,7 @@ import '../../theme/spacing.dart';
 import '../../theme/colors.dart';
 import '../../theme/typography.dart';
 import '../../widgets/business_card/business_card.dart';
-import 'login.dart';
+import '../../routes/routes.dart';
 
 class IntroSplash extends StatefulWidget {
   const IntroSplash({super.key});
@@ -145,11 +145,7 @@ class _IntroSplashState extends State<IntroSplash> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const LoginScreen(),
-                              ),
-                            );
+                            Navigator.of(context).pushNamed(AppRoutes.login);
                           },
                           child: Text(
                             'Log In',

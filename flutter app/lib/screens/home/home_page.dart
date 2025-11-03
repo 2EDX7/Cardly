@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../widgets/navBar.dart';
 import '../../widgets/business_card/card_background.dart';
 import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
@@ -18,7 +17,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _currentIndex = 0;
   final TextEditingController _searchController = TextEditingController();
   bool _showCategories = false;
   String _searchQuery = '';
@@ -61,13 +59,6 @@ class _HomePageState extends State<HomePage> {
       'category': 'Stores',
     },
   ];
-
-  void _onTabChange(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-    // TODO: Navigate to different screens based on index
-  }
 
   List<Map<String, dynamic>> get _filteredCards {
     return CardFilterUtils.filterCards(_businessCards, _searchQuery);
@@ -150,10 +141,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavBar(
-        activeIndex: _currentIndex,
-        onTabChange: _onTabChange,
       ),
     );
   }

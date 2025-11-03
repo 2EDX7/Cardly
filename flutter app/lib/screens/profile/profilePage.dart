@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import "package:cardly/widgets/navBar.dart";
 import "package:cardly/widgets/business_card/card_background.dart";
 import "package:cardly/theme/colors.dart";
 import "package:cardly/theme/spacing.dart";
@@ -10,6 +9,7 @@ import "package:cardly/screens/profile/widgets/background_picker_widget.dart";
 import "package:cardly/screens/profile/widgets/profile_action_buttons.dart";
 import "package:cardly/screens/profile/widgets/custom_color_picker_dialog.dart";
 import "package:cardly/screens/profile/edit_card_page.dart";
+import "package:cardly/routes/routes.dart";
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -20,7 +20,6 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
-  int _activeNavIndex = 2;
 
   // Card customization state
   Color _selectedFontColor = Colors.white;
@@ -103,12 +102,7 @@ class _ProfilePageState extends State<ProfilePage>
       appBar: AppBar(
         backgroundColor: AppColors.lightBackground,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        automaticallyImplyLeading: false, // Remove back button
         title: Text(
           'Preview Card',
           style: AppTextStyles.heading2(context).copyWith(
@@ -221,14 +215,6 @@ class _ProfilePageState extends State<ProfilePage>
             const SizedBox(height: AppSpacing.lg),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavBar(
-        activeIndex: _activeNavIndex,
-        onTabChange: (index) {
-          setState(() {
-            _activeNavIndex = index;
-          });
-        },
       ),
     );
   }
