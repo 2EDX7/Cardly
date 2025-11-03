@@ -3,7 +3,7 @@ import '../../theme/spacing.dart';
 import '../../theme/colors.dart';
 import '../../widgets/stars_background.dart';
 import '../../theme/typography.dart';
-import 'login.dart';
+import '../../routes/routes.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -211,7 +211,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  // Navigate to main app (home page with bottom nav)
+                                  Navigator.of(context).pushNamedAndRemoveUntil(
+                                    AppRoutes.main,
+                                    (route) => false,
+                                  );
+                                },
                                 child: Text('Sign Up', style: AppTextStyles.buttonPrimary(context)),
                               ),
                             ),

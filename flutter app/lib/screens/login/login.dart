@@ -3,7 +3,7 @@ import '../../theme/spacing.dart';
 import '../../theme/colors.dart';
 import '../../widgets/stars_background.dart';
 import '../../theme/typography.dart';
-import 'signup.dart';
+import '../../routes/routes.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -209,7 +209,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  // Navigate to main app (home page with bottom nav)
+                                  Navigator.of(context).pushNamedAndRemoveUntil(
+                                    AppRoutes.main,
+                                    (route) => false,
+                                  );
+                                },
                                 child: Text('Log In', style: AppTextStyles.buttonPrimary(context)),
                               ),
                             ),
@@ -221,11 +227,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Text("Don't have an account? ", style: AppTextStyles.caption(context)),
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => const SignUpScreen(),
-                                      ),
-                                    );
+                                    Navigator.of(context).pushNamed(AppRoutes.signup);
                                   },
                                   child: Text(
                                     'Sign Up',
