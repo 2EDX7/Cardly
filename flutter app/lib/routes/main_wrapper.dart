@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../screens/home/home_page.dart';
-import '../screens/addcard/addCard.dart';
-import '../screens/profile/profilePage.dart';
-import '../widgets/navBar.dart';
+import '../presentation/screens/home/home_page.dart';
+import '../presentation/screens/addcard/addCard.dart';
+import '../presentation/screens/profile/profilePage.dart';
+import '../presentation/widgets/navBar.dart';
 
 /// Main wrapper widget that handles bottom navigation between Home, Add Card, and Profile
 class MainWrapper extends StatefulWidget {

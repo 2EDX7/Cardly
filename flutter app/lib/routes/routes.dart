@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import '../screens/login/splash.dart';
-import '../screens/login/login.dart';
-import '../screens/login/signup.dart';
-// import '../screens/home/home_page.dart';
-// import '../screens/addcard/addCard.dart';
-// import '../screens/profile/profilePage.dart';
-import '../screens/addcard/fillcardinformations.dart';
-import '../screens/addcard/ScanCard.dart';
-import '../screens/addcard/addCardinformations.dart';
-import '../screens/profile/edit_card_page.dart';
+import '../presentation/screens/login/splash.dart';
+import '../presentation/screens/login/login.dart';
+import '../presentation/screens/login/signup.dart';
+import '../presentation/screens/addcard/fillcardinformations.dart';
+import '../presentation/screens/addcard/ScanCard.dart';
+import '../presentation/screens/addcard/addCardinformations.dart';
+import '../presentation/screens/profile/edit_card_page.dart';
+import '../data/models/card_info.dart';
 import 'main_wrapper.dart';
 
 /// Application route names
