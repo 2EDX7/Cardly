@@ -1,0 +1,310 @@
+{
+  "@@locale": "fr",
+  
+  "appTitle": "Cardly",
+  "@appTitle": {
+    "description": "Le titre de l'application"
+  },
+
+  "ok": "OK",
+  "cancel": "Annuler",
+  "save": "Enregistrer",
+  "back": "Retour",
+  "next": "Suivant",
+  "done": "Terminé",
+  "delete": "Supprimer",
+  "edit": "Modifier",
+  "close": "Fermer",
+  "yes": "Oui",
+  "no": "Non",
+  "confirm": "Confirmer",
+  "search": "Rechercher",
+  "loading": "Chargement...",
+  "retry": "Réessayer",
+  "share": "Partager",
+
+  "signInToAccount": "Connectez-vous à votre\ncompte",
+  "@signInToAccount": {
+    "description": "Titre de l'écran de connexion"
+  },
+  
+  "enterEmailPassword": "Entrez votre email et mot de passe pour vous connecter",
+  "continueWithGoogle": "Continuer avec Google",
+  "or": "OU",
+  "emailLabel": "Email",
+  "passwordLabel": "Mot de passe",
+  "rememberMe": "Se souvenir de moi",
+  "forgotPassword": "Mot de passe oublié?",
+  "signIn": "Se connecter",
+  "dontHaveAccount": "Vous n'avez pas de compte?",
+  "signUpNow": "Inscrivez-vous maintenant",
+
+  "createAccount": "Créez votre\ncompte",
+  "enterDetailsToSignUp": "Entrez vos détails pour vous inscrire",
+  "fullName": "Nom complet",
+  "confirmPassword": "Confirmer le mot de passe",
+  "signUp": "S'inscrire",
+  "alreadyHaveAccount": "Vous avez déjà un compte?",
+  "signInNow": "Connectez-vous maintenant",
+
+  "addCard": "Ajouter une carte",
+  "@addCard": {
+    "description": "Titre de l'écran d'ajout de carte"
+  },
+  
+  "enterCardId": "Entrez l'ID de la carte",
+  "cardRegisteredInApp": "Si la carte de visite est enregistrée dans notre application",
+  "cardlyCardId": "ID de carte Cardly",
+  "enter": "Entrer",
+  "fillCardManually": "Remplir la carte manuellement",
+  "fillManually": "Remplir manuellement",
+  "scanQrCode": "Scanner le code QR",
+  "scanCard": "Scanner la carte",
+  "scan": "Scanner",
+  "scanning": "Numérisation...",
+  "pointCameraAtCard": "Pointez votre appareil photo sur une carte de visite ou un code QR",
+
+  "fillCardInformations": "Remplir les informations de la carte",
+  "addCardInformations": "Ajouter les informations de la carte",
+  "phone": "Téléphone",
+  "company": "Entreprise",
+  "jobTitle": "Titre du poste",
+  "location": "Emplacement",
+  "website": "Site web",
+  "about": "À propos",
+  "previewCard": "Aperçu de la carte",
+
+  "profile": "Profil",
+  "cards": "Cartes",
+  "settings": "Paramètres",
+  "myCard": "Ma carte",
+  "previewYourCard": "Aperçu de la carte",
+
+  "cardCustomization": "Personnalisation de la carte",
+  "fontColor": "Couleur de la police",
+  "background": "Arrière-plan",
+  "customColor": "Couleur personnalisée",
+  "selectColor": "Sélectionner une couleur",
+  "selectBackground": "Sélectionner un arrière-plan",
+  "flipCard": "Retourner la carte",
+  "editInformation": "Modifier les informations",
+  "shareCard": "Partager la carte",
+  "downloadQr": "Télécharger le QR",
+
+  "editCardInformation": "Modifier les informations de la carte",
+  "updateCard": "Mettre à jour la carte",
+  "discardChanges": "Annuler les modifications",
+
+  "errorGeneric": "Une erreur s'est produite. Veuillez réessayer.",
+  "errorNetwork": "Erreur réseau. Veuillez vérifier votre connexion.",
+  "errorInvalidEmail": "Veuillez entrer une adresse email valide.",
+  "errorPasswordTooShort": "Le mot de passe doit contenir au moins 6 caractères.",
+  "errorPasswordsDontMatch": "Les mots de passe ne correspondent pas.",
+  "errorEmptyField": "Ce champ ne peut pas être vide.",
+  "errorCardIdEmpty": "Veuillez entrer un ID de carte",
+
+  "successCardAdded": "Carte ajoutée avec succès!",
+  "successCardUpdated": "Carte mise à jour avec succès!",
+  "successCardDeleted": "Carte supprimée avec succès!",
+
+  "imageSelected": "Image sélectionnée: {fileName}",
+  "@imageSelected": {
+    "description": "Message affiché lorsqu'une image est sélectionnée",
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "ocrProcessingComingSoon": "Traitement OCR bientôt disponible!",
+  "photoCaptured": "Photo capturée: {fileName}",
+  "@photoCaptured": {
+    "description": "Message affiché lorsqu'une photo est capturée",
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorPickingImage": "Erreur lors de la sélection de l'image: {error}",
+  "@errorPickingImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorTakingPhoto": "Erreur lors de la prise de photo: {error}",
+  "@errorTakingPhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "lookingUpCardId": "Recherche de l'ID de carte: {cardId}...",
+  "@lookingUpCardId": {
+    "placeholders": {
+      "cardId": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "featureComingSoon": "Fonctionnalité bientôt disponible!",
+
+  "language": "Langue",
+  "languageEnglish": "English",
+  "languageFrench": "Français",
+  "languageArabic": "العربية",
+  "changeLanguage": "Changer de langue",
+  "selectLanguage": "Sélectionner la langue",
+
+  "theme": "Thème",
+  "themeLight": "Clair",
+  "themeDark": "Sombre",
+  "themeSystem": "Système",
+
+  "logout": "Déconnexion",
+  "logoutConfirmation": "Êtes-vous sûr de vouloir vous déconnecter?",
+
+  "noCardsYet": "Pas encore de cartes",
+  "addYourFirstCard": "Ajoutez votre première carte pour commencer",
+
+  "cardDetails": "Détails de la carte",
+  "personalInfo": "Informations personnelles",
+  "contactInfo": "Informations de contact",
+  "additionalInfo": "Informations supplémentaires",
+
+  "logIn": "Se connecter",
+  "orLoginWith": "Ou se connecter avec",
+  "enterYourFullName": "Entrez votre nom complet",
+  "enterYourJobTitle": "Entrez votre titre de poste",
+  "organizationName": "Nom de l'organisation",
+  "enterOrganizationName": "Entrez le nom de l'organisation",
+  "logoText": "Texte du logo",
+  "enterLogoText": "Entrez le texte du logo (abréviation)",
+  "enterYourEmail": "Entrez votre email",
+  "enterYourPhone": "Entrez votre numéro de téléphone",
+  "enterYourLocation": "Entrez votre emplacement",
+  "enterYourWebsite": "Entrez votre site web",
+  "tellUsAboutYourself": "Parlez-nous de vous",
+  "pleaseEnterYourName": "Veuillez entrer votre nom",
+  "pleaseEnterEmail": "Veuillez entrer votre email",
+  "pleaseEnterPhone": "Veuillez entrer votre numéro de téléphone",
+  
+  "firstName": "Prénom",
+  "lastName": "Nom de famille",
+  "birthDate": "Date de naissance",
+  "alreadyHaveAnAccount": "Vous avez déjà un compte?",
+
+  "myCards": "Mes cartes",
+  "showCategories": "Afficher les catégories",
+  "noCardsFound": "Aucune carte trouvée",
+  "noCardsAvailable": "Aucune carte disponible",
+  "deleteCard": "Supprimer la carte",
+  "areYouSureDeleteCard": "Êtes-vous sûr de vouloir supprimer la carte de {cardName}?",
+  "@areYouSureDeleteCard": {
+    "placeholders": {
+      "cardName": {
+        "type": "String"
+      }
+    }
+  },
+  "cardDeleted": "Carte de {cardName} supprimée",
+  "@cardDeleted": {
+    "placeholders": {
+      "cardName": {
+        "type": "String"
+      }
+    }
+  },
+  "undo": "Annuler",
+  "noCategoriesFound": "Aucune catégorie trouvée",
+
+  "editCard": "Modifier la carte",
+  "personalInformationCaps": "INFORMATIONS PERSONNELLES",
+  "contactInformationCaps": "INFORMATIONS DE CONTACT",
+  "additionalInformationCaps": "INFORMATIONS SUPPLÉMENTAIRES",
+
+  "cardPreview": "APERÇU DE LA CARTE",
+  "changeFontColor": "CHANGER LA COULEUR DE LA POLICE",
+  "changeBackground": "CHANGER L'ARRIÈRE-PLAN",
+  "red": "Rouge",
+  "green": "Vert",
+  "blue": "Bleu",
+  
+  "splashTitle": "Cardly",
+  "splashSubtitle": "Vos cartes de visite numériques,\\nRéinventées",
+  "splashDescription": "Créez de superbes cartes de visite numériques qui laissent des impressions durables. Partagez vos informations de contact instantanément avec n'importe qui, n'importe où.",
+  "shareInstantly": "Partage instantané",
+  "connectWithTap": "Connectez-vous d'un simple toucher",
+  "shareInstantlyDescription": "Partagez vos informations de contact avec un simple scan de code QR ou un toucher. Plus besoin de chercher des cartes papier ou de saisir les détails manuellement.",
+  "ecoFriendly": "Écologique",
+  "goGreenGoDigital": "Passez au vert, passez au numérique",
+  "ecoFriendlyDescription": "Sauvez les arbres et réduisez les déchets en passant au sans papier. Rejoignez des milliers de personnes qui font des choix de réseautage respectueux de l'environnement.",
+  
+  "getStarted": "Commencer",
+  "skip": "Passer",
+  
+  "searchForCard": "Rechercher une carte",
+  "categoryOptional": "Catégorie (Optionnel)",
+  "cardAddedSuccessfully": "Carte ajoutée avec succès!",
+  "cardInformationUpdated": "Informations de la carte mises à jour!",
+  "cardSavedSuccessfully": "Carte enregistrée avec succès!",
+  "pleaseFillAllRequiredFields": "Veuillez remplir tous les champs obligatoires",
+  "couldNotLaunch": "Impossible d'ouvrir {url}",
+  "@couldNotLaunch": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningWebsite": "Erreur lors de l'ouverture du site web: {error}",
+  "@errorOpeningWebsite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "name": "Nom",
+  "email": "Email",
+  "organization": "Organisation",
+  "category": "Catégorie",
+  "uncategorized": "Non catégorisé",
+  
+  "yourTitle": "Votre titre",
+  "customBackgroundPicker": "Sélecteur d'arrière-plan personnalisé - À implémenter",
+
+  "apply": "Appliquer",
+  "chooseCustomColor": "Choisir une couleur personnalisée",
+  "lookingUpCardIdFeature": "Recherche de l'ID de carte: {cardId}...\\nFonctionnalité bientôt disponible!",
+  "@lookingUpCardIdFeature": {
+    "placeholders": {
+      "cardId": {
+        "type": "String"
+      }
+    }
+  },
+  "appTheme": "Thème de l'application",
+  "darkMode": "Mode sombre",
+  "lightMode": "Mode clair",
+  "useSystemTheme": "Utiliser le thème du système",
+
+  "personalInformation": "INFORMATIONS PERSONNELLES",
+  "pleaseEnterYourJobTitle": "Veuillez entrer votre titre de poste",
+  "organizationSection": "ORGANISATION",
+  "pleaseEnterOrganizationName": "Veuillez entrer le nom de l'organisation",
+  "contactInformation": "INFORMATIONS DE CONTACT",
+  "pleaseEnterValidEmail": "Veuillez entrer un email valide",
+  "pleaseEnterYourPhoneNumber": "Veuillez entrer votre numéro de téléphone",
+  "aboutSection": "À PROPOS",
+  "saveChanges": "Enregistrer les modifications"
+}
