@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cardly/src/generated/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../theme/spacing.dart';
 import '../../theme/typography.dart';
@@ -36,7 +37,7 @@ class CardBack extends StatelessWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Could not launch $url'),
+              content: Text(AppLocalizations.of(context)!.couldNotLaunch(url)),
               backgroundColor: Colors.red,
             ),
           );
@@ -46,7 +47,7 @@ class CardBack extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error opening website: $e'),
+            content: Text(AppLocalizations.of(context)!.errorOpeningWebsite(e.toString())),
             backgroundColor: Colors.red,
           ),
         );

@@ -1,0 +1,316 @@
+{
+  "@@locale": "en",
+  
+  "appTitle": "Cardly",
+  "@appTitle": {
+    "description": "The application title"
+  },
+
+  "ok": "OK",
+  "cancel": "Cancel",
+  "save": "Save",
+  "back": "Back",
+  "next": "Next",
+  "done": "Done",
+  "delete": "Delete",
+  "edit": "Edit",
+  "close": "Close",
+  "yes": "Yes",
+  "no": "No",
+  "confirm": "Confirm",
+  "search": "Search",
+  "loading": "Loading...",
+  "retry": "Retry",
+  "share": "Share",
+
+  "signInToAccount": "Sign in to your\nAccount",
+  "@signInToAccount": {
+    "description": "Login screen title"
+  },
+  
+  "enterEmailPassword": "Enter your email and password to log in",
+  "continueWithGoogle": "Continue with Google",
+  "or": "OR",
+  "emailLabel": "Email",
+  "passwordLabel": "Password",
+  "rememberMe": "Remember Me",
+  "forgotPassword": "Forgot Password?",
+  "signIn": "Sign In",
+  "dontHaveAccount": "Don't have an account?",
+  "signUpNow": "Sign up now",
+
+  "createAccount": "Create your\nAccount",
+  "enterDetailsToSignUp": "Enter your details to sign up",
+  "fullName": "Full Name",
+  "confirmPassword": "Confirm Password",
+  "signUp": "Sign Up",
+  "alreadyHaveAccount": "Already have an account?",
+  "signInNow": "Sign in now",
+
+  "addCard": "Add Card",
+  "@addCard": {
+    "description": "Add card screen title"
+  },
+  
+  "enterCardId": "Enter the Card ID",
+  "cardRegisteredInApp": "If the business card is registered in our app",
+  "cardlyCardId": "Cardly Card ID",
+  "enter": "Enter",
+  "fillCardManually": "Fill The Card Manually",
+  "fillManually": "Fill Manually",
+  "scanQrCode": "Scan QR Code",
+  "scanCard": "Scan Card",
+  "scan": "Scan",
+  "scanning": "Scanning...",
+  "pointCameraAtCard": "Point your camera at a business card or QR code",
+
+  "fillCardInformations": "Fill Card Informations",
+  "addCardInformations": "Add Card Informations",
+  "phone": "Phone",
+  "company": "Company",
+  "jobTitle": "Job Title",
+  "location": "Location",
+  "website": "Website",
+  "about": "About",
+  "previewCard": "Preview Card",
+
+  "profile": "Profile",
+  "cards": "Cards",
+  "settings": "Settings",
+  "myCard": "My Card",
+  "previewYourCard": "Preview Card",
+
+  "cardCustomization": "Card Customization",
+  "fontColor": "Font Color",
+  "background": "Background",
+  "customColor": "Custom Color",
+  "selectColor": "Select Color",
+  "selectBackground": "Select Background",
+  "flipCard": "Flip Card",
+  "editInformation": "Edit Information",
+  "shareCard": "Share Card",
+  "downloadQr": "Download QR",
+
+  "editCardInformation": "Edit Card Information",
+  "updateCard": "Update Card",
+  "discardChanges": "Discard Changes",
+
+  "errorGeneric": "An error occurred. Please try again.",
+  "errorNetwork": "Network error. Please check your connection.",
+  "errorInvalidEmail": "Please enter a valid email address.",
+  "errorPasswordTooShort": "Password must be at least 6 characters.",
+  "errorPasswordsDontMatch": "Passwords do not match.",
+  "errorEmptyField": "This field cannot be empty.",
+  "errorCardIdEmpty": "Please enter a Card ID",
+
+  "successCardAdded": "Card added successfully!",
+  "successCardUpdated": "Card updated successfully!",
+  "successCardDeleted": "Card deleted successfully!",
+
+  "imageSelected": "Image selected: {fileName}",
+  "@imageSelected": {
+    "description": "Message shown when an image is selected",
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "ocrProcessingComingSoon": "OCR processing coming soon!",
+  "photoCaptured": "Photo captured: {fileName}",
+  "@photoCaptured": {
+    "description": "Message shown when a photo is captured",
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorPickingImage": "Error picking image: {error}",
+  "@errorPickingImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorTakingPhoto": "Error taking photo: {error}",
+  "@errorTakingPhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "lookingUpCardId": "Looking up card ID: {cardId}...",
+  "@lookingUpCardId": {
+    "placeholders": {
+      "cardId": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "featureComingSoon": "Feature coming soon!",
+
+  "language": "Language",
+  "languageEnglish": "English",
+  "languageFrench": "Français",
+  "languageArabic": "العربية",
+  "changeLanguage": "Change Language",
+  "selectLanguage": "Select Language",
+
+  "theme": "Theme",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "themeSystem": "System",
+
+  "logout": "Logout",
+  "logoutConfirmation": "Are you sure you want to logout?",
+
+  "noCardsYet": "No cards yet",
+  "addYourFirstCard": "Add your first card to get started",
+
+  "cardDetails": "Card Details",
+  "personalInfo": "Personal Information",
+  "contactInfo": "Contact Information",
+  "additionalInfo": "Additional Information",
+
+  "logIn": "Log In",
+  "orLoginWith": "Or login with",
+  "enterYourFullName": "Enter your full name",
+  "enterYourJobTitle": "Enter your job title",
+  "organizationName": "Organization Name",
+  "enterOrganizationName": "Enter organization name",
+  "logoText": "Logo Text",
+  "enterLogoText": "Enter logo text (abbreviation)",
+  "enterYourEmail": "Enter your email",
+  "enterYourPhone": "Enter your phone number",
+  "enterYourLocation": "Enter your location",
+  "enterYourWebsite": "Enter your website",
+  "tellUsAboutYourself": "Tell us about yourself",
+  "pleaseEnterYourName": "Please enter your name",
+  "pleaseEnterEmail": "Please enter your email",
+  "pleaseEnterPhone": "Please enter your phone number",
+  
+  "firstName": "First name",
+  "lastName": "Last name",
+  "birthDate": "Birth date",
+  "alreadyHaveAnAccount": "Already have an account?",
+
+  "myCards": "My Cards",
+  "showCategories": "Show Categories",
+  "noCardsFound": "No cards found",
+  "noCardsAvailable": "No cards available",
+  "deleteCard": "Delete Card",
+  "areYouSureDeleteCard": "Are you sure you want to delete {cardName}'s card?",
+  "@areYouSureDeleteCard": {
+    "placeholders": {
+      "cardName": {
+        "type": "String"
+      }
+    }
+  },
+  "cardDeleted": "{cardName}'s card deleted",
+  "@cardDeleted": {
+    "placeholders": {
+      "cardName": {
+        "type": "String"
+      }
+    }
+  },
+  "undo": "Undo",
+  "noCategoriesFound": "No categories found",
+
+  "editCard": "Edit Card",
+  "personalInformationCaps": "PERSONAL INFORMATION",
+  "contactInformationCaps": "CONTACT INFORMATION",
+  "additionalInformationCaps": "ADDITIONAL INFORMATION",
+
+  "cardPreview": "CARD PREVIEW",
+  "changeFontColor": "CHANGE FONT COLOR",
+  "changeBackground": "CHANGE BACKGROUND",
+  "red": "Red",
+  "green": "Green",
+  "blue": "Blue",
+  
+  "splashTitle": "Cardly",
+  "splashSubtitle": "Your Digital Business Cards,\\nReimagined",
+  "splashDescription": "Create stunning digital business cards that make lasting impressions. Share your contact information instantly with anyone, anywhere.",
+  "shareInstantly": "Share Instantly",
+  "connectWithTap": "Connect with a Tap",
+  "shareInstantlyDescription": "Share your contact info with a simple QR code scan or tap. No more fumbling with paper cards or typing details manually.",
+  "ecoFriendly": "Eco-Friendly",
+  "goGreenGoDigital": "Go Green, Go Digital",
+  "ecoFriendlyDescription": "Save trees and reduce waste by going paperless. Join thousands making environmentally conscious networking choices.",
+  
+  "getStarted": "Get Started",
+  "skip": "Skip",
+  
+  "searchForCard": "Search for a card",
+  "categoryOptional": "Category (Optional)",
+  "cardAddedSuccessfully": "Card added successfully!",
+  "cardInformationUpdated": "Card information updated!",
+  "cardSavedSuccessfully": "Card saved successfully!",
+  "pleaseFillAllRequiredFields": "Please fill all required fields",
+  "couldNotLaunch": "Could not launch {url}",
+  "@couldNotLaunch": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningWebsite": "Error opening website: {error}",
+  "@errorOpeningWebsite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "name": "Name",
+  "email": "Email",
+  "organization": "Organization",
+  "category": "Category",
+  "uncategorized": "Uncategorized",
+  
+  "yourTitle": "Your Title",
+  "yourName": "Your Name",
+  "yourCompany": "Your Company",
+  "yourEmail": "your.email@example.com",
+  "yourPhone": "0000000000",
+  "yourLocation": "Your Location",
+  "exampleWebsite": "www.example.com",
+  "customBackgroundPicker": "Custom background picker - To be implemented",
+
+  "apply": "Apply",
+  "chooseCustomColor": "Choose Custom Color",
+  "lookingUpCardIdFeature": "Looking up card ID: {cardId}...\\nFeature coming soon!",
+  "@lookingUpCardIdFeature": {
+    "placeholders": {
+      "cardId": {
+        "type": "String"
+      }
+    }
+  },
+  "appTheme": "App Theme",
+  "darkMode": "Dark Mode",
+  "lightMode": "Light Mode",
+  "useSystemTheme": "Use System Theme",
+
+  "personalInformation": "PERSONAL INFORMATION",
+  "pleaseEnterYourJobTitle": "Please enter your job title",
+  "organizationSection": "ORGANIZATION",
+  "pleaseEnterOrganizationName": "Please enter organization name",
+  "contactInformation": "CONTACT INFORMATION",
+  "pleaseEnterValidEmail": "Please enter a valid email",
+  "pleaseEnterYourPhoneNumber": "Please enter your phone number",
+  "aboutSection": "ABOUT",
+  "saveChanges": "Save Changes"
+}

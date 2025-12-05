@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cardly/presentation/widgets/business_card/card_background.dart';
 import 'package:cardly/presentation/theme/colors.dart';
 import 'package:cardly/presentation/screens/profile/widgets/section_label.dart';
+import 'package:cardly/src/generated/l10n/app_localizations.dart';
 
 /// Widget for selecting background patterns/gradients for business cards
 class BackgroundPickerWidget extends StatelessWidget {
@@ -20,11 +21,13 @@ class BackgroundPickerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionLabel(text: 'CHANGE BACKGROUND'),
+          SectionLabel(text: l10n.changeBackground),
           const SizedBox(height: 12),
           Wrap(
             spacing: 12,

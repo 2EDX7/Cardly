@@ -9,6 +9,7 @@ import 'widgets/filter_button.dart';
 import 'widgets/filter_icon_button.dart';
 import 'widgets/card_list_item.dart';
 import 'widgets/category_section.dart';
+import 'package:cardly/src/generated/l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -32,6 +33,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -48,7 +50,7 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: AppSpacing.sm),
                   // Title
                   Text(
-                    'My Cards',
+                    l10n.myCards,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w600,
@@ -68,7 +70,7 @@ class _HomePageState extends State<HomePage> {
                   Row(
                     children: [
                       FilterButton(
-                        text: 'Show Categories',
+                        text: l10n.showCategories,
                         isActive: _showCategories,
                         onTap: () {
                           setState(() {
@@ -114,7 +116,7 @@ class _HomePageState extends State<HomePage> {
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () => context.read<CardCubit>().loadCards(),
-                            child: const Text('Retry'),
+                            child: Text(l10n.retry),
                           ),
                         ],
                       ),
@@ -123,18 +125,18 @@ class _HomePageState extends State<HomePage> {
                   
                   if (state is CardLoaded) {
                     if (state.filteredCards.isEmpty) {
-                      return const Center(
-                        child: Text('No cards found'),
+                      return Center(
+                        child: Text(l10n.noCardsFound),
                       );
                     }
                     
                     return _showCategories 
-                        ? _buildCategorizedView(state) 
-                        : _buildListView(state);
+                        ? _buildCategorizedView(state, l10n) 
+                        : _buildListView(state, l10n);
                   }
                   
-                  return const Center(
-                    child: Text('No cards available'),
+                  return Center(
+                    child: Text(l10n.noCardsAvailable),
                   );
                 },
               ),
@@ -145,7 +147,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildListView(CardLoaded state) {
+  Widget _buildListView(CardLoaded state, AppLocalizations l10n) {
     final cards = state.filteredCards;
     return ListView.builder(
       padding: const EdgeInsets.symmetric(
@@ -160,7 +162,7 @@ class _HomePageState extends State<HomePage> {
           'organization': card.organization,
           'jobTitle': card.jobTitle,
           'background': card.background ?? CardBackground.defaultGradient,
-          'category': card.category ?? 'Uncategorized',
+          'category': card.category ?? l10n.uncategorized,
         };
         
         return Dismissible(
@@ -185,19 +187,19 @@ class _HomePageState extends State<HomePage> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: const Text('Delete Card'),
-                  content: Text('Are you sure you want to delete ${card.name}\'s card?'),
+                  title: Text(l10n.deleteCard),
+                  content: Text(l10n.areYouSureDeleteCard(card.name)),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(false),
-                      child: const Text('Cancel'),
+                      child: Text(l10n.cancel),
                     ),
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(true),
                       style: TextButton.styleFrom(
                         foregroundColor: Colors.red,
                       ),
-                      child: const Text('Delete'),
+                      child: Text(l10n.delete),
                     ),
                   ],
                 );
@@ -208,9 +210,9 @@ class _HomePageState extends State<HomePage> {
             context.read<CardCubit>().deleteCard(card.email);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('${card.name}\'s card deleted'),
+                content: Text(l10n.cardDeleted(card.name)),
                 action: SnackBarAction(
-                  label: 'Undo',
+                  label: l10n.undo,
                   onPressed: () {
                     // Re-add the card
                     context.read<CardCubit>().addCard(card);
@@ -225,12 +227,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildCategorizedView(CardLoaded state) {
+  Widget _buildCategorizedView(CardLoaded state, AppLocalizations l10n) {
     final grouped = state.cardsByCategory;
     final categories = grouped.keys.toList();
 
     if (categories.isEmpty) {
-      return const Center(child: Text('No categories found'));
+      return Center(child: Text(l10n.noCategoriesFound));
     }
 
     return ListView.builder(
@@ -258,12 +260,12 @@ class _HomePageState extends State<HomePage> {
               context: context,
               builder: (BuildContext dialogContext) {
                 return AlertDialog(
-                  title: const Text('Delete Card'),
-                  content: Text('Are you sure you want to delete ${cardToDelete.name}\'s card?'),
+                  title: Text(l10n.deleteCard),
+                  content: Text(l10n.areYouSureDeleteCard(cardToDelete.name)),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.of(dialogContext).pop(),
-                      child: const Text('Cancel'),
+                      child: Text(l10n.cancel),
                     ),
                     TextButton(
                       onPressed: () {
@@ -271,9 +273,9 @@ class _HomePageState extends State<HomePage> {
                         context.read<CardCubit>().deleteCard(cardEmail);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('${cardToDelete.name}\'s card deleted'),
+                            content: Text(l10n.cardDeleted(cardToDelete.name)),
                             action: SnackBarAction(
-                              label: 'Undo',
+                              label: l10n.undo,
                               onPressed: () {
                                 context.read<CardCubit>().addCard(cardToDelete);
                               },
@@ -284,7 +286,7 @@ class _HomePageState extends State<HomePage> {
                       style: TextButton.styleFrom(
                         foregroundColor: Colors.red,
                       ),
-                      child: const Text('Delete'),
+                      child: Text(l10n.delete),
                     ),
                   ],
                 );

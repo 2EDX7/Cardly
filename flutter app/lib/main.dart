@@ -6,8 +6,12 @@ import 'presentation/theme/themes.dart';
 import 'logic/cubits/theme/theme_cubit.dart';
 import 'logic/cubits/theme/theme_state.dart';
 import 'logic/cubits/card/card_cubit.dart';
+import 'logic/cubits/language/language_cubit.dart';
+import 'logic/cubits/language/language_state.dart';
 import 'routes/routes.dart';
 import 'data/database/database_helper.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'src/generated/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,17 +42,53 @@ class CardlyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => ThemeCubit()),
         BlocProvider(create: (context) => CardCubit()),
+        BlocProvider(create: (context) => LanguageCubit()),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, themeState) {
-          return MaterialApp(
-            title: 'Cardly',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: themeState.themeMode,
-            initialRoute: AppRoutes.splash,
-            onGenerateRoute: RouteGenerator.generateRoute,
+          return BlocBuilder<LanguageCubit, LanguageState>(
+            builder: (context, languageState) {
+              return MaterialApp(
+                title: 'Cardly',
+                debugShowCheckedModeBanner: false,
+                
+                // Localization delegates
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                
+                // Supported locales
+                supportedLocales: const [
+                  Locale('en'), // English
+                  Locale('fr'), // French
+                  Locale('ar'), // Arabic
+                ],
+                
+                // Current locale
+                locale: languageState.locale,
+                
+                // Locale resolution callback
+                localeResolutionCallback: (locale, supportedLocales) {
+                  // Check if the current device locale is supported
+                  for (var supportedLocale in supportedLocales) {
+                    if (supportedLocale.languageCode == locale?.languageCode) {
+                      return supportedLocale;
+                    }
+                  }
+                  // If not supported, return English as default
+                  return supportedLocales.last;
+                },
+                
+                theme: AppTheme.lightTheme,
+                darkTheme: AppTheme.darkTheme,
+                themeMode: themeState.themeMode,
+                initialRoute: AppRoutes.splash,
+                onGenerateRoute: RouteGenerator.generateRoute,
+              );
+            },
           );
         },
       ),

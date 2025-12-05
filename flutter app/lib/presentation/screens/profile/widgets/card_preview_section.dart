@@ -4,6 +4,7 @@ import 'package:cardly/presentation/widgets/business_card/card_background.dart';
 import 'package:cardly/presentation/theme/spacing.dart';
 import 'package:cardly/presentation/theme/typography.dart';
 import 'package:cardly/presentation/screens/profile/widgets/section_label.dart';
+import 'package:cardly/src/generated/l10n/app_localizations.dart';
 
 /// Widget that displays the business card preview with flip functionality
 class CardPreviewSection extends StatelessWidget {
@@ -38,11 +39,13 @@ class CardPreviewSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // "CARD PREVIEW" Label
-        const SectionLabel(text: 'CARD PREVIEW'),
+        SectionLabel(text: l10n.cardPreview),
         const SizedBox(height: AppSpacing.md),
 
         // Business Card with Flip Animation
@@ -70,7 +73,7 @@ class CardPreviewSection extends StatelessWidget {
         // "tap to flip" text
         Center(
           child: Text(
-            'tap to flip',
+            l10n.tapToFlip,
             style: AppTextStyles.caption(context).copyWith(
               color: Theme.of(context).colorScheme.onBackground,
               fontWeight: FontWeight.bold,

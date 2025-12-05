@@ -3,6 +3,7 @@ import '../../theme/spacing.dart';
 import '../../widgets/stars_background.dart';
 import '../../theme/typography.dart';
 import '../../../routes/routes.dart';
+import '../../../src/generated/l10n/app_localizations.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -52,6 +53,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final cs = Theme.of(context).colorScheme;
     final keyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
@@ -103,7 +105,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               const SizedBox(height: AppSpacing.xxl),
                               const SizedBox(height: AppSpacing.xxl),
                               Text(
-                                'Create Account',
+                                l10n.createAccount,
                                 style: AppTextStyles.heading1(context).copyWith(color: cs.onPrimary),
                               ),
                               const SizedBox(height: AppSpacing.md),
@@ -111,7 +113,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    'Already have an account? ',
+                                    l10n.alreadyHaveAccount,
                                     style: AppTextStyles.bodySmall(context).copyWith(
                                       color: cs.onPrimary.withOpacity(0.9),
                                     ),
@@ -119,7 +121,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   GestureDetector(
                                     onTap: () => Navigator.of(context).pop(),
                                     child: Text(
-                                      'Log In',
+                                      l10n.logIn,
                                       style: AppTextStyles.bodySmall(context).copyWith(
                                         color: Colors.white,
                                         decoration: TextDecoration.underline,
@@ -171,13 +173,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               children: [
                                 Expanded(
                                   child: TextFormField(
-                                    decoration: const InputDecoration(hintText: 'First name'),
+                                    decoration: InputDecoration(hintText: l10n.firstName),
                                   ),
                                 ),
                                 const SizedBox(width: AppSpacing.md),
                                 Expanded(
                                   child: TextFormField(
-                                    decoration: const InputDecoration(hintText: 'Last name'),
+                                    decoration: InputDecoration(hintText: l10n.lastName),
                                   ),
                                 ),
                               ],
@@ -185,7 +187,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             const SizedBox(height: AppSpacing.md),
 
                             TextFormField(
-                              decoration: const InputDecoration(hintText: 'Email'),
+                              decoration: InputDecoration(hintText: l10n.emailLabel),
                             ),
                             const SizedBox(height: AppSpacing.md),
 
@@ -193,7 +195,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             TextFormField(
                               controller: _birthDateController,
                               decoration: InputDecoration(
-                                hintText: 'Birth date',
+                                hintText: l10n.birthDate,
                                 suffixIcon: Icon(Icons.calendar_today, color: cs.primary),
                               ),
                               readOnly: true,
@@ -203,7 +205,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                             TextFormField(
                               obscureText: true,
-                              decoration: const InputDecoration(hintText: 'Password'),
+                              decoration: InputDecoration(hintText: l10n.passwordLabel),
                             ),
                             const SizedBox(height: AppSpacing.xl),
 
@@ -217,19 +219,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     (route) => false,
                                   );
                                 },
-                                child: Text('Sign Up', style: AppTextStyles.buttonPrimary(context)),
+                                child: Text(l10n.signUp, style: AppTextStyles.buttonPrimary(context)),
                               ),
                             ),
 
                             const SizedBox(height: AppSpacing.lg),
                             Row(
                               children: [
-                                Expanded(child: Divider(color: cs.onSurface.withAlpha(50))),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                                  child: Text('Or', style: AppTextStyles.caption(context)),
-                                ),
-                                Expanded(child: Divider(color: cs.onSurface.withAlpha(50))),
+                              Expanded(child: Divider(color: cs.onSurface.withAlpha(50))),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                                child: Text(l10n.or, style: AppTextStyles.caption(context)),
+                              ),
+                              Expanded(child: Divider(color: cs.onSurface.withAlpha(50))),
                               ],
                             ),
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cardly/presentation/widgets/navBar.dart';
 import 'package:cardly/presentation/theme/spacing.dart';
 import 'package:cardly/presentation/theme/typography.dart';
+import '../../../src/generated/l10n/app_localizations.dart';
 
 // In this screen I simulate a small scanning process
 class ScanCardScreen extends StatefulWidget {
@@ -31,6 +32,7 @@ class _ScanCardScreenState extends State<ScanCardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
@@ -41,7 +43,7 @@ class _ScanCardScreenState extends State<ScanCardScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Scan Card',
+          l10n.scanCard,
           style: AppTextStyles.heading3(context),
         ),
       ),
@@ -130,7 +132,7 @@ class _ScanCardScreenState extends State<ScanCardScreen> {
                   SizedBox(height: AppSpacing.lg),
 
                   Text(
-                    'Point your camera at a business card or QR code',
+                    l10n.pointCameraAtCard,
                     textAlign: TextAlign.center,
                     style: AppTextStyles.bodySmall(context),
                   ),
@@ -167,7 +169,7 @@ class _ScanCardScreenState extends State<ScanCardScreen> {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        _isScanning ? 'Scanning...' : 'Scan',
+                        _isScanning ? l10n.scanning : l10n.scan,
                         style: AppTextStyles.buttonPrimary(context),
                       ),
                     ],

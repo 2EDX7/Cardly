@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cardly/presentation/theme/spacing.dart';
 import 'package:cardly/presentation/theme/typography.dart';
 import 'package:cardly/data/models/card_info.dart';
-
+import '../../../src/generated/l10n/app_localizations.dart';
 /// Edit card page where user can update card information
 class EditCardPage extends StatefulWidget {
   final CardInfo cardInfo;
@@ -102,6 +102,7 @@ class _EditCardPageState extends State<EditCardPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
@@ -114,7 +115,7 @@ class _EditCardPageState extends State<EditCardPage> {
           },
         ),
         title: Text(
-          'Edit Card',
+          l10n.editCard,
           style: AppTextStyles.heading2(context).copyWith(
             fontWeight: FontWeight.bold,
             color: Theme.of(context).colorScheme.onBackground,
@@ -131,7 +132,7 @@ class _EditCardPageState extends State<EditCardPage> {
             children: [
               // Personal Information Section
               Text(
-                'PERSONAL INFORMATION',
+                l10n.personalInformation,
                 style: AppTextStyles.overline(context).copyWith(
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.onBackground,
@@ -141,12 +142,12 @@ class _EditCardPageState extends State<EditCardPage> {
 
               _buildTextField(
                 controller: _nameController,
-                labelText: 'Full Name',
-                hintText: 'Enter your full name',
+                labelText: l10n.fullName,
+                hintText: l10n.enterYourFullName,
                 prefixIcon: Icons.person_outline,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your name';
+                    return l10n.pleaseEnterYourName;
                   }
                   return null;
                 },
@@ -155,12 +156,12 @@ class _EditCardPageState extends State<EditCardPage> {
 
               _buildTextField(
                 controller: _jobTitleController,
-                labelText: 'Job Title',
-                hintText: 'Enter your job title',
+                labelText: l10n.jobTitle,
+                hintText: l10n.enterYourJobTitle,
                 prefixIcon: Icons.work_outline,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your job title';
+                    return l10n.pleaseEnterYourJobTitle;
                   }
                   return null;
                 },
@@ -169,7 +170,7 @@ class _EditCardPageState extends State<EditCardPage> {
 
               // Organization Section
               Text(
-                'ORGANIZATION',
+                l10n.organizationSection,
                 style: AppTextStyles.overline(context).copyWith(
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.onBackground,
@@ -179,12 +180,12 @@ class _EditCardPageState extends State<EditCardPage> {
 
               _buildTextField(
                 controller: _organizationController,
-                labelText: 'Organization Name',
-                hintText: 'Enter organization name',
+                labelText: l10n.organizationName,
+                hintText: l10n.enterOrganizationName,
                 prefixIcon: Icons.business_outlined,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter organization name';
+                    return l10n.pleaseEnterOrganizationName;
                   }
                   return null;
                 },
@@ -201,7 +202,7 @@ class _EditCardPageState extends State<EditCardPage> {
 
               // Contact Information Section
               Text(
-                'CONTACT INFORMATION',
+                l10n.contactInformation,
                 style: AppTextStyles.overline(context).copyWith(
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.onBackground,
@@ -211,16 +212,16 @@ class _EditCardPageState extends State<EditCardPage> {
 
               _buildTextField(
                 controller: _emailController,
-                labelText: 'Email',
-                hintText: 'Enter your email',
+                labelText: l10n.email,
+                hintText: l10n.enterYourEmail,
                 prefixIcon: Icons.email_outlined,
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
+                    return l10n.pleaseEnterEmail;
                   }
                   if (!value.contains('@')) {
-                    return 'Please enter a valid email';
+                    return l10n.pleaseEnterValidEmail;
                   }
                   return null;
                 },
@@ -229,13 +230,13 @@ class _EditCardPageState extends State<EditCardPage> {
 
               _buildTextField(
                 controller: _phoneController,
-                labelText: 'Phone',
-                hintText: 'Enter your phone number',
+                labelText: l10n.phone,
+                hintText: l10n.enterYourPhone,
                 prefixIcon: Icons.phone_outlined,
                 keyboardType: TextInputType.phone,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your phone number';
+                    return l10n.pleaseEnterYourPhoneNumber;
                   }
                   return null;
                 },
@@ -244,16 +245,16 @@ class _EditCardPageState extends State<EditCardPage> {
 
               _buildTextField(
                 controller: _locationController,
-                labelText: 'Location',
-                hintText: 'Enter your location',
+                labelText: l10n.location,
+                hintText: l10n.enterYourLocation,
                 prefixIcon: Icons.location_on_outlined,
               ),
               const SizedBox(height: AppSpacing.md),
 
               _buildTextField(
                 controller: _websiteController,
-                labelText: 'Website',
-                hintText: 'Enter your website',
+                labelText: l10n.website,
+                hintText: l10n.enterYourWebsite,
                 prefixIcon: Icons.language_outlined,
                 keyboardType: TextInputType.url,
               ),
@@ -261,7 +262,7 @@ class _EditCardPageState extends State<EditCardPage> {
 
               // About Section
               Text(
-                'ABOUT',
+                l10n.aboutSection,
                 style: AppTextStyles.overline(context).copyWith(
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.onBackground,
@@ -271,8 +272,8 @@ class _EditCardPageState extends State<EditCardPage> {
 
               _buildTextField(
                 controller: _aboutController,
-                labelText: 'About',
-                hintText: 'Tell us about yourself',
+                labelText: l10n.about,
+                hintText: l10n.tellUsAboutYourself,
                 prefixIcon: Icons.info_outline,
                 maxLines: 4,
               ),
@@ -285,7 +286,7 @@ class _EditCardPageState extends State<EditCardPage> {
                 child: ElevatedButton(
                   onPressed: _saveChanges,
                   child: Text(
-                    'Save Changes',
+                    l10n.saveChanges,
                     style: AppTextStyles.buttonPrimary(context).copyWith(
                       fontSize: 16,
                     ),

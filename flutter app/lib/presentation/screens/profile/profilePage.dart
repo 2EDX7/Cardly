@@ -15,7 +15,8 @@ import '../../../logic/cubits/card/card_cubit.dart';
 import '../../../logic/cubits/card/card_state.dart';
 import '../../../logic/cubits/theme/theme_cubit.dart';
 import '../../../logic/cubits/theme/theme_state.dart';
-
+import './widgets/LanguageSection_widget.dart';
+import 'package:cardly/src/generated/l10n/app_localizations.dart';
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -117,6 +118,7 @@ class _ProfilePageState extends State<ProfilePage>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -125,7 +127,7 @@ class _ProfilePageState extends State<ProfilePage>
         elevation: 0,
         automaticallyImplyLeading: false, // Remove back button
         title: Text(
-          'Preview Card',
+          l10n.previewCard,
           style: AppTextStyles.heading2(context).copyWith(
             fontWeight: FontWeight.bold,
             color: Theme.of(context).colorScheme.onBackground,
@@ -192,9 +194,9 @@ class _ProfilePageState extends State<ProfilePage>
               onCustomBackgroundPressed: () {
                 // TODO: Implement custom background picker
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
+                  SnackBar(
                     content:
-                        Text('Custom background picker - To be implemented'),
+                        Text(AppLocalizations.of(context)!.customBackgroundPicker),
                   ),
                 );
               },
@@ -205,6 +207,11 @@ class _ProfilePageState extends State<ProfilePage>
             // Theme Settings Section
             _buildThemeSection(context),
 
+            const SizedBox(height: AppSpacing.xl),
+
+            // Language Settings Section
+            const LanguagesectionWidget(),
+
             const SizedBox(height: AppSpacing.xxl),
 
             // Action Buttons
@@ -213,7 +220,7 @@ class _ProfilePageState extends State<ProfilePage>
                 if (state is CardUpdated) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Text('Card saved successfully!'),
+                      content: Text(AppLocalizations.of(context)!.cardSavedSuccessfully),
                       backgroundColor: theme.colorScheme.primary,
                     ),
                   );
@@ -246,8 +253,8 @@ class _ProfilePageState extends State<ProfilePage>
                       });
                       
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Card information updated!'),
+                        SnackBar(
+                          content: Text(AppLocalizations.of(context)!.cardInformationUpdated),
                           backgroundColor: AppColors.success,
                         ),
                       );
@@ -277,13 +284,14 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   Widget _buildThemeSection(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'App Theme',
+          l10n.appTheme,
           style: AppTextStyles.heading3(context).copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -311,7 +319,7 @@ class _ProfilePageState extends State<ProfilePage>
                       color: theme.colorScheme.primary,
                     ),
                     title: Text(
-                      isDarkMode ? 'Dark Mode' : 'Light Mode',
+                      isDarkMode ? l10n.darkMode : l10n.lightMode,
                       style: AppTextStyles.body(context),
                     ),
                     trailing: Switch(
@@ -337,7 +345,7 @@ class _ProfilePageState extends State<ProfilePage>
                       color: theme.colorScheme.primary,
                     ),
                     title: Text(
-                      'Use System Theme',
+                      l10n.useSystemTheme,
                       style: AppTextStyles.body(context),
                     ),
                     trailing: Switch(

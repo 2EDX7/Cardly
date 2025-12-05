@@ -3,7 +3,7 @@ import '../../theme/spacing.dart';
 import '../../widgets/stars_background.dart';
 import '../../theme/typography.dart';
 import '../../../routes/routes.dart';
-
+import '../../../src/generated/l10n/app_localizations.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -16,6 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final cs = Theme.of(context).colorScheme;
     final keyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
@@ -67,13 +68,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               Icon(Icons.shield, color: cs.onPrimary, size: 48),
                               const SizedBox(height: AppSpacing.lg),
                               Text(
-                                'Sign in to your\nAccount',
+                                l10n.signInToAccount,
                                 style: AppTextStyles.heading1(context).copyWith(color: cs.onPrimary),
                                 textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: AppSpacing.md),
                               Text(
-                                'Enter your email and password to log in',
+                                l10n.enterEmailPassword,
                                 style: AppTextStyles.body(context).copyWith(
                                   color: cs.onPrimary.withOpacity(0.9),
                                 ),
@@ -135,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     Image.asset('assets/images/google_icon.jpg', height: 20),
                                     const SizedBox(width: AppSpacing.md),
                                     Text(
-                                      'Continue with Google',
+                                      l10n.continueWithGoogle,
                                       style: AppTextStyles.body(context),
                                     ),
                                   ],
@@ -149,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Expanded(child: Divider(color: cs.onSurface.withAlpha(50))),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                                  child: Text('Or login with', style: AppTextStyles.caption(context)),
+                                  child: Text(l10n.orLoginWith, style: AppTextStyles.caption(context)),
                                 ),
                                 Expanded(child: Divider(color: cs.onSurface.withAlpha(50))),
                               ],
@@ -159,8 +160,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                             // Email field
                             TextFormField(
-                              decoration: const InputDecoration(
-                                hintText: 'Email',
+                              decoration: InputDecoration(
+                                hintText: l10n.emailLabel,
                               ),
                             ),
                             const SizedBox(height: AppSpacing.md),
@@ -168,8 +169,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             // Password field
                             TextFormField(
                               obscureText: true,
-                              decoration: const InputDecoration(
-                                hintText: 'Password',
+                              decoration: InputDecoration(
+                                hintText: l10n.passwordLabel,
                               ),
                             ),
 
@@ -190,13 +191,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                       activeColor: cs.primary,
                                       checkColor: Colors.white,
                                     ),
-                                    Text('Remember me', style: AppTextStyles.caption(context)),
+                                    Text(l10n.rememberMe, style: AppTextStyles.caption(context)),
                                   ],
                                 ),
                                 TextButton(
                                   onPressed: () {},
                                   child: Text(
-                                    'Forgot Password?',
+                                    l10n.forgotPassword,
                                     style: AppTextStyles.bodySmall(context).copyWith(color: cs.primary),
                                   ),
                                 ),
@@ -215,7 +216,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     (route) => false,
                                   );
                                 },
-                                child: Text('Log In', style: AppTextStyles.buttonPrimary(context)),
+                                child: Text(l10n.logIn, style: AppTextStyles.buttonPrimary(context)),
                               ),
                             ),
 
@@ -223,13 +224,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text("Don't have an account? ", style: AppTextStyles.caption(context)),
+                                Text(l10n.dontHaveAccount + ' ', style: AppTextStyles.caption(context)),
                                 TextButton(
                                   onPressed: () {
                                     Navigator.of(context).pushNamed(AppRoutes.signup);
                                   },
                                   child: Text(
-                                    'Sign Up',
+                                    l10n.signUp,
                                     style: AppTextStyles.bodySmall(context).copyWith(
                                       color: cs.primary,
                                       decoration: TextDecoration.underline,

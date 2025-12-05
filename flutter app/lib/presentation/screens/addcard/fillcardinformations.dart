@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cardly/src/generated/l10n/app_localizations.dart';
 import 'package:cardly/presentation/widgets/buildTextField.dart';
 import 'package:cardly/presentation/theme/spacing.dart';
 import 'package:cardly/presentation/theme/typography.dart';
@@ -52,6 +53,7 @@ class _FillcardinformationsState extends State<Fillcardinformations> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
@@ -62,7 +64,7 @@ class _FillcardinformationsState extends State<Fillcardinformations> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Fill Card Informations',
+          l10n.fillCardInformations,
           style: AppTextStyles.heading3(context),
         ),
       ),
@@ -73,21 +75,21 @@ class _FillcardinformationsState extends State<Fillcardinformations> {
               padding: AppSpacing.paddingLg,
               child: Column(
                 children: [
-                  buildTextField(context, 'Full Name', _fullNameController),
-                  buildTextField(context, 'Email', _emailController),
-                  buildTextField(context, 'Phone', _phoneController),
-                  buildTextField(context, 'Company', _companyController),
-                  buildTextField(context, 'Job Title', _jobTitleController),
-                  buildTextField(context, 'Location', _locationController),
-                  buildTextField(context, 'Website', _websiteController),
-                  buildTextField(context, 'About', _aboutController),
+                  buildTextField(context, l10n.fullName, _fullNameController),
+                  buildTextField(context, l10n.email, _emailController),
+                  buildTextField(context, l10n.phone, _phoneController),
+                  buildTextField(context, l10n.company, _companyController),
+                  buildTextField(context, l10n.jobTitle, _jobTitleController),
+                  buildTextField(context, l10n.location, _locationController),
+                  buildTextField(context, l10n.website, _websiteController),
+                  buildTextField(context, l10n.about, _aboutController),
                   
                   // Category Dropdown
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
                     value: _selectedCategory,
                     decoration: InputDecoration(
-                      labelText: 'Category (Optional)',
+                      labelText: l10n.categoryOptional,
                       labelStyle: TextStyle(
                         color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
                       ),
@@ -135,8 +137,8 @@ class _FillcardinformationsState extends State<Fillcardinformations> {
                       listener: (context, state) {
                         if (state is CardAdded) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Card added successfully!'),
+                            SnackBar(
+                              content: Text(l10n.cardAddedSuccessfully),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -161,8 +163,8 @@ class _FillcardinformationsState extends State<Fillcardinformations> {
                                 _companyController.text.isEmpty ||
                                 _jobTitleController.text.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Please fill all required fields'),
+                                SnackBar(
+                                  content: Text(l10n.pleaseFillAllRequiredFields),
                                   backgroundColor: Colors.orange,
                                 ),
                               );
@@ -178,7 +180,7 @@ class _FillcardinformationsState extends State<Fillcardinformations> {
                               location: _locationController.text,
                               website: _websiteController.text,
                               about: _aboutController.text,
-                              category: _selectedCategory ?? 'Uncategorized',
+                              category: _selectedCategory ?? l10n.uncategorized,
                             );
 
                             await context.read<CardCubit>().addCard(newCard);
@@ -193,7 +195,7 @@ class _FillcardinformationsState extends State<Fillcardinformations> {
                                   ),
                                 )
                               : Text(
-                                  'Add Card',
+                                  l10n.addCard,
                                   style: AppTextStyles.buttonPrimary(context),
                                 ),
                         );

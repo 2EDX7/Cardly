@@ -4,6 +4,7 @@ import '../../theme/spacing.dart';
 import '../../theme/typography.dart';
 import '../../widgets/business_card/business_card.dart';
 import '../../../routes/routes.dart';
+import 'package:cardly/src/generated/l10n/app_localizations.dart';
 
 class IntroSplash extends StatefulWidget {
   const IntroSplash({super.key});
@@ -105,30 +106,30 @@ class _IntroSplashState extends State<IntroSplash> {
                           _buildFeatureContent(
                             context,
                             icon: Icons.credit_card,
-                            title: 'Cardly',
-                            subtitle: 'Your Digital Business Cards,\nReimagined',
+                            title: AppLocalizations.of(context)!.splashTitle,
+                            subtitle: AppLocalizations.of(context)!.splashSubtitle,
                             description:
-                                'Create stunning digital business cards that make lasting impressions. Share your contact information instantly with anyone, anywhere.',
+                                AppLocalizations.of(context)!.splashDescription,
                           ),
 
                           // Page 2: Instant Sharing
                           _buildFeatureContent(
                             context,
                             icon: Icons.qr_code_2,
-                            title: 'Share Instantly',
-                            subtitle: 'Connect with a Tap',
+                            title: AppLocalizations.of(context)!.shareInstantly,
+                            subtitle: AppLocalizations.of(context)!.connectWithTap,
                             description:
-                                'Share your contact info with a simple QR code scan or tap. No more fumbling with paper cards or typing details manually.',
+                                AppLocalizations.of(context)!.shareInstantlyDescription,
                           ),
 
                           // Page 3: Eco-Friendly
                           _buildFeatureContent(
                             context,
                             icon: Icons.eco,
-                            title: 'Eco-Friendly',
-                            subtitle: 'Go Green, Go Digital',
+                            title: AppLocalizations.of(context)!.ecoFriendly,
+                            subtitle: AppLocalizations.of(context)!.goGreenGoDigital,
                             description:
-                                'Save trees and reduce waste by going paperless. Join thousands making environmentally conscious networking choices.',
+                                AppLocalizations.of(context)!.ecoFriendlyDescription,
                           ),
                         ],
                       ),
@@ -147,7 +148,7 @@ class _IntroSplashState extends State<IntroSplash> {
                             Navigator.of(context).pushNamed(AppRoutes.login);
                           },
                           child: Text(
-                            'Log In',
+                            AppLocalizations.of(context)!.logIn,
                             style: AppTextStyles.buttonPrimary(context),
                           ),
                         ),

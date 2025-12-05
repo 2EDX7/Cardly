@@ -5,6 +5,7 @@ import 'package:cardly/presentation/theme/colors.dart';
 import 'package:cardly/presentation/theme/spacing.dart';
 import 'package:cardly/presentation/theme/typography.dart';
 import 'package:cardly/routes/routes.dart';
+import '../../../src/generated/l10n/app_localizations.dart';
 
 class AddCardScreen extends StatefulWidget {
   const AddCardScreen({Key? key}) : super(key: key);
@@ -28,9 +29,10 @@ class _AddCardScreenState extends State<AddCardScreen> {
         // TODO: Process the image with OCR to extract card information
         // For now, show a message that this feature is coming soon
         if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Image selected: ${image.name}\nOCR processing coming soon!'),
+              content: Text('${l10n.imageSelected(image.name)}\n${l10n.ocrProcessingComingSoon}'),
               backgroundColor: Theme.of(context).colorScheme.primary,
             ),
           );
@@ -38,9 +40,10 @@ class _AddCardScreenState extends State<AddCardScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error picking image: $e'),
+            content: Text(l10n.errorPickingImage(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -59,9 +62,10 @@ class _AddCardScreenState extends State<AddCardScreen> {
         // TODO: Process the image with OCR to extract card information
         // For now, show a message that this feature is coming soon
         if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Photo captured: ${image.name}\nOCR processing coming soon!'),
+              content: Text('${l10n.photoCaptured(image.name)}\n${l10n.ocrProcessingComingSoon}'),
               backgroundColor: Theme.of(context).colorScheme.primary,
             ),
           );
@@ -69,9 +73,10 @@ class _AddCardScreenState extends State<AddCardScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error taking photo: $e'),
+            content: Text(l10n.errorTakingPhoto(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -87,6 +92,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
@@ -94,7 +100,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         automaticallyImplyLeading: false, // Remove back button
         title: Text(
-          'Add Card',
+          AppLocalizations.of(context)!.addCard,
           style: AppTextStyles.heading3(context),
         ),
       ),
@@ -104,19 +110,19 @@ class _AddCardScreenState extends State<AddCardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Enter the Card ID',
+              AppLocalizations.of(context)!.enterCardId,
               style: AppTextStyles.heading2(context),
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              'If the business card is registered in our app',
+              AppLocalizations.of(context)!.cardRegisteredInApp,
               style: AppTextStyles.bodySmall(context).copyWith(color: AppColors.primary),
             ),
             const SizedBox(height: AppSpacing.md),
             TextField(
               controller: _cardIdController,
-              decoration: const InputDecoration(
-                hintText: 'Cardly Card ID',
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context)!.cardlyCardId,
               ),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -127,8 +133,8 @@ class _AddCardScreenState extends State<AddCardScreen> {
                   final cardId = _cardIdController.text.trim();
                   if (cardId.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please enter a Card ID'),
+                      SnackBar(
+                        content: Text(l10n.errorCardIdEmpty),
                         backgroundColor: Colors.orange,
                       ),
                     );
@@ -139,13 +145,13 @@ class _AddCardScreenState extends State<AddCardScreen> {
                   // For now, show a message that this feature is coming soon
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Looking up card ID: $cardId...\\nFeature coming soon!'),
+                      content: Text('${l10n.lookingUpCardId(cardId)}\n${l10n.featureComingSoon}'),
                       backgroundColor: Theme.of(context).colorScheme.primary,
                     ),
                   );
                 },
                 child: Text(
-                  'Enter',
+                  l10n.enter,
                   style: AppTextStyles.buttonPrimary(context),
                 ),
               ),
@@ -154,7 +160,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
             buildDivider(context),
             const SizedBox(height: AppSpacing.lg),
             Text(
-              'Fill The Card Manually',
+              AppLocalizations.of(context)!.fillCardManually,
               style: AppTextStyles.heading3(context),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -162,10 +168,10 @@ class _AddCardScreenState extends State<AddCardScreen> {
               width: double.infinity,
               child: OutlinedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, AppRoutes.fillCardManually);
+                  Navigator.of(context).pushNamed(AppRoutes.fillCardManually);
                 },
                 child: Text(
-                  'Fill Manually',
+                  AppLocalizations.of(context)!.fillManually,
                   style: AppTextStyles.buttonSecondary(context),
                 ),
               ),
@@ -223,7 +229,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                   size: 20,
                 ),
                 label: Text(
-                  'Scan QR Code',
+                  l10n.scanQrCode,
                   style: AppTextStyles.buttonSecondary(context),
                 ),
               ),

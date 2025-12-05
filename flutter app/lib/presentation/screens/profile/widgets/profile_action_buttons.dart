@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cardly/presentation/theme/spacing.dart';
 import 'package:cardly/presentation/theme/typography.dart';
+import 'package:cardly/src/generated/l10n/app_localizations.dart';
 
 /// Action buttons for profile page (Edit and Save)
 class ProfileActionButtons extends StatelessWidget {
@@ -15,6 +16,8 @@ class ProfileActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Column(
       children: [
         // Edit Card Button (Outlined)
@@ -24,7 +27,7 @@ class ProfileActionButtons extends StatelessWidget {
           child: OutlinedButton(
             onPressed: onEditPressed,
             child: Text(
-              'Edit Card',
+              l10n.editCard,
               style: AppTextStyles.buttonSecondary(context).copyWith(
                 fontSize: 16,
               ),
@@ -41,7 +44,7 @@ class ProfileActionButtons extends StatelessWidget {
           child: ElevatedButton(
             onPressed: onSavePressed,
             child: Text(
-              'Save Card',
+              l10n.save,
               style:
               AppTextStyles.buttonPrimary(context).copyWith(
                 fontSize: 16,

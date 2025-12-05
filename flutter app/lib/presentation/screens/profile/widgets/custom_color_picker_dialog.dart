@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cardly/presentation/theme/colors.dart';
 import 'package:cardly/presentation/theme/spacing.dart';
 import 'package:cardly/presentation/theme/typography.dart';
+import '../../../../src/generated/l10n/app_localizations.dart';
 
 /// Custom color picker dialog with RGB sliders
 class CustomColorPickerDialog extends StatefulWidget {
@@ -40,6 +41,7 @@ class _CustomColorPickerDialogState extends State<CustomColorPickerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.md),
@@ -52,7 +54,7 @@ class _CustomColorPickerDialogState extends State<CustomColorPickerDialog> {
           children: [
             // Title
             Text(
-              'Choose Custom Color',
+              l10n.chooseCustomColor,
               style: AppTextStyles.heading3(context).copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -79,7 +81,7 @@ class _CustomColorPickerDialogState extends State<CustomColorPickerDialog> {
 
             // RGB Sliders
             _buildColorSlider(
-              label: 'Red',
+              label: l10n.red,
               value: _red,
               color: Colors.red,
               onChanged: (value) {
@@ -92,7 +94,7 @@ class _CustomColorPickerDialogState extends State<CustomColorPickerDialog> {
             const SizedBox(height: AppSpacing.md),
 
             _buildColorSlider(
-              label: 'Green',
+              label: l10n.green,
               value: _green,
               color: Colors.green,
               onChanged: (value) {
@@ -105,7 +107,7 @@ class _CustomColorPickerDialogState extends State<CustomColorPickerDialog> {
             const SizedBox(height: AppSpacing.md),
 
             _buildColorSlider(
-              label: 'Blue',
+              label: l10n.blue,
               value: _blue,
               color: Colors.blue,
               onChanged: (value) {
@@ -137,7 +139,7 @@ class _CustomColorPickerDialogState extends State<CustomColorPickerDialog> {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: const Text('Cancel'),
+                    child: Text(l10n.cancel),
                   ),
                 ),
                 const SizedBox(width: AppSpacing.md),
@@ -146,7 +148,7 @@ class _CustomColorPickerDialogState extends State<CustomColorPickerDialog> {
                     onPressed: () {
                       Navigator.of(context).pop(_currentColor);
                     },
-                    child: const Text('Apply'),
+                    child: Text(l10n.apply),
                   ),
                 ),
               ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cardly/presentation/theme/colors.dart';
 import 'package:cardly/presentation/screens/profile/widgets/section_label.dart';
+import 'package:cardly/src/generated/l10n/app_localizations.dart';
 
 /// Widget for selecting font colors for business cards
 class ColorPickerWidget extends StatelessWidget {
@@ -19,11 +20,13 @@ class ColorPickerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionLabel(text: 'CHANGE FONT COLOR'),
+          SectionLabel(text: l10n.changeFontColor),
           const SizedBox(height: 12),
           Wrap(
             spacing: 12,

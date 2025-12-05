@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../theme/colors.dart';
 import '../../../theme/spacing.dart';
-
+import '../../../../src/generated/l10n/app_localizations.dart';
 class SearchBarWidget extends StatelessWidget {
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
@@ -31,7 +31,7 @@ class SearchBarWidget extends StatelessWidget {
         controller: controller,
         onChanged: onChanged,
         decoration: InputDecoration(
-          hintText: 'Search for a card',
+          hintText: AppLocalizations.of(context)!.searchForCard,
           hintStyle: TextStyle(
             color: AppColors.lightTextSecondary.withValues(alpha: 0.5),
             fontSize: 15,

@@ -1,0 +1,310 @@
+{
+  "@@locale": "ar",
+  
+  "appTitle": "كاردلي",
+  "@appTitle": {
+    "description": "عنوان التطبيق"
+  },
+
+  "ok": "موافق",
+  "cancel": "إلغاء",
+  "save": "حفظ",
+  "back": "رجوع",
+  "next": "التالي",
+  "done": "تم",
+  "delete": "حذف",
+  "edit": "تعديل",
+  "close": "إغلاق",
+  "yes": "نعم",
+  "no": "لا",
+  "confirm": "تأكيد",
+  "search": "بحث",
+  "loading": "جاري التحميل...",
+  "retry": "إعادة المحاولة",
+  "share": "مشاركة",
+
+  "signInToAccount": "تسجيل الدخول إلى\nحسابك",
+  "@signInToAccount": {
+    "description": "عنوان شاشة تسجيل الدخول"
+  },
+  
+  "enterEmailPassword": "أدخل بريدك الإلكتروني وكلمة المرور لتسجيل الدخول",
+  "continueWithGoogle": "المتابعة مع جوجل",
+  "or": "أو",
+  "emailLabel": "البريد الإلكتروني",
+  "passwordLabel": "كلمة المرور",
+  "rememberMe": "تذكرني",
+  "forgotPassword": "نسيت كلمة المرور؟",
+  "signIn": "تسجيل الدخول",
+  "dontHaveAccount": "ليس لديك حساب؟",
+  "signUpNow": "سجل الآن",
+
+  "createAccount": "إنشاء\nحسابك",
+  "enterDetailsToSignUp": "أدخل تفاصيلك للتسجيل",
+  "fullName": "الاسم الكامل",
+  "confirmPassword": "تأكيد كلمة المرور",
+  "signUp": "التسجيل",
+  "alreadyHaveAccount": "لديك حساب بالفعل؟",
+  "signInNow": "سجل الدخول الآن",
+
+  "addCard": "إضافة بطاقة",
+  "@addCard": {
+    "description": "عنوان شاشة إضافة البطاقة"
+  },
+  
+  "enterCardId": "أدخل معرف البطاقة",
+  "cardRegisteredInApp": "إذا كانت بطاقة العمل مسجلة في تطبيقنا",
+  "cardlyCardId": "معرف بطاقة كاردلي",
+  "enter": "إدخال",
+  "fillCardManually": "ملء البطاقة يدويًا",
+  "fillManually": "ملء يدوي",
+  "scanQrCode": "مسح رمز الاستجابة السريعة",
+  "scanCard": "مسح البطاقة",
+  "scan": "مسح",
+  "scanning": "جاري المسح...",
+  "pointCameraAtCard": "وجه الكاميرا نحو بطاقة العمل أو رمز الاستجابة السريعة",
+
+  "fillCardInformations": "ملء معلومات البطاقة",
+  "addCardInformations": "إضافة معلومات البطاقة",
+  "phone": "الهاتف",
+  "company": "الشركة",
+  "jobTitle": "المسمى الوظيفي",
+  "location": "الموقع",
+  "website": "الموقع الإلكتروني",
+  "about": "نبذة",
+  "previewCard": "معاينة البطاقة",
+
+  "profile": "الملف الشخصي",
+  "cards": "البطاقات",
+  "settings": "الإعدادات",
+  "myCard": "بطاقتي",
+  "previewYourCard": "معاينة البطاقة",
+
+  "cardCustomization": "تخصيص البطاقة",
+  "fontColor": "لون الخط",
+  "background": "الخلفية",
+  "customColor": "لون مخصص",
+  "selectColor": "اختر اللون",
+  "selectBackground": "اختر الخلفية",
+  "flipCard": "قلب البطاقة",
+  "editInformation": "تعديل المعلومات",
+  "shareCard": "مشاركة البطاقة",
+  "downloadQr": "تحميل رمز الاستجابة السريعة",
+
+  "editCardInformation": "تعديل معلومات البطاقة",
+  "updateCard": "تحديث البطاقة",
+  "discardChanges": "تجاهل التغييرات",
+
+  "errorGeneric": "حدث خطأ. الرجاء المحاولة مرة أخرى.",
+  "errorNetwork": "خطأ في الشبكة. يرجى التحقق من اتصالك.",
+  "errorInvalidEmail": "الرجاء إدخال عنوان بريد إلكتروني صالح.",
+  "errorPasswordTooShort": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.",
+  "errorPasswordsDontMatch": "كلمات المرور غير متطابقة.",
+  "errorEmptyField": "لا يمكن أن يكون هذا الحقل فارغًا.",
+  "errorCardIdEmpty": "الرجاء إدخال معرف البطاقة",
+
+  "successCardAdded": "تمت إضافة البطاقة بنجاح!",
+  "successCardUpdated": "تم تحديث البطاقة بنجاح!",
+  "successCardDeleted": "تم حذف البطاقة بنجاح!",
+
+  "imageSelected": "تم اختيار الصورة: {fileName}",
+  "@imageSelected": {
+    "description": "الرسالة المعروضة عند اختيار صورة",
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "ocrProcessingComingSoon": "معالجة التعرف الضوئي على الحروف قريبًا!",
+  "photoCaptured": "تم التقاط الصورة: {fileName}",
+  "@photoCaptured": {
+    "description": "الرسالة المعروضة عند التقاط صورة",
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorPickingImage": "خطأ في اختيار الصورة: {error}",
+  "@errorPickingImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorTakingPhoto": "خطأ في التقاط الصورة: {error}",
+  "@errorTakingPhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "lookingUpCardId": "البحث عن معرف البطاقة: {cardId}...",
+  "@lookingUpCardId": {
+    "placeholders": {
+      "cardId": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "featureComingSoon": "الميزة قريبًا!",
+
+  "language": "اللغة",
+  "languageEnglish": "English",
+  "languageFrench": "Français",
+  "languageArabic": "العربية",
+  "changeLanguage": "تغيير اللغة",
+  "selectLanguage": "اختر اللغة",
+
+  "theme": "السمة",
+  "themeLight": "فاتح",
+  "themeDark": "داكن",
+  "themeSystem": "النظام",
+
+  "logout": "تسجيل الخروج",
+  "logoutConfirmation": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+
+  "noCardsYet": "لا توجد بطاقات بعد",
+  "addYourFirstCard": "أضف بطاقتك الأولى للبدء",
+
+  "cardDetails": "تفاصيل البطاقة",
+  "personalInfo": "المعلومات الشخصية",
+  "contactInfo": "معلومات الاتصال",
+  "additionalInfo": "معلومات إضافية",
+
+  "logIn": "تسجيل الدخول",
+  "orLoginWith": "أو تسجيل الدخول باستخدام",
+  "enterYourFullName": "أدخل اسمك الكامل",
+  "enterYourJobTitle": "أدخل مسماك الوظيفي",
+  "organizationName": "اسم المنظمة",
+  "enterOrganizationName": "أدخل اسم المنظمة",
+  "logoText": "نص الشعار",
+  "enterLogoText": "أدخل نص الشعار (اختصار)",
+  "enterYourEmail": "أدخل بريدك الإلكتروني",
+  "enterYourPhone": "أدخل رقم هاتفك",
+  "enterYourLocation": "أدخل موقعك",
+  "enterYourWebsite": "أدخل موقعك الإلكتروني",
+  "tellUsAboutYourself": "أخبرنا عن نفسك",
+  "pleaseEnterYourName": "الرجاء إدخال اسمك",
+  "pleaseEnterEmail": "الرجاء إدخال بريدك الإلكتروني",
+  "pleaseEnterPhone": "الرجاء إدخال رقم هاتفك",
+  
+  "firstName": "الاسم الأول",
+  "lastName": "اسم العائلة",
+  "birthDate": "تاريخ الميلاد",
+  "alreadyHaveAnAccount": "هل لديك حساب بالفعل؟",
+
+  "myCards": "بطاقاتي",
+  "showCategories": "عرض الفئات",
+  "noCardsFound": "لم يتم العثور على بطاقات",
+  "noCardsAvailable": "لا توجد بطاقات متاحة",
+  "deleteCard": "حذف البطاقة",
+  "areYouSureDeleteCard": "هل أنت متأكد من حذف بطاقة {cardName}؟",
+  "@areYouSureDeleteCard": {
+    "placeholders": {
+      "cardName": {
+        "type": "String"
+      }
+    }
+  },
+  "cardDeleted": "تم حذف بطاقة {cardName}",
+  "@cardDeleted": {
+    "placeholders": {
+      "cardName": {
+        "type": "String"
+      }
+    }
+  },
+  "undo": "تراجع",
+  "noCategoriesFound": "لم يتم العثور على فئات",
+
+  "editCard": "تعديل البطاقة",
+  "personalInformationCaps": "المعلومات الشخصية",
+  "contactInformationCaps": "معلومات الاتصال",
+  "additionalInformationCaps": "معلومات إضافية",
+
+  "cardPreview": "معاينة البطاقة",
+  "changeFontColor": "تغيير لون الخط",
+  "changeBackground": "تغيير الخلفية",
+  "red": "أحمر",
+  "green": "أخضر",
+  "blue": "أزرق",
+  
+  "splashTitle": "كاردلي",
+  "splashSubtitle": "بطاقات عملك الرقمية،\\nإعادة تصورها",
+  "splashDescription": "أنشئ بطاقات عمل رقمية مذهلة تترك انطباعات دائمة. شارك معلومات الاتصال الخاصة بك على الفور مع أي شخص في أي مكان.",
+  "shareInstantly": "مشاركة فورية",
+  "connectWithTap": "تواصل بلمسة واحدة",
+  "shareInstantlyDescription": "شارك معلومات الاتصال الخاصة بك بمسح رمز الاستجابة السريعة البسيط أو اللمس. لا مزيد من البحث عن البطاقات الورقية أو كتابة التفاصيل يدويًا.",
+  "ecoFriendly": "صديق للبيئة",
+  "goGreenGoDigital": "كن صديقًا للبيئة، انتقل رقميًا",
+  "ecoFriendlyDescription": "وفر الأشجار وقلل النفايات من خلال التحول إلى عدم استخدام الورق. انضم إلى الآلاف الذين يتخذون خيارات تواصل صديقة للبيئة.",
+  
+  "getStarted": "ابدأ",
+  "skip": "تخطي",
+  
+  "searchForCard": "ابحث عن بطاقة",
+  "categoryOptional": "الفئة (اختياري)",
+  "cardAddedSuccessfully": "تمت إضافة البطاقة بنجاح!",
+  "cardInformationUpdated": "تم تحديث معلومات البطاقة!",
+  "cardSavedSuccessfully": "تم حفظ البطاقة بنجاح!",
+  "pleaseFillAllRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
+  "couldNotLaunch": "تعذر فتح {url}",
+  "@couldNotLaunch": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningWebsite": "خطأ في فتح الموقع: {error}",
+  "@errorOpeningWebsite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "name": "الاسم",
+  "email": "البريد الإلكتروني",
+  "organization": "المنظمة",
+  "category": "الفئة",
+  "uncategorized": "غير مصنف",
+  
+  "yourTitle": "مسماك الوظيفي",
+  "customBackgroundPicker": "منتقي الخلفية المخصص - سيتم تنفيذه",
+
+  "apply": "تطبيق",
+  "chooseCustomColor": "اختر لونًا مخصصًا",
+  "lookingUpCardIdFeature": "البحث عن معرف البطاقة: {cardId}...\\nالميزة قريبًا!",
+  "@lookingUpCardIdFeature": {
+    "placeholders": {
+      "cardId": {
+        "type": "String"
+      }
+    }
+  },
+  "appTheme": "سمة التطبيق",
+  "darkMode": "الوضع الداكن",
+  "lightMode": "الوضع الفاتح",
+  "useSystemTheme": "استخدم سمة النظام",
+
+  "personalInformation": "المعلومات الشخصية",
+  "pleaseEnterYourJobTitle": "الرجاء إدخال المسمى الوظيفي",
+  "organizationSection": "المنظمة",
+  "pleaseEnterOrganizationName": "الرجاء إدخال اسم المنظمة",
+  "contactInformation": "معلومات الاتصال",
+  "pleaseEnterValidEmail": "الرجاء إدخال بريد إلكتروني صالح",
+  "pleaseEnterYourPhoneNumber": "الرجاء إدخال رقم هاتفك",
+  "aboutSection": "نبذة عني",
+  "saveChanges": "حفظ التغييرات"
+}
