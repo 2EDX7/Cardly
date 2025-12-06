@@ -605,7 +605,18 @@ class DatabaseHelper {
   Future<void> insertUser(User user) async {
     final db = await database;
     await _ensureUserTable(db);
-    await db.insert('users', user.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+    // Only insert user fields, not card fields (those go in user_cards table)
+    final userMap = {
+      'id': user.id,
+      'fullName': user.fullName,
+      'email': user.email,
+      'passwordHash': user.passwordHash,
+      'themeMode': user.themeMode,
+      'language': user.language,
+      'createdAt': user.createdAt.toIso8601String(),
+      'updatedAt': user.updatedAt.toIso8601String(),
+    };
+    await db.insert('users', userMap, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<User?> getUserByEmail(String email) async {

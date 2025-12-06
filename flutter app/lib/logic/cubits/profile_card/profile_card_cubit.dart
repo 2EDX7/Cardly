@@ -110,7 +110,7 @@ class ProfileCardCubit extends Cubit<ProfileCardState> {
     try {
       final card = await _repository.getProfileCard(userId: _userId);
       debugPrint('📦 loadProfileCard: repository returned card: ${card?.name}');
-      if (card == null) {
+      if (card == null || (card.name.isEmpty && card.organization.isEmpty)) {
         emit(ProfileCardEmpty());
       } else {
         debugPrint('📦 loadProfileCard: emitting ProfileCardLoaded');

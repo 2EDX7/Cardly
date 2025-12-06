@@ -217,9 +217,10 @@ class _IntroSplashState extends State<IntroSplash> {
         horizontal: AppSpacing.xl,
         vertical: AppSpacing.lg,
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
           // Icon
           Container(
             padding: const EdgeInsets.all(AppSpacing.xl),
@@ -268,6 +269,7 @@ class _IntroSplashState extends State<IntroSplash> {
           //   textAlign: TextAlign.center,
           // ),
         ],
+        ),
       ),
     );
   }

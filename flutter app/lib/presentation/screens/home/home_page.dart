@@ -66,7 +66,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print("Building HomePage");
     final l10n = AppLocalizations.of(context)!;
+    print("L10n loaded: ${l10n.myCards}");
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -191,6 +193,7 @@ class _HomePageState extends State<HomePage> {
                         : _buildListView(state, l10n);
                   }
                   
+                  // Handle CardInitial and any other state - show empty state
                   return _buildEmptyState(context, l10n);
                 },
               ),

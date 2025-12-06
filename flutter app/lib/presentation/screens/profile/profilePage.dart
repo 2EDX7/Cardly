@@ -181,7 +181,7 @@ class _ProfilePageState extends State<ProfilePage>
           if (state is ProfileCardLoaded) {
             final bgName = state.card.background?.getBackgroundName() ?? 'null';
             final colorHex = state.card.fontColor != null 
-                ? '#${state.card.fontColor!.value.toRadixString(16).padLeft(8, '0')}'
+                ? '#${(state.card.fontColor?.value ?? 0xFFFFFFFF).toRadixString(16).padLeft(8, '0')}'
                 : 'null';
             debugPrint('👀 ProfilePage received card: name=${state.card.name}, bg=$bgName, fontColor=$colorHex');
             // Update the internal state so edits work correctly
@@ -212,22 +212,54 @@ class _ProfilePageState extends State<ProfilePage>
             return const Center(child: CircularProgressIndicator());
           }
 
-          // Use loaded card directly from state, or fall back to _cardInfo
-          final card = state is ProfileCardLoaded ? state.card : _cardInfo;
+          // Handle empty state early before accessing card properties
+          if (state is ProfileCardEmpty) {
+            return _buildEmptyState(context, l10n);
+          }
+
+          // Handle error state
+          if (state is ProfileCardError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text(
+                    state.message,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => context.read<ProfileCardCubit>().loadProfileCard(),
+                    child: Text(l10n.retry),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          // Handle initial state - show empty state
+          if (state is ProfileCardInitial) {
+            return _buildEmptyState(context, l10n);
+          }
+
+          // At this point, state must be ProfileCardLoaded
+          if (state is! ProfileCardLoaded) {
+            return _buildEmptyState(context, l10n);
+          }
+
+          final card = state.card;
           // Use user selections if they've changed anything, otherwise use card's values
           final displayBackground = _userChangedBackground 
               ? _selectedBackground 
-              : ((state is ProfileCardLoaded ? state.card.background : null) ?? _selectedBackground);
+              : (state.card.background ?? _selectedBackground);
           final displayFontColor = _userChangedFontColor 
               ? _selectedFontColor 
-              : ((state is ProfileCardLoaded ? state.card.fontColor : null) ?? _selectedFontColor);
-          final hasCard = state is ProfileCardLoaded;
+              : (state.card.fontColor ?? _selectedFontColor);
 
           debugPrint('👀 ProfilePage builder: card=${card.name}, displayBg=${displayBackground.getBackgroundName()}, displayColor=#${displayFontColor.value.toRadixString(16)}');
-
-          if (!hasCard) {
-            return _buildEmptyState(context, l10n);
-          }
 
           return SingleChildScrollView(
             padding: AppSpacing.paddingLg,
