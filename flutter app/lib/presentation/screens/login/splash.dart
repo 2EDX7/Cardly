@@ -5,6 +5,13 @@ import '../../theme/typography.dart';
 import '../../widgets/business_card/business_card.dart';
 import '../../../routes/routes.dart';
 import 'package:cardly/src/generated/l10n/app_localizations.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../logic/cubits/auth/auth_cubit.dart';
+import '../../../logic/cubits/auth/auth_state.dart';
+import '../../../logic/cubits/card/card_cubit.dart';
+import '../../../logic/cubits/profile_card/profile_card_cubit.dart';
+import '../../../logic/cubits/theme/theme_cubit.dart';
+import '../../../logic/cubits/language/language_cubit.dart';
 
 class IntroSplash extends StatefulWidget {
   const IntroSplash({super.key});
@@ -16,6 +23,38 @@ class IntroSplash extends StatefulWidget {
 class _IntroSplashState extends State<IntroSplash> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeUser();
+  }
+
+  Future<void> _initializeUser() async {
+    final authState = context.read<AuthCubit>().state;
+    if (authState.status == AuthStatus.authenticated && authState.user != null) {
+      final user = authState.user!;
+      
+      // Set user context
+      context.read<CardCubit>().setUser(user.id);
+      
+      // Load card data from user object (already fetched from DB with LEFT JOIN)
+      context.read<ProfileCardCubit>().loadCardFromUser(user);
+      
+      // Load user preferences for theme and language
+      final themeMode = ThemeCubit.themeModeFromString(user.themeMode);
+      final locale = LanguageCubit.localeFromString(user.language);
+      
+      await context.read<ThemeCubit>().setUser(user.id, initialTheme: themeMode);
+      await context.read<LanguageCubit>().setUser(user.id, initialLocale: locale);
+      
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.main, (route) => false);
+        }
+      });
+    }
+  }
 
   @override
   void dispose() {

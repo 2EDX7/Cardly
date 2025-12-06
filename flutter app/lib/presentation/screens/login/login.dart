@@ -4,6 +4,13 @@ import '../../widgets/stars_background.dart';
 import '../../theme/typography.dart';
 import '../../../routes/routes.dart';
 import '../../../src/generated/l10n/app_localizations.dart';
+import '../../../logic/cubits/auth/auth_cubit.dart';
+import '../../../logic/cubits/auth/auth_state.dart';
+import '../../../logic/cubits/card/card_cubit.dart';
+import '../../../logic/cubits/profile_card/profile_card_cubit.dart';
+import '../../../logic/cubits/theme/theme_cubit.dart';
+import '../../../logic/cubits/language/language_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -13,6 +20,41 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleLoginSuccess(BuildContext context, dynamic user) async {
+    debugPrint('🔐 LOGIN SUCCESS - User: ${user.email}');
+    debugPrint('🎴 User Card Data: name=${user.cardName}, bg=${user.cardBackground}, fontColor=${user.cardFontColor}');
+    
+    // Set user context
+    context.read<CardCubit>().setUser(user.id);
+    context.read<ProfileCardCubit>().setUser(user.id);
+    
+    // Load card data from user object (already fetched from DB with LEFT JOIN)
+    context.read<ProfileCardCubit>().loadCardFromUser(user);
+    
+    // Load user preferences for theme and language
+    final themeMode = ThemeCubit.themeModeFromString(user.themeMode);
+    final locale = LanguageCubit.localeFromString(user.language);
+    
+    await context.read<ThemeCubit>().setUser(user.id, initialTheme: themeMode);
+    await context.read<LanguageCubit>().setUser(user.id, initialLocale: locale);
+    
+    if (mounted) {
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        AppRoutes.main,
+        (route) => false,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +62,23 @@ class _LoginScreenState extends State<LoginScreen> {
     final cs = Theme.of(context).colorScheme;
     final keyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
-    return Scaffold(
+    final authState = context.watch<AuthCubit>().state;
+    final isLoading = authState.status == AuthStatus.loading;
+
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state.status == AuthStatus.authenticated && state.user != null) {
+          final user = state.user!;
+          
+          // Load user data and preferences
+          _handleLoginSuccess(context, user);
+        } else if (state.status == AuthStatus.error && state.message != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message!)),
+          );
+        }
+      },
+      child: Scaffold(
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
@@ -160,6 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                             // Email field
                             TextFormField(
+                              controller: _emailController,
                               decoration: InputDecoration(
                                 hintText: l10n.emailLabel,
                               ),
@@ -168,6 +227,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                             // Password field
                             TextFormField(
+                              controller: _passwordController,
                               obscureText: true,
                               decoration: InputDecoration(
                                 hintText: l10n.passwordLabel,
@@ -209,14 +269,26 @@ class _LoginScreenState extends State<LoginScreen> {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: () {
-                                  // Navigate to main app (home page with bottom nav)
-                                  Navigator.of(context).pushNamedAndRemoveUntil(
-                                    AppRoutes.main,
-                                    (route) => false,
-                                  );
-                                },
-                                child: Text(l10n.logIn, style: AppTextStyles.buttonPrimary(context)),
+                                onPressed: isLoading
+                                    ? null
+                                    : () {
+                                        final email = _emailController.text.trim();
+                                        final password = _passwordController.text;
+                                        if (email.isEmpty || password.isEmpty) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text(l10n.pleaseEnterEmail)),
+                                          );
+                                          return;
+                                        }
+                                        context.read<AuthCubit>().login(email: email, password: password);
+                                      },
+                                child: isLoading
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                      )
+                                    : Text(l10n.logIn, style: AppTextStyles.buttonPrimary(context)),
                               ),
                             ),
 
@@ -249,6 +321,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

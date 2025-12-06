@@ -1275,6 +1275,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save Changes'**
   String get saveChanges;
+
+  /// Button text to create first card on home page
+  ///
+  /// In en, this message translates to:
+  /// **'Create Your First Card'**
+  String get createYourFirstCard;
 }
 
 class _AppLocalizationsDelegate

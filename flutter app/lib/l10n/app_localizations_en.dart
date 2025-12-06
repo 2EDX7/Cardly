@@ -621,4 +621,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saveChanges => 'Save Changes';
+
+  @override
+  String get createYourFirstCard => 'Create Your First Card';
 }

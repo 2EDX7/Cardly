@@ -10,7 +10,8 @@ class CategorySection extends StatefulWidget {
   final List<CardInfo> cards;
   final bool isExpanded;
   final VoidCallback onToggle;
-  final Function(String cardEmail)? onDeleteCard;
+  final Function(int cardId)? onDeleteCard;
+  final Function(CardInfo card)? onCardTap;
 
   const CategorySection({
     super.key,
@@ -19,6 +20,7 @@ class CategorySection extends StatefulWidget {
     required this.isExpanded,
     required this.onToggle,
     this.onDeleteCard,
+    this.onCardTap,
   });
 
   @override
@@ -107,7 +109,7 @@ class _CategorySectionState extends State<CategorySection>
           child: AnimatedCrossFade(
             firstChild: Column(
               children: widget.cards.map((card) => Dismissible(
-                key: Key(card.email),
+                key: Key(card.id?.toString() ?? card.email),
                 direction: DismissDirection.endToStart,
                 background: Container(
                   alignment: Alignment.centerRight,
@@ -124,20 +126,23 @@ class _CategorySectionState extends State<CategorySection>
                   ),
                 ),
                 confirmDismiss: (direction) async {
-                  if (widget.onDeleteCard != null) {
-                    widget.onDeleteCard!(card.email);
+                  if (widget.onDeleteCard != null && card.id != null) {
+                    widget.onDeleteCard!(card.id!);
                   }
                   return false; // Dialog handles deletion
                 },
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-                  child: BusinessCard(
-                    name: card.name,
-                    organization: card.organization,
-                    jobTitle: card.jobTitle,
-                    background: card.background ?? CardBackground.defaultGradient,
-                    compactCard: true,
-                    width: double.infinity,
+                  child: GestureDetector(
+                    onTap: widget.onCardTap != null ? () => widget.onCardTap!(card) : null,
+                    child: BusinessCard(
+                      name: card.name,
+                      organization: card.organization,
+                      jobTitle: card.jobTitle,
+                      background: card.background ?? CardBackground.defaultGradient,
+                      compactCard: true,
+                      width: double.infinity,
+                    ),
                   ),
                 ),
               )).toList(),

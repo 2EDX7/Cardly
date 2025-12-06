@@ -100,7 +100,51 @@ class CardBackground {
   static CardBackground get blueSolid =>
       CardBackground._(color: const Color(0xFF3B82F6));
 
+  /// Get a readable name for this background
+  String getBackgroundName() {
+    if (assetPath != null) {
+      if (assetPath!.contains('Gold.png')) return 'gold';
+      if (assetPath!.contains('Green.png')) return 'green';
+      if (assetPath!.contains('Grey.png')) return 'grey';
+      if (assetPath!.contains('Purple.png')) return 'purple';
+      if (assetPath!.contains('Rectangle.png')) return 'blue';
+      if (assetPath!.contains('gold_silver.jpg')) return 'goldSilver';
+    }
+    
+    if (gradient != null) {
+      final colors = gradient is LinearGradient 
+          ? (gradient as LinearGradient).colors 
+          : <Color>[];
+      if (_sameColors(colors, defaultGradient.gradient!.colors)) return 'defaultGradient';
+      if (_sameColors(colors, purpleBlue.gradient!.colors)) return 'purpleBlue';
+      if (_sameColors(colors, orangePink.gradient!.colors)) return 'orangePink';
+      if (_sameColors(colors, greenBlue.gradient!.colors)) return 'greenBlue';
+      if (_sameColors(colors, sunset.gradient!.colors)) return 'sunset';
+    }
+    
+    if (color != null) {
+      if (color!.value == primarySolid.color!.value) return 'primarySolid';
+      if (color!.value == secondarySolid.color!.value) return 'secondarySolid';
+      if (color!.value == darkSolid.color!.value) return 'darkSolid';
+      if (color!.value == blueSolid.color!.value) return 'blueSolid';
+    }
+    
+    return 'unknown';
+  }
+
+  static bool _sameColors(List<Color> a, List<Color> b) {
+    if (a.length != b.length) return false;
+    for (int i = 0; i < a.length; i++) {
+      if (a[i].value != b[i].value) return false;
+    }
+    return true;
+  }
+
+  @override
+  String toString() => 'CardBackground(${getBackgroundName()})';
+
   /// Build the background widget
+
   Widget build() {
     // Priority: Asset > Gradient > Color
     if (assetPath != null) {

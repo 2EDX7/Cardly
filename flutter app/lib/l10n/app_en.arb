@@ -312,5 +312,10 @@
   "pleaseEnterValidEmail": "Please enter a valid email",
   "pleaseEnterYourPhoneNumber": "Please enter your phone number",
   "aboutSection": "ABOUT",
-  "saveChanges": "Save Changes"
+  "saveChanges": "Save Changes",
+  
+  "createYourFirstCard": "Create Your First Card",
+  "@createYourFirstCard": {
+    "description": "Button text to create first card on home page"
+  }
 }

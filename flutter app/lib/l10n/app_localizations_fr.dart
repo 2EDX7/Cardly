@@ -628,4 +628,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get saveChanges => 'Enregistrer les modifications';
+
+  @override
+  String get createYourFirstCard => 'Créez votre première carte';
 }

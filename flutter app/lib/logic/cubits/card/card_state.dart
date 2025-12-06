@@ -119,7 +119,7 @@ class CardUpdated extends CardState {
 
 /// State after successfully deleting a card
 class CardDeleted extends CardState {
-  final String cardId;
+  final int cardId;
 
   const CardDeleted(this.cardId);
 

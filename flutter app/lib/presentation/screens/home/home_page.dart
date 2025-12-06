@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../logic/cubits/card/card_cubit.dart';
 import '../../../logic/cubits/card/card_state.dart';
-import '../../widgets/business_card/card_background.dart';
 import '../../theme/spacing.dart';
 import 'widgets/search_bar_widget.dart';
 import 'widgets/filter_button.dart';
@@ -10,6 +9,8 @@ import 'widgets/filter_icon_button.dart';
 import 'widgets/card_list_item.dart';
 import 'widgets/category_section.dart';
 import 'package:cardly/src/generated/l10n/app_localizations.dart';
+import '../../../data/models/card_info.dart';
+import '../../../routes/routes.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -29,6 +30,38 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _openCardDetails(CardInfo card) async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        return _CardDetailSheet(
+          card: card,
+          onEdit: () async {
+            Navigator.of(sheetContext).pop();
+            final updatedCard = await Navigator.of(context).pushNamed(
+              AppRoutes.editCard,
+              arguments: card,
+            );
+            if (updatedCard is CardInfo) {
+              await context.read<CardCubit>().updateCard(updatedCard);
+            }
+          },
+          onDelete: () async {
+            Navigator.of(sheetContext).pop();
+            if (card.id != null) {
+              await context.read<CardCubit>().deleteCard(card.id!);
+            }
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -124,9 +157,32 @@ class _HomePageState extends State<HomePage> {
                   }
                   
                   if (state is CardLoaded) {
+                    // Check if user has any cards at all
+                    if (state.cards.isEmpty) {
+                      return _buildEmptyState(context, l10n);
+                    }
+                    
+                    // User has cards but filtered list is empty
                     if (state.filteredCards.isEmpty) {
                       return Center(
-                        child: Text(l10n.noCardsFound),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.search_off,
+                              size: 64,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
+                            Text(
+                              l10n.noCardsFound,
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
                       );
                     }
                     
@@ -135,10 +191,64 @@ class _HomePageState extends State<HomePage> {
                         : _buildListView(state, l10n);
                   }
                   
-                  return Center(
-                    child: Text(l10n.noCardsAvailable),
-                  );
+                  return _buildEmptyState(context, l10n);
                 },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context, AppLocalizations l10n) {
+    final cs = Theme.of(context).colorScheme;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.credit_card_outlined,
+              size: 80,
+              color: cs.primary.withOpacity(0.5),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Text(
+              l10n.noCardsAvailable,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: cs.onBackground,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              'Start building your digital card collection',
+              style: TextStyle(
+                fontSize: 16,
+                color: cs.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.of(context).pushNamed(AppRoutes.addCard);
+              },
+              icon: const Icon(Icons.add),
+              label: Text(l10n.createYourFirstCard),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.xl,
+                  vertical: AppSpacing.md,
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],
@@ -156,17 +266,11 @@ class _HomePageState extends State<HomePage> {
       itemCount: cards.length,
       itemBuilder: (context, index) {
         final card = cards[index];
-        // Convert CardInfo to Map for compatibility with CardListItem
-        final cardMap = {
-          'name': card.name,
-          'organization': card.organization,
-          'jobTitle': card.jobTitle,
-          'background': card.background ?? CardBackground.defaultGradient,
-          'category': card.category ?? l10n.uncategorized,
-        };
         
+        final cardIdKey = card.id?.toString() ?? card.email;
+
         return Dismissible(
-          key: Key(card.email), // Use email as unique identifier
+          key: Key(cardIdKey),
           direction: DismissDirection.endToStart,
           background: Container(
             alignment: Alignment.centerRight,
@@ -207,7 +311,14 @@ class _HomePageState extends State<HomePage> {
             );
           },
           onDismissed: (direction) {
-            context.read<CardCubit>().deleteCard(card.email);
+            final id = card.id;
+            if (id == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.noCardsFound)),
+              );
+              return;
+            }
+            context.read<CardCubit>().deleteCard(id);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(l10n.cardDeleted(card.name)),
@@ -221,7 +332,10 @@ class _HomePageState extends State<HomePage> {
               ),
             );
           },
-          child: CardListItem(card: cardMap),
+          child: CardListItem(
+            card: card,
+            onTap: () => _openCardDetails(card),
+          ),
         );
       },
     );
@@ -254,8 +368,8 @@ class _HomePageState extends State<HomePage> {
               _expandedCategories[category] = !isExpanded;
             });
           },
-          onDeleteCard: (cardEmail) {
-            final cardToDelete = cards.firstWhere((c) => c.email == cardEmail);
+          onDeleteCard: (cardId) {
+            final cardToDelete = cards.firstWhere((c) => c.id == cardId);
             showDialog(
               context: context,
               builder: (BuildContext dialogContext) {
@@ -270,7 +384,9 @@ class _HomePageState extends State<HomePage> {
                     TextButton(
                       onPressed: () {
                         Navigator.of(dialogContext).pop();
-                        context.read<CardCubit>().deleteCard(cardEmail);
+                        if (cardToDelete.id != null) {
+                          context.read<CardCubit>().deleteCard(cardToDelete.id!);
+                        }
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(l10n.cardDeleted(cardToDelete.name)),
@@ -293,8 +409,116 @@ class _HomePageState extends State<HomePage> {
               },
             );
           },
+          onCardTap: (card) => _openCardDetails(card),
         );
       },
+    );
+  }
+}
+
+
+class _CardDetailSheet extends StatelessWidget {
+  final CardInfo card;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  const _CardDetailSheet({
+    required this.card,
+    required this.onEdit,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      card.name,
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(card.jobTitle, style: TextStyle(color: cs.onSurfaceVariant)),
+                    Text(card.organization, style: TextStyle(color: cs.onSurfaceVariant)),
+                  ],
+                ),
+                IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            _InfoRow(icon: Icons.email_outlined, label: card.email),
+            _InfoRow(icon: Icons.phone_outlined, label: card.phone),
+            _InfoRow(icon: Icons.location_on_outlined, label: card.location),
+            if (card.website.isNotEmpty) _InfoRow(icon: Icons.link, label: card.website),
+            const SizedBox(height: AppSpacing.md),
+            Text(card.about, style: TextStyle(color: cs.onSurface)),
+            const SizedBox(height: AppSpacing.lg),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: onEdit,
+                    icon: const Icon(Icons.edit),
+                    label: Text(l10n.editCard),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: onDelete,
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    label: Text(l10n.deleteCard),
+                    style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _InfoRow({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Row(
+        children: [
+          Icon(icon, color: cs.primary),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(color: cs.onSurface),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

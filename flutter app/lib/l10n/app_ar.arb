@@ -306,5 +306,10 @@
   "pleaseEnterValidEmail": "الرجاء إدخال بريد إلكتروني صالح",
   "pleaseEnterYourPhoneNumber": "الرجاء إدخال رقم هاتفك",
   "aboutSection": "نبذة عني",
-  "saveChanges": "حفظ التغييرات"
+  "saveChanges": "حفظ التغييرات",
+  
+  "createYourFirstCard": "أنشئ بطاقتك الأولى",
+  "@createYourFirstCard": {
+    "description": "Button text to create first card on home page"
+  }
 }

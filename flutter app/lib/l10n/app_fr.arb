@@ -306,5 +306,10 @@
   "pleaseEnterValidEmail": "Veuillez entrer un email valide",
   "pleaseEnterYourPhoneNumber": "Veuillez entrer votre numéro de téléphone",
   "aboutSection": "À PROPOS",
-  "saveChanges": "Enregistrer les modifications"
+  "saveChanges": "Enregistrer les modifications",
+  
+  "createYourFirstCard": "Créez votre première carte",
+  "@createYourFirstCard": {
+    "description": "Button text to create first card on home page"
+  }
 }
