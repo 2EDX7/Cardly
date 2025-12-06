@@ -9,6 +9,9 @@ abstract class CardRepository {
   /// Get a single card by ID
   Future<CardInfo?> getCardById(int id, {required String userId});
   
+  /// Get a single card by ID globally (across all users) for sharing
+  Future<CardInfo?> getCardByIdGlobal(int id);
+  
   /// Add a new card
   Future<void> addCard(CardInfo card, {required String userId});
   

@@ -17,6 +17,11 @@ class SQLiteCardRepository implements CardRepository {
   }
 
   @override
+  Future<CardInfo?> getCardByIdGlobal(int id) async {
+    return await _dbHelper.getCardByIdGlobal(id);
+  }
+
+  @override
   Future<void> addCard(CardInfo card, {required String userId}) async {
     await _dbHelper.insertCard(card, userId: userId);
   }
