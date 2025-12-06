@@ -4,7 +4,7 @@ import '../../theme/spacing.dart';
 import '../../theme/typography.dart';
 import '../../widgets/business_card/business_card.dart';
 import '../../../routes/routes.dart';
-import 'package:cardly/src/generated/l10n/app_localizations.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../logic/cubits/auth/auth_cubit.dart';
 import '../../../logic/cubits/auth/auth_state.dart';

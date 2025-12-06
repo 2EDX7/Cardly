@@ -3,7 +3,7 @@ import '../../theme/spacing.dart';
 import '../../widgets/stars_background.dart';
 import '../../theme/typography.dart';
 import '../../../routes/routes.dart';
-import '../../../src/generated/l10n/app_localizations.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../logic/cubits/auth/auth_cubit.dart';
 import '../../../logic/cubits/auth/auth_state.dart';
 import '../../../logic/cubits/card/card_cubit.dart';

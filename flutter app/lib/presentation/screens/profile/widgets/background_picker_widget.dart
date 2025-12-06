@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cardly/presentation/widgets/business_card/card_background.dart';
 import 'package:cardly/presentation/theme/colors.dart';
 import 'package:cardly/presentation/screens/profile/widgets/section_label.dart';
-import 'package:cardly/src/generated/l10n/app_localizations.dart';
+import 'package:cardly/l10n/app_localizations.dart';
 
 /// Widget for selecting background patterns/gradients for business cards
 class BackgroundPickerWidget extends StatelessWidget {

@@ -19,7 +19,8 @@ import '../../../logic/cubits/theme/theme_state.dart';
 import '../../../logic/cubits/language/language_cubit.dart';
 import '../../../logic/cubits/auth/auth_cubit.dart';
 import './widgets/LanguageSection_widget.dart';
-import 'package:cardly/src/generated/l10n/app_localizations.dart';
+// import 'package:cardly/src/generated/l10n/app_localizations.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../routes/routes.dart';
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

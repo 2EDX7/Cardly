@@ -958,6 +958,12 @@ abstract class AppLocalizations {
   /// **'CARD PREVIEW'**
   String get cardPreview;
 
+  /// No description provided for @tapToFlip.
+  ///
+  /// In en, this message translates to:
+  /// **'tap to flip'**
+  String get tapToFlip;
+
   /// No description provided for @changeFontColor.
   ///
   /// In en, this message translates to:

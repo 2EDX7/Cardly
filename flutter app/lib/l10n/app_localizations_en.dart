@@ -454,6 +454,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cardPreview => 'CARD PREVIEW';
 
   @override
+  String get tapToFlip => 'tap to flip';
+
+  @override
   String get changeFontColor => 'CHANGE FONT COLOR';
 
   @override

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cardly/presentation/theme/colors.dart';
 import 'package:cardly/presentation/screens/profile/widgets/section_label.dart';
-import 'package:cardly/src/generated/l10n/app_localizations.dart';
+import 'package:cardly/l10n/app_localizations.dart';
 
 /// Widget for selecting font colors for business cards
 class ColorPickerWidget extends StatelessWidget {

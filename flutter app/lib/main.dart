@@ -13,7 +13,7 @@ import 'logic/cubits/profile_card/profile_card_cubit.dart';
 import 'routes/routes.dart';
 import 'data/database/database_helper.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'src/generated/l10n/app_localizations.dart';
+import 'l10n/app_localizations.dart'; 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

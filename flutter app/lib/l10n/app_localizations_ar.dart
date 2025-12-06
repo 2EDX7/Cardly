@@ -456,6 +456,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cardPreview => 'معاينة البطاقة';
 
   @override
+  String get tapToFlip => 'اضغط لتقليب';
+
+  @override
   String get changeFontColor => 'تغيير لون الخط';
 
   @override

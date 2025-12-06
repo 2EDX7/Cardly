@@ -4,7 +4,7 @@ import "package:cardly/presentation/theme/spacing.dart";
 import "package:cardly/presentation/theme/typography.dart";
 import '../../../../logic/cubits/language/language_cubit.dart';
 import '../../../../logic/cubits/language/language_state.dart';
-import 'package:cardly/src/generated/l10n/app_localizations.dart';
+import 'package:cardly/l10n/app_localizations.dart';
 
 class LanguagesectionWidget extends StatefulWidget {
   const LanguagesectionWidget({super.key});

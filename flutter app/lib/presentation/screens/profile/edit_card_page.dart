@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cardly/presentation/theme/spacing.dart';
 import 'package:cardly/presentation/theme/typography.dart';
 import 'package:cardly/data/models/card_info.dart';
-import '../../../src/generated/l10n/app_localizations.dart';
+import '../../../l10n/app_localizations.dart';
 /// Edit card page where user can update card information
 class EditCardPage extends StatefulWidget {
   final CardInfo cardInfo;

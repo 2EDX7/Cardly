@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cardly/src/generated/l10n/app_localizations.dart';
+import 'package:cardly/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../theme/spacing.dart';
 import '../../theme/typography.dart';

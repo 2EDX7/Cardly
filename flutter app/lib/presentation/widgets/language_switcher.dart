@@ -4,7 +4,7 @@ import '../../../logic/cubits/language/language_cubit.dart';
 import '../../../logic/cubits/language/language_state.dart';
 import 'package:cardly/presentation/theme/spacing.dart';
 import 'package:cardly/presentation/theme/typography.dart';
-import '../../src/generated/l10n/app_localizations.dart';
+import '../../l10n/app_localizations.dart';
 
 /// A widget that allows users to switch between languages
 class LanguageSwitcher extends StatelessWidget {

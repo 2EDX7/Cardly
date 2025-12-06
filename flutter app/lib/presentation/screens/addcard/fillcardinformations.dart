@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cardly/src/generated/l10n/app_localizations.dart';
+import 'package:cardly/l10n/app_localizations.dart';
 import 'package:cardly/presentation/widgets/buildTextField.dart';
 import 'package:cardly/presentation/theme/spacing.dart';
 import 'package:cardly/presentation/theme/typography.dart';

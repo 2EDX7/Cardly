@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cardly/presentation/theme/spacing.dart';
 import 'package:cardly/presentation/theme/typography.dart';
-import 'package:cardly/src/generated/l10n/app_localizations.dart';
+import 'package:cardly/l10n/app_localizations.dart';
 
 /// Action buttons for profile page (Edit and Save)
 class ProfileActionButtons extends StatelessWidget {

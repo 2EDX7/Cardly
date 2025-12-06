@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cardly/presentation/widgets/navBar.dart';
 import 'package:cardly/presentation/theme/spacing.dart';
 import 'package:cardly/presentation/theme/typography.dart';
-import '../../../src/generated/l10n/app_localizations.dart';
+import '../../../l10n/app_localizations.dart';
 
 // In this screen I simulate a small scanning process
 class ScanCardScreen extends StatefulWidget {

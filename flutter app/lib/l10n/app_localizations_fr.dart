@@ -458,6 +458,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cardPreview => 'APERÇU DE LA CARTE';
 
   @override
+  String get tapToFlip => 'appuyez pour retourner';
+
+  @override
   String get changeFontColor => 'CHANGER LA COULEUR DE LA POLICE';
 
   @override
