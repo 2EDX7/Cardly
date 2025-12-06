@@ -458,6 +458,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cardPreview => 'APERÇU DE LA CARTE';
 
   @override
+  String get tapToFlip => 'appuyez pour retourner';
+
+  @override
   String get changeFontColor => 'CHANGER LA COULEUR DE LA POLICE';
 
   @override
@@ -476,7 +479,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get splashTitle => 'Cardly';
 
   @override
-  String get splashSubtitle => 'Vos cartes de visite numériques,\\nRéinventées';
+  String get splashSubtitle => 'Vos cartes de visite numériques,\nRéinventées';
 
   @override
   String get splashDescription =>
@@ -585,7 +588,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String lookingUpCardIdFeature(String cardId) {
-    return 'Recherche de l\'ID de carte: $cardId...\\nFonctionnalité bientôt disponible!';
+    return 'Recherche de l\'ID de carte: $cardId...\nFonctionnalité bientôt disponible!';
   }
 
   @override
@@ -628,4 +631,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get saveChanges => 'Enregistrer les modifications';
+
+  @override
+  String get createYourFirstCard => 'Créez votre première carte';
 }

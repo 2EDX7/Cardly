@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cardly/presentation/theme/colors.dart';
 import 'package:cardly/presentation/theme/spacing.dart';
 import 'package:cardly/presentation/theme/typography.dart';
-import '../../../../src/generated/l10n/app_localizations.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// Custom color picker dialog with RGB sliders
 class CustomColorPickerDialog extends StatefulWidget {

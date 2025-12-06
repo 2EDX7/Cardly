@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
 import '../../../presentation/widgets/business_card/card_background.dart';
 
 /// Model class representing a business card with all its information
 class CardInfo {
+  int? id;
   String name;
   String organization;
   String jobTitle;
@@ -13,8 +15,11 @@ class CardInfo {
   String? logoText;
   String? category;
   CardBackground? background;
+  String? userId;
+  Color? fontColor;
 
   CardInfo({
+    this.id,
     required this.name,
     required this.organization,
     required this.jobTitle,
@@ -26,10 +31,13 @@ class CardInfo {
     this.logoText,
     this.category,
     this.background,
+    this.userId,
+    this.fontColor,
   });
 
   /// Create a copy of this card with some fields updated
   CardInfo copyWith({
+    int? id,
     String? name,
     String? organization,
     String? jobTitle,
@@ -41,8 +49,11 @@ class CardInfo {
     String? logoText,
     String? category,
     CardBackground? background,
+    String? userId,
+    Color? fontColor,
   }) {
     return CardInfo(
+      id: id ?? this.id,
       name: name ?? this.name,
       organization: organization ?? this.organization,
       jobTitle: jobTitle ?? this.jobTitle,
@@ -54,12 +65,15 @@ class CardInfo {
       logoText: logoText ?? this.logoText,
       category: category ?? this.category,
       background: background ?? this.background,
+      userId: userId ?? this.userId,
+      fontColor: fontColor ?? this.fontColor,
     );
   }
 
   /// Convert to Map for storage/serialization
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'name': name,
       'organization': organization,
       'jobTitle': jobTitle,
@@ -71,12 +85,15 @@ class CardInfo {
       'logoText': logoText,
       'category': category,
       'background': background?.toString(),
+      'userId': userId,
+      'fontColor': fontColor != null ? '#${fontColor!.value.toRadixString(16).padLeft(8, '0')}' : null,
     };
   }
 
   /// Create from Map for deserialization
   factory CardInfo.fromMap(Map<String, dynamic> map) {
     return CardInfo(
+      id: map['id'] as int?,
       name: map['name'] ?? '',
       organization: map['organization'] ?? '',
       jobTitle: map['jobTitle'] ?? '',
@@ -90,6 +107,8 @@ class CardInfo {
       background: map['background'] != null 
           ? _parseCardBackground(map['background']) 
           : null,
+      userId: map['userId'],
+      fontColor: map['fontColor'] != null ? _parseColor(map['fontColor']) : null,
     );
   }
 
@@ -103,9 +122,20 @@ class CardInfo {
     return value as CardBackground?;
   }
 
+  static Color? _parseColor(String? hex) {
+    if (hex == null || hex.isEmpty) return null;
+    try {
+      final hexColor = hex.replaceFirst('#', '');
+      return Color(int.parse(hexColor, radix: 16));
+    } catch (e) {
+      return null;
+    }
+  }
+
   /// Create an empty card
   factory CardInfo.empty() {
     return CardInfo(
+      id: null,
       name: '',
       organization: '',
       jobTitle: '',
@@ -114,6 +144,7 @@ class CardInfo {
       location: '',
       about: '',
       website: '',
+      userId: null,
     );
   }
 }

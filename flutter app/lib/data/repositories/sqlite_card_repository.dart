@@ -7,37 +7,37 @@ class SQLiteCardRepository implements CardRepository {
   final DatabaseHelper _dbHelper = DatabaseHelper();
 
   @override
-  Future<List<CardInfo>> getAllCards() async {
-    return await _dbHelper.getAllCards();
+  Future<List<CardInfo>> getAllCards({required String userId}) async {
+    return await _dbHelper.getAllCards(userId: userId);
   }
 
   @override
-  Future<CardInfo?> getCardById(String id) async {
-    return await _dbHelper.getCardByEmail(id);
+  Future<CardInfo?> getCardById(int id, {required String userId}) async {
+    return await _dbHelper.getCardById(id, userId: userId);
   }
 
   @override
-  Future<void> addCard(CardInfo card) async {
-    await _dbHelper.insertCard(card);
+  Future<void> addCard(CardInfo card, {required String userId}) async {
+    await _dbHelper.insertCard(card, userId: userId);
   }
 
   @override
-  Future<void> updateCard(CardInfo card) async {
-    await _dbHelper.updateCard(card);
+  Future<void> updateCard(CardInfo card, {required String userId}) async {
+    await _dbHelper.updateCard(card, userId: userId);
   }
 
   @override
-  Future<void> deleteCard(String id) async {
-    await _dbHelper.deleteCard(id);
+  Future<void> deleteCard(int id, {required String userId}) async {
+    await _dbHelper.deleteCard(id, userId: userId);
   }
 
   @override
-  Future<List<CardInfo>> searchCards(String query) async {
-    return await _dbHelper.searchCards(query);
+  Future<List<CardInfo>> searchCards(String query, {required String userId}) async {
+    return await _dbHelper.searchCards(query, userId: userId);
   }
 
   @override
-  Future<List<CardInfo>> getCardsByCategory(String category) async {
-    return await _dbHelper.getCardsByCategory(category);
+  Future<List<CardInfo>> getCardsByCategory(String category, {required String userId}) async {
+    return await _dbHelper.getCardsByCategory(category, userId: userId);
   }
 }

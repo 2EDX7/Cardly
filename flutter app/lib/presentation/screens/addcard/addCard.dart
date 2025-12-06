@@ -5,7 +5,8 @@ import 'package:cardly/presentation/theme/colors.dart';
 import 'package:cardly/presentation/theme/spacing.dart';
 import 'package:cardly/presentation/theme/typography.dart';
 import 'package:cardly/routes/routes.dart';
-import '../../../src/generated/l10n/app_localizations.dart';
+// import '../../../src/generated/l10n/app_localizations.dart';
+import "../../../l10n/app_localizations.dart";
 
 class AddCardScreen extends StatefulWidget {
   const AddCardScreen({Key? key}) : super(key: key);

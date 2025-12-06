@@ -6,7 +6,7 @@ class LanguageState extends Equatable {
   final Locale locale;
 
   const LanguageState({
-    this.locale = const Locale('ar'),
+    this.locale = const Locale('en'),
   });
 
   LanguageState copyWith({

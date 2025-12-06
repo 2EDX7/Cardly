@@ -232,6 +232,7 @@
   "additionalInformationCaps": "INFORMATIONS SUPPLÉMENTAIRES",
 
   "cardPreview": "APERÇU DE LA CARTE",
+  "tapToFlip": "appuyez pour retourner",
   "changeFontColor": "CHANGER LA COULEUR DE LA POLICE",
   "changeBackground": "CHANGER L'ARRIÈRE-PLAN",
   "red": "Rouge",
@@ -239,7 +240,7 @@
   "blue": "Bleu",
   
   "splashTitle": "Cardly",
-  "splashSubtitle": "Vos cartes de visite numériques,\\nRéinventées",
+  "splashSubtitle": "Vos cartes de visite numériques,\nRéinventées",
   "splashDescription": "Créez de superbes cartes de visite numériques qui laissent des impressions durables. Partagez vos informations de contact instantanément avec n'importe qui, n'importe où.",
   "shareInstantly": "Partage instantané",
   "connectWithTap": "Connectez-vous d'un simple toucher",
@@ -285,7 +286,7 @@
 
   "apply": "Appliquer",
   "chooseCustomColor": "Choisir une couleur personnalisée",
-  "lookingUpCardIdFeature": "Recherche de l'ID de carte: {cardId}...\\nFonctionnalité bientôt disponible!",
+  "lookingUpCardIdFeature": "Recherche de l'ID de carte: {cardId}...\nFonctionnalité bientôt disponible!",
   "@lookingUpCardIdFeature": {
     "placeholders": {
       "cardId": {
@@ -306,5 +307,10 @@
   "pleaseEnterValidEmail": "Veuillez entrer un email valide",
   "pleaseEnterYourPhoneNumber": "Veuillez entrer votre numéro de téléphone",
   "aboutSection": "À PROPOS",
-  "saveChanges": "Enregistrer les modifications"
+  "saveChanges": "Enregistrer les modifications",
+  
+  "createYourFirstCard": "Créez votre première carte",
+  "@createYourFirstCard": {
+    "description": "Button text to create first card on home page"
+  }
 }

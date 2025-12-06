@@ -8,10 +8,12 @@ import 'logic/cubits/theme/theme_state.dart';
 import 'logic/cubits/card/card_cubit.dart';
 import 'logic/cubits/language/language_cubit.dart';
 import 'logic/cubits/language/language_state.dart';
+import 'logic/cubits/auth/auth_cubit.dart';
+import 'logic/cubits/profile_card/profile_card_cubit.dart';
 import 'routes/routes.dart';
 import 'data/database/database_helper.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'src/generated/l10n/app_localizations.dart';
+import 'l10n/app_localizations.dart'; 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,11 +40,25 @@ class CardlyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dbHelper = DatabaseHelper();
+    
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => ThemeCubit()),
-        BlocProvider(create: (context) => CardCubit()),
-        BlocProvider(create: (context) => LanguageCubit()),
+        BlocProvider(create: (context) => AuthCubit()),
+        BlocProvider(create: (context) => ThemeCubit(
+          dbHelper: dbHelper,
+          userId: context.read<AuthCubit>().state.user?.id,
+        )),
+        BlocProvider(create: (context) => CardCubit(
+          initialUserId: context.read<AuthCubit>().state.user?.id,
+        )),
+        BlocProvider(create: (context) => ProfileCardCubit(
+          initialUserId: context.read<AuthCubit>().state.user?.id,
+        )),
+        BlocProvider(create: (context) => LanguageCubit(
+          dbHelper: dbHelper,
+          userId: context.read<AuthCubit>().state.user?.id,
+        )),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, themeState) {

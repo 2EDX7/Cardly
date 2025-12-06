@@ -958,6 +958,12 @@ abstract class AppLocalizations {
   /// **'CARD PREVIEW'**
   String get cardPreview;
 
+  /// No description provided for @tapToFlip.
+  ///
+  /// In en, this message translates to:
+  /// **'tap to flip'**
+  String get tapToFlip;
+
   /// No description provided for @changeFontColor.
   ///
   /// In en, this message translates to:
@@ -997,7 +1003,7 @@ abstract class AppLocalizations {
   /// No description provided for @splashSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Your Digital Business Cards,\\nReimagined'**
+  /// **'Your Digital Business Cards,\nReimagined'**
   String get splashSubtitle;
 
   /// No description provided for @splashDescription.
@@ -1195,7 +1201,7 @@ abstract class AppLocalizations {
   /// No description provided for @lookingUpCardIdFeature.
   ///
   /// In en, this message translates to:
-  /// **'Looking up card ID: {cardId}...\\nFeature coming soon!'**
+  /// **'Looking up card ID: {cardId}...\nFeature coming soon!'**
   String lookingUpCardIdFeature(String cardId);
 
   /// No description provided for @appTheme.
@@ -1275,6 +1281,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save Changes'**
   String get saveChanges;
+
+  /// Button text to create first card on home page
+  ///
+  /// In en, this message translates to:
+  /// **'Create Your First Card'**
+  String get createYourFirstCard;
 }
 
 class _AppLocalizationsDelegate

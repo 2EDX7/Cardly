@@ -456,6 +456,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cardPreview => 'معاينة البطاقة';
 
   @override
+  String get tapToFlip => 'اضغط لتقليب';
+
+  @override
   String get changeFontColor => 'تغيير لون الخط';
 
   @override
@@ -474,7 +477,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get splashTitle => 'كاردلي';
 
   @override
-  String get splashSubtitle => 'بطاقات عملك الرقمية،\\nإعادة تصورها';
+  String get splashSubtitle => 'بطاقات عملك الرقمية،\nإعادة تصورها';
 
   @override
   String get splashDescription =>
@@ -581,7 +584,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String lookingUpCardIdFeature(String cardId) {
-    return 'البحث عن معرف البطاقة: $cardId...\\nالميزة قريبًا!';
+    return 'البحث عن معرف البطاقة: $cardId...\nالميزة قريبًا!';
   }
 
   @override
@@ -622,4 +625,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get saveChanges => 'حفظ التغييرات';
+
+  @override
+  String get createYourFirstCard => 'أنشئ بطاقتك الأولى';
 }

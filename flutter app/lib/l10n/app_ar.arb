@@ -232,6 +232,7 @@
   "additionalInformationCaps": "معلومات إضافية",
 
   "cardPreview": "معاينة البطاقة",
+  "tapToFlip": "اضغط لتقليب",
   "changeFontColor": "تغيير لون الخط",
   "changeBackground": "تغيير الخلفية",
   "red": "أحمر",
@@ -239,7 +240,7 @@
   "blue": "أزرق",
   
   "splashTitle": "كاردلي",
-  "splashSubtitle": "بطاقات عملك الرقمية،\\nإعادة تصورها",
+  "splashSubtitle": "بطاقات عملك الرقمية،\nإعادة تصورها",
   "splashDescription": "أنشئ بطاقات عمل رقمية مذهلة تترك انطباعات دائمة. شارك معلومات الاتصال الخاصة بك على الفور مع أي شخص في أي مكان.",
   "shareInstantly": "مشاركة فورية",
   "connectWithTap": "تواصل بلمسة واحدة",
@@ -285,7 +286,7 @@
 
   "apply": "تطبيق",
   "chooseCustomColor": "اختر لونًا مخصصًا",
-  "lookingUpCardIdFeature": "البحث عن معرف البطاقة: {cardId}...\\nالميزة قريبًا!",
+  "lookingUpCardIdFeature": "البحث عن معرف البطاقة: {cardId}...\nالميزة قريبًا!",
   "@lookingUpCardIdFeature": {
     "placeholders": {
       "cardId": {
@@ -306,5 +307,10 @@
   "pleaseEnterValidEmail": "الرجاء إدخال بريد إلكتروني صالح",
   "pleaseEnterYourPhoneNumber": "الرجاء إدخال رقم هاتفك",
   "aboutSection": "نبذة عني",
-  "saveChanges": "حفظ التغييرات"
+  "saveChanges": "حفظ التغييرات",
+  
+  "createYourFirstCard": "أنشئ بطاقتك الأولى",
+  "@createYourFirstCard": {
+    "description": "Button text to create first card on home page"
+  }
 }

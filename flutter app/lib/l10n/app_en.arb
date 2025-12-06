@@ -232,6 +232,7 @@
   "additionalInformationCaps": "ADDITIONAL INFORMATION",
 
   "cardPreview": "CARD PREVIEW",
+  "tapToFlip": "tap to flip",
   "changeFontColor": "CHANGE FONT COLOR",
   "changeBackground": "CHANGE BACKGROUND",
   "red": "Red",
@@ -239,7 +240,7 @@
   "blue": "Blue",
   
   "splashTitle": "Cardly",
-  "splashSubtitle": "Your Digital Business Cards,\\nReimagined",
+  "splashSubtitle": "Your Digital Business Cards,\nReimagined",
   "splashDescription": "Create stunning digital business cards that make lasting impressions. Share your contact information instantly with anyone, anywhere.",
   "shareInstantly": "Share Instantly",
   "connectWithTap": "Connect with a Tap",
@@ -291,7 +292,7 @@
 
   "apply": "Apply",
   "chooseCustomColor": "Choose Custom Color",
-  "lookingUpCardIdFeature": "Looking up card ID: {cardId}...\\nFeature coming soon!",
+  "lookingUpCardIdFeature": "Looking up card ID: {cardId}...\nFeature coming soon!",
   "@lookingUpCardIdFeature": {
     "placeholders": {
       "cardId": {
@@ -312,5 +313,10 @@
   "pleaseEnterValidEmail": "Please enter a valid email",
   "pleaseEnterYourPhoneNumber": "Please enter your phone number",
   "aboutSection": "ABOUT",
-  "saveChanges": "Save Changes"
+  "saveChanges": "Save Changes",
+  
+  "createYourFirstCard": "Create Your First Card",
+  "@createYourFirstCard": {
+    "description": "Button text to create first card on home page"
+  }
 }

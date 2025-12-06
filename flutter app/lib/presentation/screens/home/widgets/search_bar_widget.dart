@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../theme/colors.dart';
 import '../../../theme/spacing.dart';
-import '../../../../src/generated/l10n/app_localizations.dart';
+// import '../../../../src/generated/l10n/app_localizations.dart';
+import "../../../../l10n/app_localizations.dart";
+
 class SearchBarWidget extends StatelessWidget {
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
