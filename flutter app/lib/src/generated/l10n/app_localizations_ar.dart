@@ -522,7 +522,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get splashTitle => 'كاردلي';
 
   @override
-  String get splashSubtitle => 'بطاقات عملك الرقمية،\\nإعادة تصورها';
+  String get splashSubtitle => 'بطاقات عملك الرقمية';
 
   @override
   String get splashDescription =>

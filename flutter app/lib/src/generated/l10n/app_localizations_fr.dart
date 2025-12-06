@@ -88,7 +88,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get signIn => 'Se connecter';
 
   @override
-  String get dontHaveAccount => 'Vous n\'avez pas de compte?';
+  String get dontHaveAccount => "Vous n'avez pas de compte?";
 
   @override
   String get signUpNow => 'Inscrivez-vous maintenant';
@@ -106,7 +106,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get confirmPassword => 'Confirmer le mot de passe';
 
   @override
-  String get signUp => 'S\'inscrire';
+  String get signUp => "S'inscrire";
 
   @override
   String get alreadyHaveAccount => 'Vous avez déjà un compte?';
@@ -118,7 +118,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get addCard => 'Ajouter une carte';
 
   @override
-  String get enterCardId => 'Entrez l\'ID de la carte';
+  String get enterCardId => "Entrez l'ID de la carte";
 
   @override
   String get cardRegisteredInApp =>
@@ -234,7 +234,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get discardChanges => 'Annuler les modifications';
 
   @override
-  String get errorGeneric => 'Une erreur s\'est produite. Veuillez réessayer.';
+  String get errorGeneric => "Une erreur s'est produite. Veuillez réessayer.";
 
   @override
   String get errorNetwork =>
@@ -281,7 +281,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String errorPickingImage(String error) {
-    return 'Erreur lors de la sélection de l\'image: $error';
+    return "Erreur lors de la sélection de l'image: $error";
   }
 
   @override
@@ -291,7 +291,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String lookingUpCardId(String cardId) {
-    return 'Recherche de l\'ID de carte: $cardId...';
+    return "Recherche de l'ID de carte: $cardId...";
   }
 
   @override
@@ -464,7 +464,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get changeFontColor => 'CHANGER LA COULEUR DE LA POLICE';
 
   @override
-  String get changeBackground => 'CHANGER L\'ARRIÈRE-PLAN';
+  String get changeBackground => "CHANGER L'ARRIÈRE-PLAN";
 
   @override
   String get chooseCustomColor => 'Choisir une couleur personnalisée';
@@ -500,7 +500,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get aboutSection => 'À propos';
 
   @override
-  String get appTheme => 'Thème de l\'application';
+  String get appTheme => "Thème de l'application";
 
   @override
   String get darkMode => 'Mode sombre';
@@ -524,12 +524,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get splashTitle => 'Cardly';
 
   @override
-  String get splashSubtitle => 'Vos cartes de visite numériques,\\nRéinventées';
+  String get splashSubtitle => "Vos cartes de visite numériques,Réinventées";
 
   @override
   String get splashDescription =>
-      'Créez de superbes cartes de visite numériques qui laissent des impressions durables. Partagez vos informations de contact instantanément avec n\'importe qui, n\'importe où.';
-
+      "Créez de superbes cartes de visite numériques qui laissent des impressions durables. Partagez vos informations de contact instantanément avec n'importe qui, n'importe où.";
   @override
   String get shareInstantly => 'Partage instantané';
 
@@ -548,7 +547,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get ecoFriendlyDescription =>
-      'Sauvez les arbres et réduisez les déchets en passant au sans papier. Rejoignez des milliers de personnes qui font des choix de réseautage respectueux de l\'environnement.';
+      "Sauvez les arbres et réduisez les déchets en passant au sans papier. Rejoignez des milliers de personnes qui font des choix de réseautage respectueux de l'environnement.";
 
   @override
   String get getStarted => 'Commencer';
@@ -582,7 +581,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String errorOpeningWebsite(String error) {
-    return 'Erreur lors de l\'ouverture du site web: $error';
+    return "Erreur lors de l'ouverture du site web: $error";
   }
 
   @override

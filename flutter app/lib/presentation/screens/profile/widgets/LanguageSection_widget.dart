@@ -54,10 +54,10 @@ class _LanguagesectionWidgetState extends State<LanguagesectionWidget> {
                           : Colors.transparent,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Center(
+                      child: const Center(
                         child: Text(
                           '🇬🇧',
-                          style: const TextStyle(fontSize: 24),
+                          style:  TextStyle(fontSize: 24),
                         ),
                       ),
                     ),
@@ -91,10 +91,10 @@ class _LanguagesectionWidgetState extends State<LanguagesectionWidget> {
                           : Colors.transparent,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Center(
+                      child: const Center(
                         child: Text(
                           '🇫🇷',
-                          style: const TextStyle(fontSize: 24),
+                          style: TextStyle(fontSize: 24),
                         ),
                       ),
                     ),
@@ -128,10 +128,10 @@ class _LanguagesectionWidgetState extends State<LanguagesectionWidget> {
                           : Colors.transparent,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Center(
+                      child: const Center(
                         child: Text(
                           '🇩🇿',
-                          style: const TextStyle(fontSize: 24),
+                          style:  TextStyle(fontSize: 24),
                         ),
                       ),
                     ),

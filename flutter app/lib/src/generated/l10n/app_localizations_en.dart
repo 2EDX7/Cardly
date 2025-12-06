@@ -60,7 +60,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get share => 'Share';
 
   @override
-  String get signInToAccount => 'Sign in to your\nAccount';
+  String get signInToAccount => "Sign in to your Account";
 
   @override
   String get enterEmailPassword => 'Enter your email and password to log in';
@@ -87,13 +87,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signIn => 'Sign In';
 
   @override
-  String get dontHaveAccount => 'Don\'t have an account?';
+  String get dontHaveAccount => "Don't have an account?";
 
   @override
   String get signUpNow => 'Sign up now';
 
   @override
-  String get createAccount => 'Create your\nAccount';
+  String get createAccount => "Create your Account";
 
   @override
   String get enterDetailsToSignUp => 'Enter your details to sign up';
@@ -424,12 +424,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String areYouSureDeleteCard(String cardName) {
-    return 'Are you sure you want to delete $cardName\'s card?';
+    return "Are you sure you want to delete $cardName's card?";
   }
 
   @override
   String cardDeleted(String cardName) {
-    return '$cardName\'s card deleted';
+    return "$cardName's card deleted";
   }
 
   @override
@@ -520,7 +520,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get splashTitle => 'Cardly';
 
   @override
-  String get splashSubtitle => 'Your Digital Business Cards,\\nReimagined';
+  String get splashSubtitle => "Your Digital Business Cards,Reimagined";
 
   @override
   String get splashDescription =>
