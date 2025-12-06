@@ -8,7 +8,7 @@ import 'widgets/filter_button.dart';
 import 'widgets/filter_icon_button.dart';
 import 'widgets/card_list_item.dart';
 import 'widgets/category_section.dart';
-import 'package:cardly/src/generated/l10n/app_localizations.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../data/models/card_info.dart';
 import '../../../routes/routes.dart';
 
