@@ -90,6 +90,38 @@ class CardInfo {
     };
   }
 
+  /// Convert to JSON for QR code generation
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'organization': organization,
+      'jobTitle': jobTitle,
+      'email': email,
+      'phone': phone,
+      'location': location,
+      'about': about,
+      'website': website,
+      'logoText': logoText,
+      'category': category,
+    };
+  }
+
+  /// Create from JSON (for QR code scanning)
+  factory CardInfo.fromJson(Map<String, dynamic> json) {
+    return CardInfo(
+      name: json['name'] ?? '',
+      organization: json['organization'] ?? '',
+      jobTitle: json['jobTitle'] ?? '',
+      email: json['email'] ?? '',
+      phone: json['phone'] ?? '',
+      location: json['location'] ?? '',
+      about: json['about'] ?? '',
+      website: json['website'] ?? '',
+      logoText: json['logoText'],
+      category: json['category'],
+    );
+  }
+
   /// Create from Map for deserialization
   factory CardInfo.fromMap(Map<String, dynamic> map) {
     return CardInfo(
