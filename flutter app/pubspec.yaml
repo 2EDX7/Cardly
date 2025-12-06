@@ -37,6 +37,7 @@ dependencies:
 
   # Image & QR Code
   qr_flutter: ^4.1.0
+  mobile_scanner: ^5.2.3
   image_picker: ^1.1.2
 
   # Animations

@@ -11,6 +11,8 @@ import 'widgets/category_section.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../data/models/card_info.dart';
 import '../../../routes/routes.dart';
+import '../qr/show_qr_code_screen.dart';
+import '../qr/scan_qr_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -71,6 +73,26 @@ class _HomePageState extends State<HomePage> {
     print("L10n loaded: ${l10n.myCards}");
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          final result = await Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const ScanQrScreen()),
+          );
+          if (result is CardInfo && mounted) {
+            await context.read<CardCubit>().addCard(result);
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('${result.name} added to your cards'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            }
+          }
+        },
+        icon: const Icon(Icons.qr_code_scanner),
+        label: const Text('Scan Card'),
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -491,6 +513,25 @@ class _CardDetailSheet extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => ShowQrCodeScreen(card: card),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.qr_code),
+                label: const Text('Share via QR'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: cs.secondary,
+                ),
+              ),
             ),
           ],
         ),
