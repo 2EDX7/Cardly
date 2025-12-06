@@ -1003,7 +1003,7 @@ abstract class AppLocalizations {
   /// No description provided for @splashSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Your Digital Business Cards,\\nReimagined'**
+  /// **'Your Digital Business Cards,\nReimagined'**
   String get splashSubtitle;
 
   /// No description provided for @splashDescription.
@@ -1201,7 +1201,7 @@ abstract class AppLocalizations {
   /// No description provided for @lookingUpCardIdFeature.
   ///
   /// In en, this message translates to:
-  /// **'Looking up card ID: {cardId}...\\nFeature coming soon!'**
+  /// **'Looking up card ID: {cardId}...\nFeature coming soon!'**
   String lookingUpCardIdFeature(String cardId);
 
   /// No description provided for @appTheme.

@@ -240,7 +240,7 @@
   "blue": "Blue",
   
   "splashTitle": "Cardly",
-  "splashSubtitle": "Your Digital Business Cards,\\nReimagined",
+  "splashSubtitle": "Your Digital Business Cards,\nReimagined",
   "splashDescription": "Create stunning digital business cards that make lasting impressions. Share your contact information instantly with anyone, anywhere.",
   "shareInstantly": "Share Instantly",
   "connectWithTap": "Connect with a Tap",
@@ -292,7 +292,7 @@
 
   "apply": "Apply",
   "chooseCustomColor": "Choose Custom Color",
-  "lookingUpCardIdFeature": "Looking up card ID: {cardId}...\\nFeature coming soon!",
+  "lookingUpCardIdFeature": "Looking up card ID: {cardId}...\nFeature coming soon!",
   "@lookingUpCardIdFeature": {
     "placeholders": {
       "cardId": {

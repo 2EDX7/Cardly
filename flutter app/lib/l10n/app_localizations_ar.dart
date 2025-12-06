@@ -477,7 +477,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get splashTitle => 'كاردلي';
 
   @override
-  String get splashSubtitle => 'بطاقات عملك الرقمية،\\nإعادة تصورها';
+  String get splashSubtitle => 'بطاقات عملك الرقمية،\nإعادة تصورها';
 
   @override
   String get splashDescription =>
@@ -584,7 +584,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String lookingUpCardIdFeature(String cardId) {
-    return 'البحث عن معرف البطاقة: $cardId...\\nالميزة قريبًا!';
+    return 'البحث عن معرف البطاقة: $cardId...\nالميزة قريبًا!';
   }
 
   @override

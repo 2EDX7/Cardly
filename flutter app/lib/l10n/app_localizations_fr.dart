@@ -479,7 +479,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get splashTitle => 'Cardly';
 
   @override
-  String get splashSubtitle => 'Vos cartes de visite numériques,\\nRéinventées';
+  String get splashSubtitle => 'Vos cartes de visite numériques,\nRéinventées';
 
   @override
   String get splashDescription =>
@@ -588,7 +588,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String lookingUpCardIdFeature(String cardId) {
-    return 'Recherche de l\'ID de carte: $cardId...\\nFonctionnalité bientôt disponible!';
+    return 'Recherche de l\'ID de carte: $cardId...\nFonctionnalité bientôt disponible!';
   }
 
   @override

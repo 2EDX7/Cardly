@@ -475,7 +475,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get splashTitle => 'Cardly';
 
   @override
-  String get splashSubtitle => 'Your Digital Business Cards,\\nReimagined';
+  String get splashSubtitle => 'Your Digital Business Cards,\nReimagined';
 
   @override
   String get splashDescription =>
@@ -583,7 +583,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String lookingUpCardIdFeature(String cardId) {
-    return 'Looking up card ID: $cardId...\\nFeature coming soon!';
+    return 'Looking up card ID: $cardId...\nFeature coming soon!';
   }
 
   @override
