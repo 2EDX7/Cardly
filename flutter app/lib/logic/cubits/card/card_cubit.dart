@@ -47,6 +47,15 @@ class CardCubit extends Cubit<CardState> {
     }
   }
 
+  /// Fetch card by ID globally (for sharing via ID)
+  Future<CardInfo?> fetchCardByIdGlobal(int id) async {
+    try {
+      return await _repository.getCardByIdGlobal(id);
+    } catch (e) {
+      return null;
+    }
+  }
+
   /// Add a new card
   Future<void> addCard(CardInfo card) async {
     try {

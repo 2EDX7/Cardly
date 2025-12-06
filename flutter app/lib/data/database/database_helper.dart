@@ -476,6 +476,35 @@ class DatabaseHelper {
     );
   }
 
+  /// Get card by ID globally (across all users) for sharing functionality
+  Future<CardInfo?> getCardByIdGlobal(int id) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'cards',
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
+
+    if (maps.isEmpty) return null;
+
+    return CardInfo(
+      id: maps[0]['id'] as int?,
+      name: maps[0]['name'],
+      organization: maps[0]['organization'],
+      jobTitle: maps[0]['jobTitle'],
+      email: maps[0]['email'],
+      phone: maps[0]['phone'],
+      location: maps[0]['location'],
+      about: maps[0]['about'],
+      website: maps[0]['website'],
+      logoText: maps[0]['logoText'],
+      category: maps[0]['category'],
+      background: _stringToBackground(maps[0]['background']),
+      userId: maps[0]['userId'] ?? defaultUserId,
+    );
+  }
+
   /// Insert a new card
   Future<int> insertCard(CardInfo card, {String userId = defaultUserId}) async {
     final db = await database;
