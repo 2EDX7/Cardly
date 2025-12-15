@@ -13,6 +13,7 @@ import '../../../data/models/card_info.dart';
 import '../../../routes/routes.dart';
 import '../qr/show_qr_code_screen.dart';
 import '../qr/scan_qr_screen.dart';
+import '../card/add_by_id_dialog.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -73,6 +74,33 @@ class _HomePageState extends State<HomePage> {
     print("L10n loaded: ${l10n.myCards}");
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person_add),
+            tooltip: 'Add by ID',
+            onPressed: () async {
+              final result = await showDialog<bool>(
+                context: context,
+                builder: (_) => BlocProvider.value(
+                  value: context.read<CardCubit>(),
+                  child: const AddByIdDialog(),
+                ),
+              );
+              if (result == true && mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Card added successfully'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              }
+            },
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           final result = await Navigator.of(context).push(
@@ -491,6 +519,7 @@ class _CardDetailSheet extends StatelessWidget {
             _InfoRow(icon: Icons.phone_outlined, label: card.phone),
             _InfoRow(icon: Icons.location_on_outlined, label: card.location),
             if (card.website.isNotEmpty) _InfoRow(icon: Icons.link, label: card.website),
+            if (card.id != null) _InfoRow(icon: Icons.badge_outlined, label: 'ID: ${card.id}'),
             const SizedBox(height: AppSpacing.md),
             Text(card.about, style: TextStyle(color: cs.onSurface)),
             const SizedBox(height: AppSpacing.lg),
