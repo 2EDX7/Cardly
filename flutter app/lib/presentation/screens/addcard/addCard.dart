@@ -8,6 +8,7 @@ import 'package:cardly/presentation/theme/typography.dart';
 import 'package:cardly/routes/routes.dart';
 import "../../../l10n/app_localizations.dart";
 import '../../../logic/cubits/card/card_cubit.dart';
+import '../../../logic/cubits/profile_card/profile_card_cubit.dart';
 import '../../../data/models/card_info.dart';
 
 class AddCardScreen extends StatefulWidget {
@@ -30,8 +31,6 @@ class _AddCardScreenState extends State<AddCardScreen> {
       );
       
       if (image != null) {
-        // TODO: Process the image with OCR to extract card information
-        // For now, show a message that this feature is coming soon
         if (mounted) {
           final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
@@ -63,8 +62,6 @@ class _AddCardScreenState extends State<AddCardScreen> {
       );
       
       if (image != null) {
-        // TODO: Process the image with OCR to extract card information
-        // For now, show a message that this feature is coming soon
         if (mounted) {
           final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
@@ -205,6 +202,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
+              // "Enter Shareable ID" would be better, but keeping localization key for now
               AppLocalizations.of(context)!.enterCardId,
               style: AppTextStyles.heading2(context),
             ),
@@ -217,16 +215,20 @@ class _AddCardScreenState extends State<AddCardScreen> {
             TextField(
               controller: _cardIdController,
               decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.cardlyCardId,
+                // Updated hint
+                labelText: 'Shareable ID',
+                hintText: 'Enter shareable ID',
               ),
+              // Strings allowed now
+              keyboardType: TextInputType.text,
             ),
             const SizedBox(height: AppSpacing.md),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _isLoadingCard ? null : () async {
-                  final cardId = _cardIdController.text.trim();
-                  if (cardId.isEmpty) {
+                  final shareableId = _cardIdController.text.trim();
+                  if (shareableId.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(l10n.errorCardIdEmpty),
@@ -236,31 +238,20 @@ class _AddCardScreenState extends State<AddCardScreen> {
                     return;
                   }
                   
-                  final id = int.tryParse(cardId);
-                  if (id == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Invalid card ID. Please enter a number.'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                    return;
-                  }
-
                   setState(() {
                     _isLoadingCard = true;
                   });
 
                   try {
-                    // Fetch card by ID
-                    final card = await context.read<CardCubit>().fetchCardByIdGlobal(id);
+                    // Fetch profile card by shareable ID for preview
+                    final card = await context.read<ProfileCardCubit>().getCardByShareableId(shareableId);
 
                     if (!mounted) return;
 
                     if (card == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Card not found with ID: $cardId'),
+                          content: Text('Card not found with ID: $shareableId'),
                           backgroundColor: Colors.red,
                         ),
                       );
@@ -269,8 +260,8 @@ class _AddCardScreenState extends State<AddCardScreen> {
                       final shouldAdd = await _showCardPreview(card);
                       
                       if (shouldAdd == true && mounted) {
-                        // Add card to collection
-                        await context.read<CardCubit>().addCard(card);
+                        // Add card to collection via API
+                        await context.read<CardCubit>().collectCardByShareableId(shareableId);
                         
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(

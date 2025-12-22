@@ -9,7 +9,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../logic/cubits/auth/auth_cubit.dart';
 import '../../../logic/cubits/auth/auth_state.dart';
 import '../../../logic/cubits/card/card_cubit.dart';
-import '../../../logic/cubits/profile_card/profile_card_cubit.dart';
 import '../../../logic/cubits/theme/theme_cubit.dart';
 import '../../../logic/cubits/language/language_cubit.dart';
 
@@ -38,8 +37,6 @@ class _IntroSplashState extends State<IntroSplash> {
       // Set user context
       context.read<CardCubit>().setUser(user.id);
       
-      // Load card data from user object (already fetched from DB with LEFT JOIN)
-      context.read<ProfileCardCubit>().loadCardFromUser(user);
       
       // Load user preferences for theme and language
       final themeMode = ThemeCubit.themeModeFromString(user.themeMode);

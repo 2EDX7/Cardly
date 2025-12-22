@@ -12,7 +12,11 @@ class ShowQrCodeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final qrData = jsonEncode(card.toJson());
+    // Use shareableId for QR code if available, otherwise fallback (though should always have one from backend)
+    // For manual creation (offline), backendId might be null.
+    // Ideally we rely on shareableId.
+    final qrData = card.shareableId ?? card.backendId ?? jsonEncode(card.toJson());
+    final isShareableId = card.shareableId != null;
     
     return Scaffold(
       appBar: AppBar(
@@ -45,11 +49,24 @@ class ShowQrCodeScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: QrImageView(
-                  data: qrData,
-                  version: QrVersions.auto,
-                  size: 280,
-                  backgroundColor: Colors.white,
+                child: Column(
+                  children: [
+                    QrImageView(
+                      data: qrData,
+                      version: QrVersions.auto,
+                      size: 280,
+                      backgroundColor: Colors.white,
+                    ),
+                    if (isShareableId) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(
+                        'Scan to collect',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
               const SizedBox(height: AppSpacing.xl),
@@ -66,7 +83,7 @@ class ShowQrCodeScreen extends StatelessWidget {
                     ),
                 textAlign: TextAlign.center,
               ),
-              if (card.id != null) ...[
+              if (card.shareableId != null) ...[
                 const SizedBox(height: AppSpacing.lg),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -81,13 +98,13 @@ class ShowQrCodeScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        Icons.badge,
+                        Icons.share,
                         size: 20,
                         color: Theme.of(context).colorScheme.onSecondaryContainer,
                       ),
                       const SizedBox(width: AppSpacing.sm),
                       Text(
-                        'Card ID: ${card.id}',
+                        'ID: ${card.shareableId}',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onSecondaryContainer,
@@ -100,10 +117,10 @@ class ShowQrCodeScreen extends StatelessWidget {
                         constraints: const BoxConstraints(),
                         tooltip: 'Copy ID',
                         onPressed: () {
-                          Clipboard.setData(ClipboardData(text: card.id.toString()));
+                          Clipboard.setData(ClipboardData(text: card.shareableId!));
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Card ID copied to clipboard'),
+                              content: Text('Shareable ID copied to clipboard'),
                               duration: Duration(seconds: 2),
                             ),
                           );

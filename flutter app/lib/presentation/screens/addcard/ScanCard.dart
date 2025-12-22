@@ -9,6 +9,7 @@ import 'package:cardly/presentation/theme/typography.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../data/models/card_info.dart';
 import '../../../logic/cubits/card/card_cubit.dart';
+import '../../../logic/cubits/profile_card/profile_card_cubit.dart';
 
 class ScanCardScreen extends StatefulWidget {
   const ScanCardScreen({Key? key}) : super(key: key);
@@ -53,18 +54,10 @@ class _ScanCardScreenState extends State<ScanCardScreen> {
   }
 
   Future<void> _fetchCardById() async {
-    final idText = _idController.text.trim();
-    if (idText.isEmpty) {
+    final shareableId = _idController.text.trim();
+    if (shareableId.isEmpty) {
       setState(() {
-        _errorMessage = 'Please enter a card ID';
-      });
-      return;
-    }
-
-    final id = int.tryParse(idText);
-    if (id == null) {
-      setState(() {
-        _errorMessage = 'Invalid card ID. Please enter a number';
+        _errorMessage = 'Please enter a Shareable ID';
       });
       return;
     }
@@ -77,12 +70,12 @@ class _ScanCardScreenState extends State<ScanCardScreen> {
     });
 
     try {
-      final card = await context.read<CardCubit>().fetchCardByIdGlobal(id);
+      final card = await context.read<ProfileCardCubit>().getCardByShareableId(shareableId);
 
       if (card == null) {
         if (mounted) {
           setState(() {
-            _errorMessage = 'Card not found with ID: $id';
+            _errorMessage = 'Card not found with ID: $shareableId';
             _isLoadingId = false;
           });
         }
@@ -107,9 +100,15 @@ class _ScanCardScreenState extends State<ScanCardScreen> {
 
   Future<void> _addCardFromPreview() async {
     if (_previewCard == null) return;
+    final shareableId = _idController.text.trim();
 
     try {
-      await context.read<CardCubit>().addCard(_previewCard!);
+      if (shareableId.isNotEmpty) {
+         await context.read<CardCubit>().collectCardByShareableId(shareableId);
+      } else {
+         // Fallback for when ID isn't in controller (e.g. from JSON scan preview if adapted)
+         await context.read<CardCubit>().addCard(_previewCard!);
+      }
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -139,38 +138,50 @@ class _ScanCardScreenState extends State<ScanCardScreen> {
         _hasScanned = true;
         
         try {
-          // Parse the JSON data from QR code
-          final Map<String, dynamic> cardData = jsonDecode(code);
-          final CardInfo scannedCard = CardInfo.fromJson(cardData);
+          if (code.startsWith('{')) {
+             // JSON legacy format
+            final Map<String, dynamic> cardData = jsonDecode(code);
+            final CardInfo scannedCard = CardInfo.fromJson(cardData);
 
-          // Add the card using cubit
-          if (mounted) {
-            await context.read<CardCubit>().addCard(scannedCard);
-            
-            // Show success message
+             if (mounted) {
+              await context.read<CardCubit>().addCard(scannedCard);
+              if (mounted) {
+                 ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Card added: ${scannedCard.name}'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                Navigator.pop(context, true);
+              }
+             }
+
+          } else {
+            // Shareable ID format (plain string)
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Card added: ${scannedCard.name}'),
-                  backgroundColor: Colors.green,
-                ),
-              );
-              
-              // Go back after successful scan
-              Navigator.pop(context, true);
+               await context.read<CardCubit>().collectCardByShareableId(code);
+               if (mounted) {
+                 ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Card collected successfully!'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                Navigator.pop(context, true);
+               }
             }
           }
         } catch (e) {
-          // Show error if QR code is invalid
+          // Show error
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Invalid QR code: ${e.toString()}'),
+                content: Text('Error scanning card: ${e.toString()}'),
                 backgroundColor: Colors.red,
               ),
             );
             setState(() {
-              _hasScanned = false;
+              _hasScanned = false; // Allow rescanning
             });
           }
         }
@@ -309,7 +320,7 @@ class _ScanCardScreenState extends State<ScanCardScreen> {
 
                   // Add by ID Section
                   Text(
-                    'Enter Card ID',
+                    'Enter Shareable ID', // Updated Text
                     style: AppTextStyles.heading3(context),
                   ),
                   
@@ -319,9 +330,9 @@ class _ScanCardScreenState extends State<ScanCardScreen> {
                   TextField(
                     controller: _idController,
                     decoration: InputDecoration(
-                      labelText: 'Card ID',
-                      hintText: 'Enter card ID',
-                      prefixIcon: const Icon(Icons.numbers),
+                      labelText: 'Shareable ID', // Updated Label
+                      hintText: 'Enter shareable ID',
+                      prefixIcon: const Icon(Icons.qr_code),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -330,8 +341,7 @@ class _ScanCardScreenState extends State<ScanCardScreen> {
                         onPressed: _fetchCardById,
                       ),
                     ),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    keyboardType: TextInputType.text, // Updated Input Type
                     onSubmitted: (_) => _fetchCardById(),
                   ),
 
@@ -523,5 +533,3 @@ class _InfoItem extends StatelessWidget {
     );
   }
 }
-
-

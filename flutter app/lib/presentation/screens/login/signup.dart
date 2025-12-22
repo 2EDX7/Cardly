@@ -7,7 +7,6 @@ import '../../../l10n/app_localizations.dart';
 import '../../../logic/cubits/auth/auth_cubit.dart';
 import '../../../logic/cubits/auth/auth_state.dart';
 import '../../../logic/cubits/card/card_cubit.dart';
-import '../../../logic/cubits/profile_card/profile_card_cubit.dart';
 import '../../../logic/cubits/theme/theme_cubit.dart';
 import '../../../logic/cubits/language/language_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -70,8 +69,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     // Set user context
     context.read<CardCubit>().setUser(user.id);
     
-    // Load card data from user object (new users won't have card data)
-    context.read<ProfileCardCubit>().loadCardFromUser(user);
     
     // For new users, use default preferences (already in User model)
     final themeMode = ThemeCubit.themeModeFromString(user.themeMode);

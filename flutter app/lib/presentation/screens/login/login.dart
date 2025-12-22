@@ -38,8 +38,6 @@ class _LoginScreenState extends State<LoginScreen> {
     context.read<CardCubit>().setUser(user.id);
     context.read<ProfileCardCubit>().setUser(user.id);
     
-    // Load card data from user object (already fetched from DB with LEFT JOIN)
-    context.read<ProfileCardCubit>().loadCardFromUser(user);
     
     // Load user preferences for theme and language
     final themeMode = ThemeCubit.themeModeFromString(user.themeMode);

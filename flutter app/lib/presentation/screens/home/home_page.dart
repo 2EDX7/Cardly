@@ -147,7 +147,7 @@ class _HomePageState extends State<HomePage> {
                   SearchBarWidget(
                     controller: _searchController,
                     onChanged: (value) {
-                      context.read<CardCubit>().setSearchQuery(value);
+                      context.read<CardCubit>().searchCards(value);
                     },
                   ),
                   const SizedBox(height: AppSpacing.md),
@@ -519,6 +519,8 @@ class _CardDetailSheet extends StatelessWidget {
             _InfoRow(icon: Icons.phone_outlined, label: card.phone),
             _InfoRow(icon: Icons.location_on_outlined, label: card.location),
             if (card.website.isNotEmpty) _InfoRow(icon: Icons.link, label: card.website),
+            if (card.shareableId != null && card.shareableId!.isNotEmpty) 
+              _InfoRow(icon: Icons.share, label: 'Share ID: ${card.shareableId}'),
             if (card.id != null) _InfoRow(icon: Icons.badge_outlined, label: 'ID: ${card.id}'),
             const SizedBox(height: AppSpacing.md),
             Text(card.about, style: TextStyle(color: cs.onSurface)),

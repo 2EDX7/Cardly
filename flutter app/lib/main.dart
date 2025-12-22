@@ -2,18 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
+
+// Theme & Localization
 import 'presentation/theme/themes.dart';
 import 'logic/cubits/theme/theme_cubit.dart';
 import 'logic/cubits/theme/theme_state.dart';
-import 'logic/cubits/card/card_cubit.dart';
 import 'logic/cubits/language/language_cubit.dart';
 import 'logic/cubits/language/language_state.dart';
-import 'logic/cubits/auth/auth_cubit.dart';
-import 'logic/cubits/profile_card/profile_card_cubit.dart';
-import 'routes/routes.dart';
-import 'data/database/database_helper.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'l10n/app_localizations.dart'; 
+import 'l10n/app_localizations.dart';
+
+// Cubits
+import 'logic/cubits/auth/auth_cubit.dart';
+import 'logic/cubits/card/card_cubit.dart';
+import 'logic/cubits/profile_card/profile_card_cubit.dart';
+
+// API
+import 'data/api/api_client.dart';
+import 'data/services/token_storage_service.dart';
+import 'data/repositories/api_user_repository.dart';
+import 'data/repositories/api_card_repository.dart';
+import 'data/repositories/api_profile_card_repository.dart';
+import 'core/config/app_config.dart';
+
+// Routes
+import 'routes/routes.dart';
+
+// Database (for theme & language persistence - can be removed if not needed)
+import 'data/database/database_helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +41,8 @@ void main() async {
       storageDirectory: await getApplicationDocumentsDirectory(),
     );
     
-    // Initialize SQLite database
+    // Initialize SQLite database (kept for theme/language preferences)
+    // Can be removed if you want to store preferences in API only
     await DatabaseHelper().database;
   } catch (e) {
     // Log error but continue - app can still run without persistence
@@ -40,74 +58,155 @@ class CardlyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Initialize API client and repositories
+    final apiClient = ApiClient(
+      baseUrl: AppConfig.apiBaseUrl,
+      client: http.Client(),
+      timeout: AppConfig.apiTimeout,
+    );
+
+    final tokenStorage = TokenStorageService();
+    
+    // Initialize repositories
+    final userRepository = ApiUserRepository(
+      apiClient: apiClient,
+      tokenStorage: tokenStorage,
+    );
+
+    final cardRepository = ApiCardRepository(
+      apiClient: apiClient,
+    );
+
+    final profileCardRepository = ApiProfileCardRepository(
+      apiClient: apiClient,
+    );
+
+    // Restore token if exists
+    _restoreAuthToken(apiClient, tokenStorage);
+
     final dbHelper = DatabaseHelper();
     
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => AuthCubit()),
-        BlocProvider(create: (context) => ThemeCubit(
-          dbHelper: dbHelper,
-          userId: context.read<AuthCubit>().state.user?.id,
-        )),
-        BlocProvider(create: (context) => CardCubit(
-          initialUserId: context.read<AuthCubit>().state.user?.id,
-        )),
-        BlocProvider(create: (context) => ProfileCardCubit(
-          initialUserId: context.read<AuthCubit>().state.user?.id,
-        )),
-        BlocProvider(create: (context) => LanguageCubit(
-          dbHelper: dbHelper,
-          userId: context.read<AuthCubit>().state.user?.id,
-        )),
+        // Auth Cubit with API repository
+        BlocProvider(
+          create: (context) => AuthCubit(repository: userRepository),
+        ),
+        
+        // Theme Cubit
+        BlocProvider(
+          create: (context) => ThemeCubit(
+            dbHelper: dbHelper,
+            userRepository: userRepository,
+            userId: null, // Will be set after login
+          ),
+        ),
+        
+        // Card Cubit with API repository
+        BlocProvider(
+          create: (context) => CardCubit(
+            repository: cardRepository,
+            initialUserId: null, // Will be set after login
+          ),
+        ),
+        
+        // Profile Card Cubit with API repository
+        BlocProvider(
+          create: (context) => ProfileCardCubit(
+            repository: profileCardRepository,
+            initialUserId: null, // Will be set after login
+          ),
+        ),
+        
+        // Language Cubit
+        BlocProvider(
+          create: (context) => LanguageCubit(
+            dbHelper: dbHelper,
+            userRepository: userRepository,
+            userId: null, // Will be set after login
+          ),
+        ),
       ],
-      child: BlocBuilder<ThemeCubit, ThemeState>(
-        builder: (context, themeState) {
-          return BlocBuilder<LanguageCubit, LanguageState>(
-            builder: (context, languageState) {
-              return MaterialApp(
-                title: 'Cardly',
-                debugShowCheckedModeBanner: false,
-                
-                // Localization delegates
-                localizationsDelegates: const [
-                  AppLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                
-                // Supported locales
-                supportedLocales: const [
-                  Locale('en'), // English
-                  Locale('fr'), // French
-                  Locale('ar'), // Arabic
-                ],
-                
-                // Current locale
-                locale: languageState.locale,
-                
-                // Locale resolution callback
-                localeResolutionCallback: (locale, supportedLocales) {
-                  // Check if the current device locale is supported
-                  for (var supportedLocale in supportedLocales) {
-                    if (supportedLocale.languageCode == locale?.languageCode) {
-                      return supportedLocale;
-                    }
-                  }
-                  // If not supported, return English as default
-                  return supportedLocales.last;
+      child: BlocBuilder<AuthCubit, dynamic>(
+        builder: (context, authState) {
+          // When user logs in, set user context for other cubits
+          if (authState.user != null) {
+            final userId = authState.user.id;
+            
+            // Set user for cubits that need it
+            Future.microtask(() {
+              try {
+                context.read<CardCubit>().setUser(userId);
+                context.read<ProfileCardCubit>().setUser(userId);
+                context.read<ThemeCubit>().setUser(userId);
+                context.read<LanguageCubit>().setUser(userId);
+              } catch (e) {
+                debugPrint('Error setting user context: $e');
+              }
+            });
+          }
+
+          return BlocBuilder<ThemeCubit, ThemeState>(
+            builder: (context, themeState) {
+              return BlocBuilder<LanguageCubit, LanguageState>(
+                builder: (context, languageState) {
+                  return MaterialApp(
+                    title: 'Cardly',
+                    debugShowCheckedModeBanner: false,
+                    
+                    // Localization delegates
+                    localizationsDelegates: const [
+                      AppLocalizations.delegate,
+                      GlobalMaterialLocalizations.delegate,
+                      GlobalWidgetsLocalizations.delegate,
+                      GlobalCupertinoLocalizations.delegate,
+                    ],
+                    
+                    // Supported locales
+                    supportedLocales: const [
+                      Locale('en'), // English
+                      Locale('fr'), // French
+                      Locale('ar'), // Arabic
+                    ],
+                    
+                    // Current locale
+                    locale: languageState.locale,
+                    
+                    // Locale resolution callback
+                    localeResolutionCallback: (locale, supportedLocales) {
+                      for (var supportedLocale in supportedLocales) {
+                        if (supportedLocale.languageCode == locale?.languageCode) {
+                          return supportedLocale;
+                        }
+                      }
+                      return supportedLocales.first;
+                    },
+                    
+                    theme: AppTheme.lightTheme,
+                    darkTheme: AppTheme.darkTheme,
+                    themeMode: themeState.themeMode,
+                    initialRoute: AppRoutes.splash,
+                    onGenerateRoute: RouteGenerator.generateRoute,
+                  );
                 },
-                
-                theme: AppTheme.lightTheme,
-                darkTheme: AppTheme.darkTheme,
-                themeMode: themeState.themeMode,
-                initialRoute: AppRoutes.splash,
-                onGenerateRoute: RouteGenerator.generateRoute,
               );
             },
           );
         },
       ),
     );
+  }
+
+  /// Restore auth token from secure storage if exists
+  Future<void> _restoreAuthToken(ApiClient apiClient, TokenStorageService tokenStorage) async {
+    try {
+      final token = await tokenStorage.getToken();
+      if (token != null && token.isNotEmpty) {
+        apiClient.setToken(token);
+        debugPrint('✅ Restored auth token');
+      }
+    } catch (e) {
+      debugPrint('Error restoring token: $e');
+    }
   }
 }

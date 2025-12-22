@@ -159,6 +159,22 @@ class User extends Equatable {
     );
   }
 
+  /// Create User from JSON (for API responses)
+  factory User.fromJson(Map<String, dynamic> json) {
+    final preferences = json['preferences'] as Map<String, dynamic>?;
+    
+    return User(
+      id: json['_id'] as String, // Backend uses _id
+      fullName: json['fullName'] as String,
+      email: json['email'] as String,
+      passwordHash: '', // Password not returned from backend
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      themeMode: preferences?['themeMode'] as String? ?? 'system',
+      language: preferences?['language'] as String? ?? 'en',
+    );
+  }
+
   @override
   List<Object?> get props => [
     id, fullName, email, passwordHash, createdAt, updatedAt, themeMode, language,

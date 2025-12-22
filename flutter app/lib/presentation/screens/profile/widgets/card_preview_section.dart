@@ -7,7 +7,6 @@ import 'package:cardly/presentation/screens/profile/widgets/section_label.dart';
 // import 'package:cardly/src/generated/l10n/app_localizations.dart';
 import '../../../../l10n/app_localizations.dart';
 
-
 /// Widget that displays the business card preview with flip functionality
 class CardPreviewSection extends StatelessWidget {
   final String name;
@@ -22,6 +21,7 @@ class CardPreviewSection extends StatelessWidget {
   final CardBackground background;
   final Color textColor;
   final VoidCallback onCardTap;
+  final String? shareableId;
 
   const CardPreviewSection({
     super.key,
@@ -37,12 +37,13 @@ class CardPreviewSection extends StatelessWidget {
     required this.background,
     required this.textColor,
     required this.onCardTap,
+    this.shareableId,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -82,6 +83,37 @@ class CardPreviewSection extends StatelessWidget {
             ),
           ),
         ),
+
+        if (shareableId != null && shareableId!.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.sm),
+          Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.xs,
+              ),
+              decoration: BoxDecoration(
+                color: Theme.of(context)
+                    .colorScheme
+                    .primaryContainer
+                    .withOpacity(0.3),
+                borderRadius: BorderRadius.circular(AppSpacing.sm),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                ),
+              ),
+              child: SelectableText(
+                // Make it copyable
+                'ID: $shareableId',
+                style: AppTextStyles.body(context).copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }

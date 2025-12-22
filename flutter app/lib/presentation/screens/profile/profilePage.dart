@@ -22,6 +22,7 @@ import './widgets/LanguageSection_widget.dart';
 // import 'package:cardly/src/generated/l10n/app_localizations.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../routes/routes.dart';
+import '../qr/show_qr_code_screen.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -125,6 +126,26 @@ class _ProfilePageState extends State<ProfilePage>
         ),
         centerTitle: true,
         actions: [
+          IconButton(
+            tooltip: 'Share Card',
+            onPressed: () {
+              // Ensure we have current card info
+              final currentCard = _cardInfo;
+              
+              if (currentCard.shareableId != null && currentCard.shareableId!.isNotEmpty) {
+                 Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => ShowQrCodeScreen(card: currentCard),
+                    ),
+                 );
+              } else {
+                 ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Card not saved or ID missing. Please save first.")),
+                 );
+              }
+            },
+            icon: Icon(Icons.share, color: Theme.of(context).colorScheme.onBackground),
+          ),
           IconButton(
             tooltip: 'Log out',
             onPressed: () async {
@@ -286,6 +307,7 @@ class _ProfilePageState extends State<ProfilePage>
                     background: displayBackground,
                     textColor: displayFontColor,
                     onCardTap: _flipCard,
+                    shareableId: card.shareableId,
                   ),
 
                 const SizedBox(height: AppSpacing.xl),

@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/models/card_info.dart';
 import '../../theme/spacing.dart';
+import '../../../logic/cubits/card/card_cubit.dart';
 
 class ScanQrScreen extends StatefulWidget {
   const ScanQrScreen({super.key});
@@ -37,27 +39,61 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
     });
 
     try {
-      // Parse JSON
-      final decodedMap = jsonDecode(rawValue) as Map<String, dynamic>;
-      
-      // Convert to CardInfo
-      final card = CardInfo.fromJson(decodedMap);
-      
-      // Return the card
-      if (mounted) {
-        Navigator.pop(context, card);
+      // Check if it's a JSON (legacy or offline) or a simple ID string
+      if (rawValue.trim().startsWith('{')) {
+        // Handle as JSON (fallback)
+        try {
+           final decodedMap = jsonDecode(rawValue) as Map<String, dynamic>;
+           final card = CardInfo.fromJson(decodedMap);
+           if (mounted) {
+             Navigator.pop(context, card); 
+           }
+        } catch (e) {
+          throw Exception('Invalid card data format');
+        }
+      } else {
+        // Assume it's a shareable ID - Collect via API
+        if (mounted) {
+          // Use the cubit to collect properly
+          await context.read<CardCubit>().collectCardByShareableId(rawValue);
+          
+          if (mounted) {
+             ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Card collected successfully!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            // Return null or true to indicate handled
+            Navigator.pop(context, true);
+          }
+        }
       }
     } catch (e) {
       if (mounted) {
+        String errorMessage = 'Error scanning: ${e.toString()}';
+        
+        // Improve error message if it's from our API Exceptions
+        if (e.toString().contains('Card not found')) {
+          errorMessage = 'Card not found with this ID';
+        } else if (e.toString().contains('already collected')) {
+          errorMessage = 'You have already collected this card';
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Invalid QR code: ${e.toString()}'),
+            content: Text(errorMessage),
             backgroundColor: Colors.red,
           ),
         );
-        setState(() {
-          _isProcessing = false;
-        });
+        
+        // Wait a bit before processing again to avoid rapid-fire errors
+        await Future.delayed(const Duration(seconds: 2));
+        if (mounted) {
+          setState(() {
+            _isProcessing = false;
+          });
+        }
       }
     }
   }

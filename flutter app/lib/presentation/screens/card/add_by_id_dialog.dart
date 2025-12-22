@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/models/card_info.dart';
 import '../../../logic/cubits/card/card_cubit.dart';
+import '../../../logic/cubits/profile_card/profile_card_cubit.dart';
 import '../../theme/spacing.dart';
 
 class AddByIdDialog extends StatefulWidget {
@@ -33,14 +34,6 @@ class _AddByIdDialogState extends State<AddByIdDialog> {
       return;
     }
 
-    final id = int.tryParse(idText);
-    if (id == null) {
-      setState(() {
-        _errorMessage = 'Invalid card ID. Please enter a number';
-      });
-      return;
-    }
-
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -48,13 +41,14 @@ class _AddByIdDialogState extends State<AddByIdDialog> {
     });
 
     try {
-      // Fetch card globally using cubit
-      final card = await context.read<CardCubit>().fetchCardByIdGlobal(id);
+      // Use ProfileCardCubit to preview the public profile card
+      // We are "searching" for a card by shareable ID
+      final card = await context.read<ProfileCardCubit>().getCardByShareableId(idText);
 
       if (card == null) {
         if (mounted) {
           setState(() {
-            _errorMessage = 'Card not found with ID: $id';
+            _errorMessage = 'Card not found with ID: $idText';
             _isLoading = false;
           });
         }
@@ -78,11 +72,16 @@ class _AddByIdDialogState extends State<AddByIdDialog> {
   }
 
   Future<void> _addCard() async {
-    if (_previewCard == null) return;
+    final idText = _idController.text.trim();
+    if (idText.isEmpty) return;
+
+    setState(() {
+      _isLoading = true;
+    });
 
     try {
-      // Add the card to current user's collection (creates a copy)
-      await context.read<CardCubit>().addCard(_previewCard!);
+      // Collect the card using its shareable ID
+      await context.read<CardCubit>().collectCardByShareableId(idText);
       
       if (mounted) {
         Navigator.of(context).pop(true);
@@ -91,6 +90,7 @@ class _AddByIdDialogState extends State<AddByIdDialog> {
       if (mounted) {
         setState(() {
           _errorMessage = 'Error adding card: ${e.toString()}';
+          _isLoading = false;
         });
       }
     }
@@ -132,9 +132,9 @@ class _AddByIdDialogState extends State<AddByIdDialog> {
             TextField(
               controller: _idController,
               decoration: InputDecoration(
-                labelText: 'Card ID',
+                labelText: 'Shareable ID',
                 hintText: 'Enter card ID',
-                prefixIcon: const Icon(Icons.numbers),
+                prefixIcon: const Icon(Icons.qr_code),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -143,8 +143,8 @@ class _AddByIdDialogState extends State<AddByIdDialog> {
                   onPressed: _fetchCard,
                 ),
               ),
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              // Changed to text for shareable IDs (alphanumeric strings)
+              keyboardType: TextInputType.text,
               onSubmitted: (_) => _fetchCard(),
             ),
 
@@ -288,4 +288,3 @@ class _InfoItem extends StatelessWidget {
     );
   }
 }
-
