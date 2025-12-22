@@ -118,7 +118,8 @@ class CardRepository {
     const cards = await Card.find(query)
       .sort({ collectedAt: -1, createdAt: -1 })
       .skip(offset)
-      .limit(limit);
+      .limit(limit)
+      .populate('sourceCardId', 'shareableId'); // Populate shareableId from source card
 
     return cards;
   }
@@ -184,7 +185,7 @@ class CardRepository {
       ownerId: userId,
       isProfileCard: false,
       isActive: true,
-    });
+    }).populate('sourceCardId', 'shareableId');
   }
 
   /**

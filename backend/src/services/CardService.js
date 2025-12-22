@@ -78,7 +78,18 @@ class CardService {
     const total = await CardRepository.countCollectedCards(userId, filters);
 
     return {
-      cards: cards.map(c => c.toObject()),
+      cards: cards.map(c => {
+        const obj = c.toObject();
+        // If this collected card has a source card with shareableId, use it
+        if (c.sourceCardId && c.sourceCardId.shareableId) {
+          obj.shareableId = c.sourceCardId.shareableId;
+        }
+        // Flatten sourceCardId back to string if it's an object (due to populate)
+        if (obj.sourceCardId && typeof obj.sourceCardId === 'object') {
+           obj.sourceCardId = obj.sourceCardId._id.toString();
+        }
+        return obj;
+      }),
       pagination: {
         total,
         limit: filters.limit || 50,
@@ -100,7 +111,15 @@ class CardService {
       throw new Error('Card not found');
     }
 
-    return card.toObject();
+    const obj = card.toObject();
+    if (card.sourceCardId && card.sourceCardId.shareableId) {
+      obj.shareableId = card.sourceCardId.shareableId;
+    }
+    // Flatten sourceCardId back to string if it's an object
+    if (obj.sourceCardId && typeof obj.sourceCardId === 'object') {
+       obj.sourceCardId = obj.sourceCardId._id.toString();
+    }
+    return obj;
   }
 
   /**
