@@ -53,67 +53,34 @@ class CardPreviewSection extends StatelessWidget {
 
         // Business Card with Flip Animation
         Center(
-          child: GestureDetector(
-            onTap: onCardTap,
-            child: BusinessCard(
-              name: name,
-              // logoText: logoText,
-              organization: organization,
-              jobTitle: jobTitle,
-              email: email,
-              phone: phone,
-              location: location,
-              about: about,
-              website: website,
-              background: background,
-              textColor: textColor,
-            ),
+          child: BusinessCard(
+            name: name,
+            // logoText: logoText,
+            organization: organization,
+            jobTitle: jobTitle,
+            email: email,
+            phone: phone,
+            location: location,
+            about: about,
+            website: website,
+            background: background,
+            textColor: textColor,
+            enableSwipeFlip: true,
           ),
         ),
 
         const SizedBox(height: AppSpacing.sm),
 
-        // "tap to flip" text
+        // "swipe to flip" text
         Center(
           child: Text(
-            l10n.tapToFlip,
+            l10n.swipeToFlip,
             style: AppTextStyles.caption(context).copyWith(
               color: Theme.of(context).colorScheme.onBackground,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
-
-        if (shareableId != null && shareableId!.isNotEmpty) ...[
-          const SizedBox(height: AppSpacing.sm),
-          Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: AppSpacing.xs,
-              ),
-              decoration: BoxDecoration(
-                color: Theme.of(context)
-                    .colorScheme
-                    .primaryContainer
-                    .withOpacity(0.3),
-                borderRadius: BorderRadius.circular(AppSpacing.sm),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
-                ),
-              ),
-              child: SelectableText(
-                // Make it copyable
-                'ID: $shareableId',
-                style: AppTextStyles.body(context).copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
-                  letterSpacing: 1.2,
-                ),
-              ),
-            ),
-          ),
-        ],
       ],
     );
   }

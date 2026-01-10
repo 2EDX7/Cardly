@@ -2,7 +2,9 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 import '../../../data/models/user.dart';
 import '../../../data/repositories/user_repository.dart';
+import '../../../data/repositories/api_user_repository.dart';
 import '../../../data/api/api_exception.dart';
+import '../../../data/services/notification_service.dart';
 import 'auth_state.dart';
 
 class AuthCubit extends HydratedCubit<AuthState> {
@@ -65,14 +67,17 @@ class AuthCubit extends HydratedCubit<AuthState> {
         email: email,
         passwordHash: password, // Backend verifies plain password
       );
-      
+
       if (user == null) {
         emit(AuthState.error('Invalid email or password'));
         emit(AuthState.unauthenticated());
         return;
       }
-      
+
       emit(AuthState.authenticated(user));
+
+      // Register FCM token after successful login
+      _registerFCMToken();
     } on UnauthorizedException catch (e) {
       emit(AuthState.error(e.message));
       emit(AuthState.unauthenticated());
@@ -86,19 +91,81 @@ class AuthCubit extends HydratedCubit<AuthState> {
     }
   }
 
-  Future<void> logout() async {
-    // Clear token from storage (handled by repository)
-    // If using ApiUserRepository, call logout method
+  /// Register FCM token with backend
+  Future<void> _registerFCMToken() async {
     try {
-      // Type check to call logout if it's ApiUserRepository
-      if (_repository is dynamic && 
-          _repository.runtimeType.toString().contains('ApiUserRepository')) {
-        await (_repository as dynamic).logout();
+      print('🔔 Attempting to register FCM token...');
+
+      // Check if repository supports FCM token registration
+      if (_repository is! ApiUserRepository) {
+        print('⚠️ Repository does not support FCM token registration');
+        return;
+      }
+
+      final apiRepo = _repository as ApiUserRepository;
+
+      await NotificationService().registerToken((token) async {
+        print('📱 Got FCM token: $token');
+        await apiRepo.registerFCMToken(token);
+        print('✅ FCM token registered successfully');
+      });
+    } catch (e) {
+      // Don't fail login if token registration fails
+      print('⚠️ Failed to register FCM token: $e');
+    }
+  }
+
+  Future<void> logout() async {
+    try {
+      // Remove FCM token before logout
+      if (_repository is ApiUserRepository) {
+        print('🔔 Removing FCM token...');
+        final apiRepo = _repository as ApiUserRepository;
+        await NotificationService().registerToken((token) async {
+          await apiRepo.removeFCMToken(token);
+          print('✅ FCM token removed');
+        });
       }
     } catch (e) {
-      // Ignore logout errors
+      print('⚠️ Failed to remove FCM token: $e');
     }
+
     emit(AuthState.unauthenticated());
+  }
+
+  /// Update notification preference
+  Future<void> updateNotificationPreference(bool receiveNotifications) async {
+    final currentState = state;
+    if (currentState.status != AuthStatus.authenticated ||
+        currentState.user == null) return;
+
+    try {
+      // Update locally first
+      final updatedUser = currentState.user!.copyWith(
+        receiveNotifications: receiveNotifications,
+      );
+      emit(AuthState.authenticated(updatedUser));
+
+      // Update in local database
+      await _repository.updatePreferences(
+        receiveNotifications: receiveNotifications,
+      );
+
+      // Update in backend if using API repository
+      if (_repository is ApiUserRepository) {
+        final apiRepo = _repository as ApiUserRepository;
+        await apiRepo.updatePreferences(
+          receiveNotifications: receiveNotifications,
+        );
+        print('✅ Notification preference updated in backend');
+      }
+
+      print('✅ Notification preference updated: $receiveNotifications');
+    } catch (e) {
+      print('⚠️ Failed to update notification preference: $e');
+      // Revert on error
+      emit(currentState);
+    }
   }
 
   /// Reset to guest/unauthenticated state

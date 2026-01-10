@@ -91,12 +91,13 @@ class ApiCardRepository implements CardRepository {
   }
 
   @override
-  Future<List<CardInfo>> searchCards(String query, {required String userId}) async {
+  Future<List<CardInfo>> searchCards(String query,
+      {required String userId}) async {
     final response = await apiClient.get(
       Endpoints.cards,
       queryParameters: {'search': query},
     );
-    
+
     final cards = (response['data']['cards'] as List)
         .map((json) => CardInfoApiHelper.fromJson(json))
         .toList();
@@ -112,7 +113,7 @@ class ApiCardRepository implements CardRepository {
       Endpoints.cards,
       queryParameters: {'category': category},
     );
-    
+
     final cards = (response['data']['cards'] as List)
         .map((json) => CardInfoApiHelper.fromJson(json))
         .toList();

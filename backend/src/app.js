@@ -44,10 +44,16 @@ app.get('/api', (req, res) => {
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const cardRoutes = require('./routes/card.routes');
+const notificationController = require('./controllers/notificationController');
+const { authenticate } = require('./middleware/auth.middleware');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api', cardRoutes); // Profile card and cards routes
+
+// Notification routes
+app.post('/api/notifications/register-token', authenticate, notificationController.registerToken);
+app.post('/api/notifications/remove-token', authenticate, notificationController.removeToken);
 
 
 // 404 handler - must be after all routes

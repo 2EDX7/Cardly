@@ -1,5 +1,7 @@
 const CardRepository = require('../repositories/CardRepository');
 const { generateUniqueShareableId } = require('../utils/idGenerator.util');
+const { sendNotificationToUser } = require('./fcmService');
+const User = require('../models/User');
 
 /**
  * Service layer for card business logic
@@ -195,6 +197,31 @@ class CardService {
     };
 
     const collectedCard = await CardRepository.addCollectedCard(userId, collectedCardData);
+    
+    // Send notification to card owner
+    try {
+      const collector = await User.findById(userId).select('fullName');
+      const cardOwner = sourceCard.ownerId;
+      
+      await sendNotificationToUser(
+        cardOwner,
+        {
+          title: '🎉 Card Collected!',
+          body: `Your card was saved by ${collector?.fullName || 'Someone'}`,
+        },
+        {
+          type: 'card_collected',
+          cardId: collectedCard._id.toString(),
+          collectorName: collector?.fullName || 'Unknown',
+          collectorId: userId.toString(),
+        }
+      );
+      
+      console.log(`✅ Notification sent to card owner ${cardOwner}`);
+    } catch (notifError) {
+      // Don't fail the whole operation if notification fails
+      console.error('❌ Failed to send notification:', notifError.message);
+    }
     
     return collectedCard.toObject();
   }

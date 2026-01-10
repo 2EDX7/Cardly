@@ -37,12 +37,20 @@ class SQLiteCardRepository implements CardRepository {
   }
 
   @override
-  Future<List<CardInfo>> searchCards(String query, {required String userId}) async {
+  Future<List<CardInfo>> searchCards(String query,
+      {required String userId}) async {
     return await _dbHelper.searchCards(query, userId: userId);
   }
 
   @override
-  Future<List<CardInfo>> getCardsByCategory(String category, {required String userId}) async {
+  Future<List<CardInfo>> getCardsByCategory(String category,
+      {required String userId}) async {
     return await _dbHelper.getCardsByCategory(category, userId: userId);
+  }
+
+  /// Get cards that need to be synced with backend
+  Future<List<CardInfo>> getCardsNeedingSync({required String userId}) async {
+    final allCards = await getAllCards(userId: userId);
+    return allCards.where((card) => card.needsSync).toList();
   }
 }

@@ -39,6 +39,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get close => 'Fermer';
 
   @override
+  String get call => 'Appeler';
+
+  @override
+  String get email => 'Email';
+
+  @override
   String get yes => 'Oui';
 
   @override
@@ -461,6 +467,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get tapToFlip => 'appuyez pour retourner';
 
   @override
+  String get swipeToFlip => 'glissez pour retourner';
+
+  @override
   String get changeFontColor => 'CHANGER LA COULEUR DE LA POLICE';
 
   @override
@@ -544,9 +553,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get name => 'Nom';
 
   @override
-  String get email => 'Email';
-
-  @override
   String get organization => 'Organisation';
 
   @override
@@ -559,22 +565,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get yourTitle => 'Votre titre';
 
   @override
-  String get yourName => 'Your Name';
+  String get yourName => 'Votre nom';
 
   @override
-  String get yourCompany => 'Your Company';
+  String get yourCompany => 'Votre entreprise';
 
   @override
-  String get yourEmail => 'your.email@example.com';
+  String get yourEmail => 'votre.email@exemple.com';
 
   @override
   String get yourPhone => '0000000000';
 
   @override
-  String get yourLocation => 'Your Location';
+  String get yourLocation => 'Votre emplacement';
 
   @override
-  String get exampleWebsite => 'www.example.com';
+  String get exampleWebsite => 'www.exemple.com';
 
   @override
   String get customBackgroundPicker =>
@@ -602,6 +608,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get useSystemTheme => 'Utiliser le thème du système';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get receiveNotifications => 'Recevoir des notifications';
+
+  @override
+  String get receiveNotificationsDesc =>
+      'Soyez informé lorsque quelqu\'un collecte votre carte';
 
   @override
   String get personalInformation => 'INFORMATIONS PERSONNELLES';

@@ -160,6 +160,18 @@ abstract class AppLocalizations {
   /// **'Close'**
   String get close;
 
+  /// No description provided for @call.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get call;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
   /// No description provided for @yes.
   ///
   /// In en, this message translates to:
@@ -964,6 +976,12 @@ abstract class AppLocalizations {
   /// **'tap to flip'**
   String get tapToFlip;
 
+  /// No description provided for @swipeToFlip.
+  ///
+  /// In en, this message translates to:
+  /// **'swipe to flip'**
+  String get swipeToFlip;
+
   /// No description provided for @changeFontColor.
   ///
   /// In en, this message translates to:
@@ -1114,12 +1132,6 @@ abstract class AppLocalizations {
   /// **'Name'**
   String get name;
 
-  /// No description provided for @email.
-  ///
-  /// In en, this message translates to:
-  /// **'Email'**
-  String get email;
-
   /// No description provided for @organization.
   ///
   /// In en, this message translates to:
@@ -1227,6 +1239,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Use System Theme'**
   String get useSystemTheme;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @receiveNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive Notifications'**
+  String get receiveNotifications;
+
+  /// No description provided for @receiveNotificationsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Get notified when someone collects your card'**
+  String get receiveNotificationsDesc;
 
   /// No description provided for @personalInformation.
   ///

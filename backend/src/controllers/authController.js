@@ -82,11 +82,12 @@ async function getCurrentUser(req, res) {
 async function updatePreferences(req, res) {
   try {
     const userId = req.user.userId;
-    const { themeMode, language } = req.body;
+    const { themeMode, language, receiveNotifications } = req.body;
 
     const preferences = {};
     if (themeMode) preferences.themeMode = themeMode;
     if (language) preferences.language = language;
+    if (receiveNotifications !== undefined) preferences.receiveNotifications = receiveNotifications;
 
     const user = await AuthService.updatePreferences(userId, preferences);
 

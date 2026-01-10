@@ -20,10 +20,12 @@ class Endpoints {
   static const String preferences = '$users/preferences';
 
   // Profile card endpoints
-  static String shareCard(String shareableId) => '$profileCard/share/$shareableId';
+  static String shareCard(String shareableId) =>
+      '$profileCard/share/$shareableId';
 
   // Card endpoints
   static const String cardStats = '$cards/stats';
   static String card(String cardId) => '$cards/$cardId';
-  static String collectCard(String shareableId) => '$cards/collect/$shareableId';
+  static String collectCard(String shareableId) =>
+      '$cards/collect/$shareableId';
 }

@@ -39,6 +39,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get close => 'إغلاق';
 
   @override
+  String get call => 'اتصال';
+
+  @override
+  String get email => 'البريد الإلكتروني';
+
+  @override
   String get yes => 'نعم';
 
   @override
@@ -459,6 +465,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tapToFlip => 'اضغط لتقليب';
 
   @override
+  String get swipeToFlip => 'اسحب لتقليب';
+
+  @override
   String get changeFontColor => 'تغيير لون الخط';
 
   @override
@@ -541,9 +550,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get name => 'الاسم';
 
   @override
-  String get email => 'البريد الإلكتروني';
-
-  @override
   String get organization => 'المنظمة';
 
   @override
@@ -556,22 +562,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get yourTitle => 'مسماك الوظيفي';
 
   @override
-  String get yourName => 'Your Name';
+  String get yourName => 'اسمك';
 
   @override
-  String get yourCompany => 'Your Company';
+  String get yourCompany => 'شركتك';
 
   @override
-  String get yourEmail => 'your.email@example.com';
+  String get yourEmail => 'بريدك.الإلكتروني@مثال.com';
 
   @override
   String get yourPhone => '0000000000';
 
   @override
-  String get yourLocation => 'Your Location';
+  String get yourLocation => 'موقعك';
 
   @override
-  String get exampleWebsite => 'www.example.com';
+  String get exampleWebsite => 'www.مثال.com';
 
   @override
   String get customBackgroundPicker => 'منتقي الخلفية المخصص - سيتم تنفيذه';
@@ -598,6 +604,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get useSystemTheme => 'استخدم سمة النظام';
+
+  @override
+  String get notifications => 'الإشعارات';
+
+  @override
+  String get receiveNotifications => 'تلقي الإشعارات';
+
+  @override
+  String get receiveNotificationsDesc =>
+      'احصل على إشعار عندما يجمع شخص ما بطاقتك';
 
   @override
   String get personalInformation => 'المعلومات الشخصية';

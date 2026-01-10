@@ -95,12 +95,15 @@ class ApiUserRepository implements UserRepository {
   Future<User> updatePreferences({
     String? themeMode,
     String? language,
+    bool? receiveNotifications,
   }) async {
     final response = await apiClient.patch(
       Endpoints.preferences,
       body: {
         if (themeMode != null) 'themeMode': themeMode,
         if (language != null) 'language': language,
+        if (receiveNotifications != null)
+          'receiveNotifications': receiveNotifications,
       },
     );
 
@@ -126,5 +129,30 @@ class ApiUserRepository implements UserRepository {
   Future<void> logout() async {
     await tokenStorage.clearAll();
     apiClient.clearToken();
+  }
+
+  /// Register FCM token with backend
+  Future<void> registerFCMToken(String token) async {
+    try {
+      await apiClient.post(
+        '/notifications/register-token',
+        body: {'token': token},
+      );
+    } catch (e) {
+      print('⚠️ Failed to register FCM token with backend: $e');
+      rethrow;
+    }
+  }
+
+  /// Remove FCM token from backend (on logout)
+  Future<void> removeFCMToken(String token) async {
+    try {
+      await apiClient.post(
+        '/notifications/remove-token',
+        body: {'token': token},
+      );
+    } catch (e) {
+      print('⚠️ Failed to remove FCM token from backend: $e');
+    }
   }
 }

@@ -62,7 +62,8 @@ class CardInfoApiHelper {
       'website': card.website,
       if (card.logoText != null) 'logoText': card.logoText,
       if (card.category != null) 'category': card.category,
-      if (card.background != null) 'background': card.background!.getBackgroundName(),
+      if (card.background != null)
+        'background': card.background!.getBackgroundName(),
       if (card.fontColor != null)
         'fontColor':
             '#${(card.fontColor!.value & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}',
@@ -85,20 +86,21 @@ class CardInfoApiHelper {
       if (value == 'purple') return CardBackground.purple;
       if (value == 'blue') return CardBackground.blue;
       if (value == 'goldSilver') return CardBackground.goldSilver;
-      
+
       // Gradient matching
       if (value == 'defaultGradient') return CardBackground.defaultGradient;
       if (value == 'purpleBlue') return CardBackground.purpleBlue;
       if (value == 'orangePink') return CardBackground.orangePink;
       if (value == 'greenBlue') return CardBackground.greenBlue;
       if (value == 'sunset') return CardBackground.sunset;
-      
+
       // Color matching
       if (value == 'primarySolid') return CardBackground.primarySolid;
       if (value == 'secondarySolid') return CardBackground.secondarySolid;
       if (value == 'darkSolid') return CardBackground.darkSolid;
       if (value == 'blueSolid') return CardBackground.blueSolid;
-      
+      if (value == 'blackSolid') return CardBackground.blackSolid;
+
       return CardBackground.defaultGradient;
     }
     return value as CardBackground?;
