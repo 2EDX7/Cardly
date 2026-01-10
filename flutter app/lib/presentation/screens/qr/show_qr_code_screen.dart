@@ -15,9 +15,10 @@ class ShowQrCodeScreen extends StatelessWidget {
     // Use shareableId for QR code if available, otherwise fallback (though should always have one from backend)
     // For manual creation (offline), backendId might be null.
     // Ideally we rely on shareableId.
-    final qrData = card.shareableId ?? card.backendId ?? jsonEncode(card.toJson());
+    final qrData =
+        card.shareableId ?? card.backendId ?? jsonEncode(card.toJson());
     final isShareableId = card.shareableId != null;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Share Your Card'),
@@ -62,8 +63,8 @@ class ShowQrCodeScreen extends StatelessWidget {
                       Text(
                         'Scan to collect',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey,
-                        ),
+                              color: Colors.grey,
+                            ),
                       ),
                     ],
                   ],
@@ -85,48 +86,58 @@ class ShowQrCodeScreen extends StatelessWidget {
               ),
               if (card.shareableId != null) ...[
                 const SizedBox(height: AppSpacing.lg),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
-                    vertical: AppSpacing.sm,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.share,
-                        size: 20,
-                        color: Theme.of(context).colorScheme.onSecondaryContainer,
+                InkWell(
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: card.shareableId!));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Shareable ID copied to clipboard'),
+                        duration: Duration(seconds: 2),
+                        backgroundColor: Colors.green,
                       ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Text(
-                        'ID: ${card.shareableId}',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.onSecondaryContainer,
-                            ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      IconButton(
-                        icon: const Icon(Icons.copy, size: 18),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        tooltip: 'Copy ID',
-                        onPressed: () {
-                          Clipboard.setData(ClipboardData(text: card.shareableId!));
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Shareable ID copied to clipboard'),
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.share,
+                          size: 20,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSecondaryContainer,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Text(
+                          'ID: ${card.shareableId}',
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSecondaryContainer,
+                                  ),
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Icon(
+                          Icons.copy,
+                          size: 18,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSecondaryContainer,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

@@ -754,55 +754,60 @@ class _HomePageState extends State<HomePage> {
           category: category,
           cards: cards,
           isExpanded: isExpanded,
+          l10n: l10n,
           onToggle: () {
             setState(() {
               _expandedCategories[category] = !isExpanded;
             });
           },
-          onDeleteCard: (cardId) {
-            final cardToDelete = cards.firstWhere((c) => c.id == cardId);
-            showDialog(
-              context: context,
-              builder: (BuildContext dialogContext) {
-                return AlertDialog(
-                  title: Text(l10n.deleteCard),
-                  content: Text(l10n.areYouSureDeleteCard(cardToDelete.name)),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(dialogContext).pop(),
-                      child: Text(l10n.cancel),
+          onDeleteConfirmed: (card) {
+            // Remove from UI immediately
+            final cardIdKey =
+                card.backendId ?? card.id?.toString() ?? card.email;
+            context.read<CardCubit>().removeCardFromState(cardIdKey);
+
+            final undoNotifier = ValueNotifier<bool>(false);
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+            // Show snackbar like the add card snackbars - auto dismisses
+            final snackBar = SnackBar(
+              content: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(l10n.cardDeleted(card.name)),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      undoNotifier.value = true;
+                      context.read<CardCubit>().addCardToState(card);
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    },
+                    child: Text(
+                      l10n.undo,
+                      style: const TextStyle(color: Colors.white),
                     ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(dialogContext).pop();
-                        if (cardToDelete.id != null) {
-                          context
-                              .read<CardCubit>()
-                              .deleteCard(cardToDelete.id!);
-                        }
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(l10n.cardDeleted(cardToDelete.name)),
-                            action: SnackBarAction(
-                              label: l10n.undo,
-                              onPressed: () {
-                                context.read<CardCubit>().addCard(cardToDelete);
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
-                      ),
-                      child: Text(l10n.delete),
-                    ),
-                  ],
-                );
-              },
+                  ),
+                ],
+              ),
+              backgroundColor: Colors.red,
             );
+
+            final snackBarController =
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+            snackBarController.closed.then((_) {
+              if (!undoNotifier.value) {
+                final backendId = card.backendId;
+                final id = card.id;
+                if (backendId != null && backendId.isNotEmpty) {
+                  context.read<CardCubit>().deleteCardByBackendId(backendId);
+                } else if (id != null) {
+                  context.read<CardCubit>().deleteCard(id);
+                }
+              }
+            });
           },
-          onCardTap: (card) => _openCardDetails(card),
         );
       },
     );

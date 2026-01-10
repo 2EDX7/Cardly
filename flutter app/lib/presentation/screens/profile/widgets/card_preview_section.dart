@@ -83,37 +83,6 @@ class CardPreviewSection extends StatelessWidget {
             ),
           ),
         ),
-
-        if (shareableId != null && shareableId!.isNotEmpty) ...[
-          const SizedBox(height: AppSpacing.sm),
-          Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: AppSpacing.xs,
-              ),
-              decoration: BoxDecoration(
-                color: Theme.of(context)
-                    .colorScheme
-                    .primaryContainer
-                    .withOpacity(0.3),
-                borderRadius: BorderRadius.circular(AppSpacing.sm),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
-                ),
-              ),
-              child: SelectableText(
-                // Make it copyable
-                'ID: $shareableId',
-                style: AppTextStyles.body(context).copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
-                  letterSpacing: 1.2,
-                ),
-              ),
-            ),
-          ),
-        ],
       ],
     );
   }
