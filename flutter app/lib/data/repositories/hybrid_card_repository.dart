@@ -25,17 +25,39 @@ class HybridCardRepository implements CardRepository {
 
   @override
   Future<List<CardInfo>> getAllCards({required String userId}) async {
-    // Always read from local for fast access
-    final localCards = await _localRepo.getAllCards(userId: userId);
+    // If online, fetch from API and save to local
+    if (_connectivityService.isConnected) {
+      try {
+        final apiCards = await _apiRepo.getAllCards(userId: userId);
 
-    // Trigger background sync if online
-    if (_connectivityService.isConnected && !_syncService.isSyncing) {
-      _syncService.syncAll(userId: userId).catchError((e) {
-        debugPrint('Background sync failed: $e');
-      });
+        // Save all API cards to local database
+        for (final card in apiCards) {
+          final existingCard =
+              await _localRepo.getCardById(card.id ?? 0, userId: userId);
+          if (existingCard == null) {
+            await _localRepo.addCard(card, userId: userId);
+          } else {
+            await _localRepo.updateCard(card, userId: userId);
+          }
+        }
+
+        debugPrint('✅ Saved ${apiCards.length} cards to local database');
+
+        // Trigger background sync for any pending local changes
+        if (!_syncService.isSyncing) {
+          _syncService.syncAll(userId: userId).catchError((e) {
+            debugPrint('Background sync failed: $e');
+          });
+        }
+
+        return apiCards;
+      } catch (e) {
+        debugPrint('⚠️ Failed to fetch from API, using local data: $e');
+      }
     }
 
-    return localCards;
+    // Fallback to local data (offline or API failed)
+    return await _localRepo.getAllCards(userId: userId);
   }
 
   @override
@@ -84,11 +106,9 @@ class HybridCardRepository implements CardRepository {
 
   @override
   Future<void> updateCard(CardInfo card, {required String userId}) async {
-    // Update locally immediately
-    await _localRepo.updateCard(card, userId: userId);
-
-    // Mark as needing sync
+    // Mark as needing sync and update locally immediately
     card.needsSync = true;
+    card.lastSyncedAt = DateTime.now();
     await _localRepo.updateCard(card, userId: userId);
 
     // Try to sync with backend if online
@@ -98,10 +118,14 @@ class HybridCardRepository implements CardRepository {
         card.needsSync = false;
         card.lastSyncedAt = DateTime.now();
         await _localRepo.updateCard(card, userId: userId);
+        debugPrint('✅ Card update synced to backend');
       } catch (e) {
         debugPrint(
             '⚠️ Failed to sync card update to backend, will retry later: $e');
       }
+    } else {
+      debugPrint(
+          '📴 Offline: Card update saved locally, will sync when online');
     }
   }
 

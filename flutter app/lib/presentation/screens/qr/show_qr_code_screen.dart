@@ -57,6 +57,14 @@ class ShowQrCodeScreen extends StatelessWidget {
                       version: QrVersions.auto,
                       size: 280,
                       backgroundColor: Colors.white,
+                      eyeStyle: QrEyeStyle(
+                        eyeShape: QrEyeShape.square,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      dataModuleStyle: QrDataModuleStyle(
+                        dataModuleShape: QrDataModuleShape.square,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                     if (isShareableId) ...[
                       const SizedBox(height: AppSpacing.sm),
@@ -104,7 +112,7 @@ class ShowQrCodeScreen extends StatelessWidget {
                       vertical: AppSpacing.sm,
                     ),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondaryContainer,
+                      color: Theme.of(context).colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -113,9 +121,8 @@ class ShowQrCodeScreen extends StatelessWidget {
                         Icon(
                           Icons.share,
                           size: 20,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSecondaryContainer,
+                          color:
+                              Theme.of(context).colorScheme.onPrimaryContainer,
                         ),
                         const SizedBox(width: AppSpacing.sm),
                         Text(
@@ -125,16 +132,15 @@ class ShowQrCodeScreen extends StatelessWidget {
                                     fontWeight: FontWeight.bold,
                                     color: Theme.of(context)
                                         .colorScheme
-                                        .onSecondaryContainer,
+                                        .onPrimaryContainer,
                                   ),
                         ),
                         const SizedBox(width: AppSpacing.sm),
                         Icon(
                           Icons.copy,
                           size: 18,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSecondaryContainer,
+                          color:
+                              Theme.of(context).colorScheme.onPrimaryContainer,
                         ),
                       ],
                     ),

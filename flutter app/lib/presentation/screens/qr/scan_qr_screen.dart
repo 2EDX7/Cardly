@@ -137,13 +137,39 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
               .read<CardCubit>()
               .collectCardByShareableId(rawValue);
 
-          if (collected != null && mounted) {
+          if (collected == null) {
+            // Check if it's a duplicate error
+            final cubitState = context.read<CardCubit>().state;
+            if (cubitState is CardError &&
+                cubitState.message.contains('already have')) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content:
+                      Text('You already have this card in your collection'),
+                  backgroundColor: Colors.orange,
+                ),
+              );
+            }
+            setState(() {
+              _isProcessing = false;
+            });
+            return;
+          }
+
+          if (mounted) {
+            // Wait a bit for the state to settle
+            await Future.delayed(const Duration(milliseconds: 100));
+
             final chosen = await _pickCategory(collected);
             final l10n = AppLocalizations.of(context)!;
             final category = chosen ?? l10n.uncategorized;
-            await context
-                .read<CardCubit>()
-                .updateCard(collected.copyWith(category: category));
+            // Create updated card with category
+            final updatedCard = collected.copyWith(category: category);
+            // Preserve backend identifiers so update works
+            updatedCard.backendId = collected.backendId;
+            updatedCard.id = collected.id;
+            updatedCard.shareableId = collected.shareableId;
+            await context.read<CardCubit>().updateCard(updatedCard);
 
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(

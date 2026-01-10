@@ -1,79 +1,36 @@
 const mongoose = require('mongoose');
 const admin = require('firebase-admin');
 const User = require('../src/models/User');
+const { sendNotificationToUser } = require('../src/services/fcmService');
 require('dotenv').config();
 
 // Initialize Firebase Admin SDK for this script
+// Note: fcmService.js also initializes it, but we need to ensure it's done before we use it
 if (!admin.apps.length) {
   try {
+    const projectId = process.env.FIREBASE_PROJECT_ID;
+    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+    const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+
+    if (!projectId || !clientEmail || !privateKey) {
+      throw new Error('Missing Firebase environment variables');
+    }
+
     admin.initializeApp({
       credential: admin.credential.cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+        projectId,
+        clientEmail,
+        privateKey,
       })
     });
     console.log('✅ Firebase Admin SDK initialized');
   } catch (error) {
-    console.error('❌ Failed to initialize Firebase:', error.message);
+    console.error('❌ Failed to initialize Firebase Admin SDK:', error.message);
     console.log('\n⚠️  Make sure these env vars are set in .env:');
     console.log('  - FIREBASE_PROJECT_ID');
     console.log('  - FIREBASE_CLIENT_EMAIL');
     console.log('  - FIREBASE_PRIVATE_KEY');
     process.exit(1);
-  }
-}
-
-async function sendNotification(tokens, notification, data = {}) {
-  if (!tokens || tokens.length === 0) {
-    console.log('No FCM tokens to send to');
-    return;
-  }
-
-  // Filter out invalid tokens (basic validation)
-  const validTokens = tokens.filter(token => 
-    token && 
-    typeof token === 'string' && 
-    token.trim().length > 20 // FCM tokens are typically 140+ chars
-  );
-
-  if (validTokens.length === 0) {
-    console.log('⚠️ No valid FCM tokens found');
-    return { successCount: 0, failureCount: 0 };
-  }
-
-  if (validTokens.length < tokens.length) {
-    console.log(`⚠️ Filtered out ${tokens.length - validTokens.length} invalid token(s)`);
-  }
-
-  const message = {
-    notification: {
-      title: notification.title,
-      body: notification.body,
-    },
-    data: data,
-    tokens: validTokens
-  };
-
-  try {
-    const response = await admin.messaging().sendEachForMulticast(message);
-    console.log(`✅ Sent ${response.successCount} notifications, ${response.failureCount} failed`);
-    
-    if (response.failureCount > 0) {
-      response.responses.forEach((resp, idx) => {
-        if (!resp.success) {
-          console.error(`❌ Failed to send to token ${idx}:`, resp.error?.message || resp.error);
-          if (resp.error?.code === 'messaging/registration-token-not-registered') {
-            console.log(`   💡 Token ${idx} is expired/invalid - should be removed from database`);
-          }
-        }
-      });
-    }
-    
-    return response;
-  } catch (error) {
-    console.error('❌ FCM send error:', error);
-    throw error;
   }
 }
 
@@ -89,6 +46,10 @@ async function setupTestNotification() {
       process.exit(1);
     }
     console.log(`✅ Found card owner: ${cardOwner.fullName} (${cardOwner.email})`);
+
+    // Check notification preferences
+    const notificationsEnabled = cardOwner.preferences?.receiveNotifications !== false;
+    console.log(`📬 Notifications enabled: ${notificationsEnabled}`);
 
     // Check if the card owner has an FCM token
     if (!cardOwner.fcmTokens || cardOwner.fcmTokens.length === 0) {
@@ -129,8 +90,8 @@ async function setupTestNotification() {
 
     // Send test notification
     console.log('\n📤 Sending test notification...');
-    await sendNotification(
-      cardOwner.fcmTokens,
+    await sendNotificationToUser(
+      cardOwner._id.toString(),
       {
         title: '🎉 Card Collected!',
         body: `Your card was saved by ${testCollector.fullName}`
@@ -144,6 +105,9 @@ async function setupTestNotification() {
 
     console.log('\n✅ Test notification sent successfully!');
     console.log('📱 Check your device for the notification.');
+    if (!notificationsEnabled) {
+      console.log('⚠️  Note: Notifications were disabled for this user, so nothing was sent.');
+    }
 
     await mongoose.connection.close();
     process.exit(0);
