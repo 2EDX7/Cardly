@@ -4,7 +4,7 @@ import '../../../data/models/card_info.dart';
 /// Base state class for card management
 abstract class CardState extends Equatable {
   const CardState();
-  
+
   @override
   List<Object?> get props => [];
 }
@@ -30,22 +30,25 @@ class CardLoaded extends CardState {
   /// Get filtered cards based on search and category
   List<CardInfo> get filteredCards {
     var result = cards;
-    
+
     // Apply category filter
     if (selectedCategory != null && selectedCategory!.isNotEmpty) {
-      result = result.where((card) => card.category == selectedCategory).toList();
+      result = result.where((card) {
+        final cardCategory = card.category ?? 'Uncategorized';
+        return cardCategory == selectedCategory;
+      }).toList();
     }
-    
+
     // Apply search filter
     if (searchQuery.isNotEmpty) {
       final query = searchQuery.toLowerCase();
       result = result.where((card) {
         return card.name.toLowerCase().contains(query) ||
-               card.organization.toLowerCase().contains(query) ||
-               card.jobTitle.toLowerCase().contains(query);
+            card.organization.toLowerCase().contains(query) ||
+            card.jobTitle.toLowerCase().contains(query);
       }).toList();
     }
-    
+
     return result;
   }
 
@@ -82,7 +85,8 @@ class CardLoaded extends CardState {
     return CardLoaded(
       cards: cards ?? this.cards,
       searchQuery: searchQuery ?? this.searchQuery,
-      selectedCategory: clearCategory ? null : (selectedCategory ?? this.selectedCategory),
+      selectedCategory:
+          clearCategory ? null : (selectedCategory ?? this.selectedCategory),
     );
   }
 }

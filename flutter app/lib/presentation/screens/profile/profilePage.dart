@@ -10,6 +10,7 @@ import "package:cardly/presentation/screens/profile/widgets/background_picker_wi
 import "package:cardly/presentation/screens/profile/widgets/profile_action_buttons.dart";
 import "package:cardly/presentation/screens/profile/widgets/custom_color_picker_dialog.dart";
 import "package:cardly/presentation/screens/profile/edit_card_page.dart";
+import "package:cardly/presentation/screens/profile/edit_appearance_page.dart";
 import "package:cardly/data/models/card_info.dart";
 import '../../../logic/cubits/profile_card/profile_card_cubit.dart';
 import '../../../logic/cubits/profile_card/profile_card_state.dart';
@@ -308,7 +309,7 @@ class _ProfilePageState extends State<ProfilePage>
                     shareableId: card.shareableId,
                   ),
 
-                // Action buttons under card (Edit and Share)
+                // Action buttons under card (Edit Info, Edit Appearance, Share)
                 if (hasCard)
                   Padding(
                     padding: const EdgeInsets.only(top: AppSpacing.md),
@@ -317,7 +318,7 @@ class _ProfilePageState extends State<ProfilePage>
                       children: [
                         _ProfileActionButton(
                           icon: Icons.edit,
-                          label: l10n.edit,
+                          label: 'Edit Info',
                           onTap: () async {
                             final CardInfo? updatedCardInfo =
                                 await Navigator.of(context).push(
@@ -349,6 +350,43 @@ class _ProfilePageState extends State<ProfilePage>
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         _ProfileActionButton(
+                          icon: Icons.palette,
+                          label: 'Edit Appearance',
+                          onTap: () async {
+                            final CardInfo? updatedCardInfo =
+                                await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    EditAppearancePage(card: card),
+                              ),
+                            );
+
+                            if (updatedCardInfo != null) {
+                              await context
+                                  .read<ProfileCardCubit>()
+                                  .saveProfileCard(updatedCardInfo);
+
+                              setState(() {
+                                _cardInfo = updatedCardInfo;
+                                _selectedBackground =
+                                    updatedCardInfo.background ??
+                                        CardBackground.defaultGradient;
+                                _selectedFontColor =
+                                    updatedCardInfo.fontColor ?? Colors.white;
+                              });
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content:
+                                      Text('Appearance updated successfully'),
+                                  backgroundColor: AppColors.success,
+                                ),
+                              );
+                            }
+                          },
+                          color: Colors.purple,
+                        ),
+                        _ProfileActionButton(
                           icon: Icons.share,
                           label: l10n.share,
                           onTap: () {
@@ -376,82 +414,11 @@ class _ProfilePageState extends State<ProfilePage>
 
                 const SizedBox(height: AppSpacing.xl),
 
-                // Only show color and background pickers if user has a card
-                if (hasCard) ...[
-                  ColorPickerWidget(
-                    selectedColor: displayFontColor,
-                    colors: _fontColors,
-                    onColorSelected: (color) {
-                      setState(() {
-                        _selectedFontColor = color;
-                        _userChangedFontColor = true;
-                      });
-                    },
-                    onCustomColorPressed: () async {
-                      final Color? color = await showCustomColorPicker(
-                        context,
-                        initialColor: _selectedFontColor,
-                      );
-                      if (color != null) {
-                        setState(() {
-                          _selectedFontColor = color;
-                          _userChangedFontColor = true;
-                        });
-                      }
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  BackgroundPickerWidget(
-                    selectedBackground: displayBackground,
-                    backgrounds: _backgrounds,
-                    onBackgroundSelected: (bg) {
-                      setState(() {
-                        _selectedBackground = bg;
-                        _userChangedBackground = true;
-                      });
-                    },
-                    onCustomBackgroundPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(AppLocalizations.of(context)!
-                              .customBackgroundPicker),
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.xl),
-                ],
-
                 _buildThemeSection(context),
 
                 const SizedBox(height: AppSpacing.xl),
 
                 const LanguagesectionWidget(),
-
-                const SizedBox(height: AppSpacing.xxl),
-
-                // Save Settings Button (saves theme and language only)
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Just show confirmation that settings are saved
-                      // Theme and language are already auto-saved by their respective cubits
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Settings saved successfully'),
-                          backgroundColor: theme.colorScheme.primary,
-                        ),
-                      );
-                    },
-                    child: Text(
-                      'Save Settings',
-                      style: AppTextStyles.buttonPrimary(context).copyWith(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
 
                 const SizedBox(height: AppSpacing.lg),
               ],

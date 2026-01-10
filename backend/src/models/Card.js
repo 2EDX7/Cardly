@@ -90,7 +90,7 @@ const cardSchema = new mongoose.Schema({
     enum: [
       'defaultGradient', 'purple', 'gold', 'greenBlue', 'grey', 'blue', 
       'green', 'goldSilver', 'purpleBlue', 'orangePink', 'sunset',
-      'primarySolid', 'secondarySolid', 'darkSolid', 'blueSolid'
+      'primarySolid', 'secondarySolid', 'darkSolid', 'blueSolid', 'blackSolid'
     ],
   },
   fontColor: {

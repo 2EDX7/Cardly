@@ -86,19 +86,19 @@ class _CategorySectionState extends State<CategorySection>
               children: [
                 RotationTransition(
                   turns: _iconRotation,
-                  child: const Icon(
+                  child: Icon(
                     Icons.arrow_drop_down,
-                    color: AppColors.lightTextPrimary,
+                    color: Theme.of(context).colorScheme.onBackground,
                     size: 24,
                   ),
                 ),
                 const SizedBox(width: AppSpacing.xs),
                 Text(
                   widget.category,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.lightTextPrimary,
+                    color: Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
               ],

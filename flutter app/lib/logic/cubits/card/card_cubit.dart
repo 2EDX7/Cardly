@@ -165,6 +165,18 @@ class CardCubit extends Cubit<CardState> {
 
   /// Search cards
   Future<void> searchCards(String query) async {
+    // If state is already loaded, just update search query
+    if (state is CardLoaded) {
+      final currentState = state as CardLoaded;
+      emit(CardLoaded(
+        cards: currentState.cards,
+        searchQuery: query,
+        selectedCategory: currentState.selectedCategory,
+      ));
+      return;
+    }
+
+    // Otherwise load all cards with search query
     if (query.isEmpty) {
       await loadCards();
       return;
@@ -174,7 +186,7 @@ class CardCubit extends Cubit<CardState> {
 
     try {
       final cards = await _repository.searchCards(query, userId: _userId);
-      emit(CardLoaded(cards: cards));
+      emit(CardLoaded(cards: cards, searchQuery: query));
     } on NetworkException catch (e) {
       emit(CardError(e.message));
     } catch (e) {
@@ -183,17 +195,33 @@ class CardCubit extends Cubit<CardState> {
   }
 
   /// Filter cards by category
-  Future<void> filterByCategory(String category) async {
-    emit(CardLoading());
+  Future<void> filterByCategory(String? category) async {
+    // If no category selected, load all cards
+    if (category == null) {
+      await loadCards();
+      return;
+    }
 
-    try {
-      final cards =
-          await _repository.getCardsByCategory(category, userId: _userId);
-      emit(CardLoaded(cards: cards));
-    } on NetworkException catch (e) {
-      emit(CardError(e.message));
-    } catch (e) {
-      emit(CardError('Filter failed: ${e.toString()}'));
+    // Otherwise, filter client-side from current state
+    if (state is CardLoaded) {
+      final currentState = state as CardLoaded;
+      emit(CardLoaded(
+        cards: currentState.cards,
+        searchQuery: currentState.searchQuery,
+        selectedCategory: category,
+      ));
+    } else {
+      // If not in loaded state, load all cards first then filter
+      emit(CardLoading());
+      try {
+        final cards = await _repository.getAllCards(userId: _userId);
+        emit(CardLoaded(
+          cards: cards,
+          selectedCategory: category,
+        ));
+      } catch (e) {
+        emit(CardError('Failed to filter cards: ${e.toString()}'));
+      }
     }
   }
 

@@ -374,6 +374,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
   bool _showCategories = false;
+  String? _selectedCategory; // Track selected category filter
 
   // Category expansion state
   final Map<String, bool> _expandedCategories = {};
@@ -382,6 +383,229 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _showCategoryFilterDialog() {
+    final state = context.read<CardCubit>().state;
+    if (state is! CardLoaded) return;
+
+    // Get all unique categories from ALL cards (not filtered)
+    final allCategories = state.cards
+        .map((card) => card.category ?? 'Uncategorized')
+        .toSet()
+        .toList();
+    allCategories.sort();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Filter by Category'),
+          contentPadding: const EdgeInsets.symmetric(vertical: 12),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: allCategories.isEmpty
+                ? const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text('No categories available'),
+                  )
+                : ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: allCategories.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        final isSelected = _selectedCategory == null;
+                        return ListTile(
+                          leading: Icon(
+                            Icons.clear_all,
+                            color: isSelected
+                                ? Theme.of(context).colorScheme.primary
+                                : null,
+                          ),
+                          title: Text(
+                            'Show All',
+                            style: TextStyle(
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color: isSelected
+                                  ? Theme.of(context).colorScheme.primary
+                                  : null,
+                            ),
+                          ),
+                          trailing: isSelected
+                              ? Icon(
+                                  Icons.check,
+                                  color: Theme.of(context).colorScheme.primary,
+                                )
+                              : null,
+                          onTap: () {
+                            setState(() {
+                              _selectedCategory = null;
+                            });
+                            context.read<CardCubit>().filterByCategory(null);
+                            Navigator.of(dialogContext).pop();
+                          },
+                        );
+                      }
+                      final category = allCategories[index - 1];
+                      final isSelected = _selectedCategory == category;
+                      return ListTile(
+                        leading: Icon(
+                          Icons.label_outline,
+                          color: isSelected
+                              ? Theme.of(context).colorScheme.primary
+                              : null,
+                        ),
+                        title: Text(
+                          category,
+                          style: TextStyle(
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: isSelected
+                                ? Theme.of(context).colorScheme.primary
+                                : null,
+                          ),
+                        ),
+                        trailing: isSelected
+                            ? Icon(
+                                Icons.check,
+                                color: Theme.of(context).colorScheme.primary,
+                              )
+                            : null,
+                        onTap: () {
+                          setState(() {
+                            _selectedCategory = category;
+                          });
+                          context.read<CardCubit>().filterByCategory(category);
+                          Navigator.of(dialogContext).pop();
+                        },
+                      );
+                    },
+                  ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<String?> _showCategorySelectionDialog(CardInfo card) async {
+    final state = context.read<CardCubit>().state;
+    List<String> existingCategories = ['Uncategorized'];
+
+    if (state is CardLoaded) {
+      existingCategories = state.cards
+          .map((card) => card.category ?? 'Uncategorized')
+          .toSet()
+          .toList();
+      existingCategories.sort();
+    }
+
+    return showDialog<String>(
+      context: context,
+      builder: (dialogContext) {
+        String? selectedCategory = card.category ?? 'Uncategorized';
+        final TextEditingController newCategoryController =
+            TextEditingController();
+        bool isCreatingNew = false;
+
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: Text('Select Category for ${card.name}'),
+              contentPadding: const EdgeInsets.symmetric(vertical: 12),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: existingCategories.length,
+                        itemBuilder: (context, index) {
+                          final category = existingCategories[index];
+                          final isSelected = selectedCategory == category;
+                          return RadioListTile<String>(
+                            value: category,
+                            groupValue: selectedCategory,
+                            title: Text(category),
+                            selected: isSelected,
+                            onChanged: (value) {
+                              setDialogState(() {
+                                selectedCategory = value;
+                                isCreatingNew = false;
+                              });
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                    const Divider(),
+                    ListTile(
+                      leading: const Icon(Icons.add),
+                      title: const Text('Create New Category'),
+                      onTap: () {
+                        setDialogState(() {
+                          isCreatingNew = !isCreatingNew;
+                        });
+                      },
+                    ),
+                    if (isCreatingNew)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: TextField(
+                          controller: newCategoryController,
+                          autofocus: true,
+                          decoration: const InputDecoration(
+                            labelText: 'New Category Name',
+                            border: OutlineInputBorder(),
+                            hintText: 'e.g., Work, Personal',
+                          ),
+                          onSubmitted: (value) {
+                            if (value.trim().isNotEmpty) {
+                              Navigator.of(dialogContext).pop(value.trim());
+                            }
+                          },
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(null),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (isCreatingNew) {
+                      final newCategory = newCategoryController.text.trim();
+                      if (newCategory.isNotEmpty) {
+                        Navigator.of(dialogContext).pop(newCategory);
+                      }
+                    } else {
+                      Navigator.of(dialogContext).pop(selectedCategory);
+                    }
+                  },
+                  child: const Text('Confirm'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   Future<void> _openCardDetails(CardInfo card) async {
@@ -421,191 +645,223 @@ class _HomePageState extends State<HomePage> {
     print("Building HomePage");
     final l10n = AppLocalizations.of(context)!;
     print("L10n loaded: ${l10n.myCards}");
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person_add),
-            tooltip: 'Add by ID',
-            onPressed: () async {
-              final result = await showDialog<bool>(
-                context: context,
-                builder: (_) => BlocProvider.value(
-                  value: context.read<CardCubit>(),
-                  child: const AddByIdDialog(),
-                ),
-              );
-              if (result == true && mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Card added successfully'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              }
-            },
+    return BlocBuilder<CardCubit, CardState>(
+      builder: (context, state) {
+        final hasCards = state is CardLoaded && state.cards.isNotEmpty;
+
+        return Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            toolbarHeight: 0, // Hide AppBar completely
           ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          final result = await Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const ScanQrScreen()),
-          );
-          if (result is CardInfo && mounted) {
-            await context.read<CardCubit>().addCard(result);
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('${result.name} added to your cards'),
-                  backgroundColor: Colors.green,
-                ),
-              );
-            }
-          }
-        },
-        icon: const Icon(Icons.qr_code_scanner),
-        label: const Text('Scan Card'),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.lg,
-                vertical: AppSpacing.md,
-              ),
-              child: Column(
-                children: [
-                  const SizedBox(height: AppSpacing.sm),
-                  // Title
-                  Text(
-                    l10n.myCards,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
-                    ),
+          body: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header with title on top left
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg,
+                    AppSpacing.lg,
+                    AppSpacing.lg,
+                    AppSpacing.md,
                   ),
-                  const SizedBox(height: AppSpacing.lg),
-                  // Search Bar
-                  SearchBarWidget(
-                    controller: _searchController,
-                    onChanged: (value) {
-                      context.read<CardCubit>().searchCards(value);
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  // Filter buttons
-                  Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      FilterButton(
-                        text: l10n.showCategories,
-                        isActive: _showCategories,
-                        onTap: () {
-                          setState(() {
-                            _showCategories = !_showCategories;
-                          });
-                        },
+                      // Title
+                      Text(
+                        l10n.myCards,
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onBackground,
+                          letterSpacing: -0.5,
+                        ),
                       ),
-                      const SizedBox(width: AppSpacing.sm),
-                      FilterIconButton(
-                        svgPath: 'assets/icons/candle.svg',
-                        onTap: () {
-                          // TODO: Implement filter functionality
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            // Business Cards List
-            Expanded(
-              child: BlocBuilder<CardCubit, CardState>(
-                builder: (context, state) {
-                  if (state is CardLoading) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-
-                  if (state is CardError) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.error_outline,
-                              size: 48, color: Colors.red),
-                          const SizedBox(height: 16),
-                          Text(
-                            state.message,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.red),
+                      const SizedBox(height: AppSpacing.lg),
+                      // Search Bar
+                      Container(
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .outline
+                                .withOpacity(0.2),
                           ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: () =>
-                                context.read<CardCubit>().loadCards(),
-                            child: Text(l10n.retry),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-
-                  if (state is CardLoaded) {
-                    // Check if user has any cards at all
-                    if (state.cards.isEmpty) {
-                      return _buildEmptyState(context, l10n);
-                    }
-
-                    // User has cards but filtered list is empty
-                    if (state.filteredCards.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.search_off,
-                              size: 64,
+                        ),
+                        child: TextField(
+                          controller: _searchController,
+                          onChanged: (value) {
+                            context.read<CardCubit>().searchCards(value);
+                          },
+                          decoration: InputDecoration(
+                            hintText: l10n.searchForCard,
+                            hintStyle: TextStyle(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant
+                                  .withOpacity(0.6),
+                              fontSize: 15,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.search,
                               color: Theme.of(context)
                                   .colorScheme
                                   .onSurfaceVariant,
                             ),
-                            const SizedBox(height: AppSpacing.lg),
-                            Text(
-                              l10n.noCardsFound,
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant,
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.md,
+                              vertical: AppSpacing.md,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      // Filter buttons
+                      Row(
+                        children: [
+                          FilterButton(
+                            text: l10n.showCategories,
+                            isActive: _showCategories,
+                            onTap: () {
+                              setState(() {
+                                _showCategories = !_showCategories;
+                                // When disabling show categories, also clear category filter
+                                if (!_showCategories &&
+                                    _selectedCategory != null) {
+                                  _selectedCategory = null;
+                                  context
+                                      .read<CardCubit>()
+                                      .filterByCategory(null);
+                                }
+                              });
+                            },
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          IconButton(
+                            onPressed: _showCategories
+                                ? () => _showCategoryFilterDialog()
+                                : null,
+                            icon: Icon(
+                              Icons.filter_alt,
+                              color: _showCategories
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant
+                                      .withOpacity(0.3),
+                            ),
+                            style: IconButton.styleFrom(
+                              backgroundColor: _showCategories
+                                  ? Theme.of(context)
+                                      .colorScheme
+                                      .primary
+                                      .withOpacity(0.1)
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .surfaceVariant
+                                      .withOpacity(0.3),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                          ],
-                        ),
-                      );
-                    }
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                // Business Cards List
+                Expanded(
+                  child: BlocBuilder<CardCubit, CardState>(
+                    builder: (context, state) {
+                      if (state is CardLoading) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
 
-                    return _showCategories
-                        ? _buildCategorizedView(state, l10n)
-                        : _buildListView(state, l10n);
-                  }
+                      if (state is CardError) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.error_outline,
+                                  size: 48, color: Colors.red),
+                              const SizedBox(height: 16),
+                              Text(
+                                state.message,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                              const SizedBox(height: 16),
+                              ElevatedButton(
+                                onPressed: () =>
+                                    context.read<CardCubit>().loadCards(),
+                                child: Text(l10n.retry),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
 
-                  // Handle CardInitial and any other state - show empty state
-                  return _buildEmptyState(context, l10n);
-                },
-              ),
+                      if (state is CardLoaded) {
+                        // Check if user has any cards at all
+                        if (state.cards.isEmpty) {
+                          return _buildEmptyState(context, l10n);
+                        }
+
+                        // User has cards but filtered list is empty
+                        if (state.filteredCards.isEmpty) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.search_off,
+                                  size: 64,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                ),
+                                const SizedBox(height: AppSpacing.lg),
+                                Text(
+                                  l10n.noCardsFound,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+
+                        return _showCategories
+                            ? _buildCategorizedView(state, l10n)
+                            : _buildListView(state, l10n);
+                      }
+
+                      // Handle CardInitial and any other state - show empty state
+                      return _buildEmptyState(context, l10n);
+                    },
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -643,15 +899,65 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: AppSpacing.xl),
             ElevatedButton.icon(
-              onPressed: () {
-                Navigator.of(context).pushNamed(AppRoutes.addCard);
+              onPressed: () async {
+                final result = await Navigator.of(context).pushNamed(
+                  AppRoutes.addCard,
+                );
+                if (result is CardInfo && mounted) {
+                  // Show category selection dialog
+                  final category = await _showCategorySelectionDialog(result);
+                  if (category != null && mounted) {
+                    final updatedCard = result.copyWith(category: category);
+                    await context.read<CardCubit>().addCard(updatedCard);
+                  }
+                }
               },
               icon: const Icon(Icons.add),
-              label: Text(l10n.createYourFirstCard),
+              label: const Text('Collect Your First Card'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.xl,
                   vertical: AppSpacing.md,
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            OutlinedButton.icon(
+              onPressed: () async {
+                final result = await Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const ScanQrScreen()),
+                );
+                if (result is CardInfo && mounted) {
+                  // Show category selection dialog
+                  final category = await _showCategorySelectionDialog(result);
+                  if (category != null && mounted) {
+                    final updatedCard = result.copyWith(category: category);
+                    await context.read<CardCubit>().addCard(updatedCard);
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('${result.name} added to your cards'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    }
+                  }
+                }
+              },
+              icon: const Icon(Icons.qr_code_scanner),
+              label: const Text('Quickly Scan QR Code'),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.xl,
+                  vertical: AppSpacing.md,
+                ),
+                side: BorderSide(
+                  color: cs.primary,
+                  width: 2,
                 ),
                 textStyle: const TextStyle(
                   fontSize: 16,
