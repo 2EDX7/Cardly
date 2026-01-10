@@ -498,26 +498,38 @@ class _HomePageState extends State<HomePage> {
             // Remove from UI immediately
             context.read<CardCubit>().removeCardFromState(cardIdKey);
 
-            bool undoPressed = false;
+            final undoNotifier = ValueNotifier<bool>(false);
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
-            // Show snackbar for 5 seconds
-            ScaffoldMessenger.of(context)
-                .showSnackBar(
-                  SnackBar(
-                    content: Text(l10n.cardDeleted(card.name)),
-                    duration: const Duration(seconds: 5),
-                    action: SnackBarAction(
-                      label: l10n.undo,
-                      onPressed: () {
-                        undoPressed = true;
-                        context.read<CardCubit>().addCardToState(card);
-                      },
+            // Show snackbar like the add card snackbars - auto dismisses
+            final snackBar = SnackBar(
+              content: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(l10n.cardDeleted(card.name)),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      undoNotifier.value = true;
+                      context.read<CardCubit>().addCardToState(card);
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    },
+                    child: Text(
+                      l10n.undo,
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
-                )
-                .closed
-                .then((_) {
-              if (!undoPressed) {
+                ],
+              ),
+              backgroundColor: Colors.red,
+            );
+
+            final snackBarController =
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+            snackBarController.closed.then((_) {
+              if (!undoNotifier.value) {
                 final backendId = card.backendId;
                 final id = card.id;
                 if (backendId != null && backendId.isNotEmpty) {
