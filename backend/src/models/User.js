@@ -35,6 +35,9 @@ const userSchema = new mongoose.Schema({
       default: 'en',
     },
   },
+  fcmTokens: [{
+    type: String,
+  }],
   lastSyncAt: {
     type: Date,
     default: null,
