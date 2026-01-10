@@ -127,4 +127,29 @@ class ApiUserRepository implements UserRepository {
     await tokenStorage.clearAll();
     apiClient.clearToken();
   }
+
+  /// Register FCM token with backend
+  Future<void> registerFCMToken(String token) async {
+    try {
+      await apiClient.post(
+        '/notifications/register-token',
+        body: {'token': token},
+      );
+    } catch (e) {
+      print('⚠️ Failed to register FCM token with backend: $e');
+      rethrow;
+    }
+  }
+
+  /// Remove FCM token from backend (on logout)
+  Future<void> removeFCMToken(String token) async {
+    try {
+      await apiClient.post(
+        '/notifications/remove-token',
+        body: {'token': token},
+      );
+    } catch (e) {
+      print('⚠️ Failed to remove FCM token from backend: $e');
+    }
+  }
 }
