@@ -285,6 +285,12 @@
   "uncategorized": "Non catégorisé",
   
   "yourTitle": "Votre titre",
+  "yourName": "Votre nom",
+  "yourCompany": "Votre entreprise",
+  "yourEmail": "votre.email@exemple.com",
+  "yourPhone": "0000000000",
+  "yourLocation": "Votre emplacement",
+  "exampleWebsite": "www.exemple.com",
   "customBackgroundPicker": "Sélecteur d'arrière-plan personnalisé - À implémenter",
 
   "apply": "Appliquer",

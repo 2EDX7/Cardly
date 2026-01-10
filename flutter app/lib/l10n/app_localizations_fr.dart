@@ -565,22 +565,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get yourTitle => 'Votre titre';
 
   @override
-  String get yourName => 'Your Name';
+  String get yourName => 'Votre nom';
 
   @override
-  String get yourCompany => 'Your Company';
+  String get yourCompany => 'Votre entreprise';
 
   @override
-  String get yourEmail => 'your.email@example.com';
+  String get yourEmail => 'votre.email@exemple.com';
 
   @override
   String get yourPhone => '0000000000';
 
   @override
-  String get yourLocation => 'Your Location';
+  String get yourLocation => 'Votre emplacement';
 
   @override
-  String get exampleWebsite => 'www.example.com';
+  String get exampleWebsite => 'www.exemple.com';
 
   @override
   String get customBackgroundPicker =>
