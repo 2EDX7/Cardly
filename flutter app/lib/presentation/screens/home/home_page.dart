@@ -17,11 +17,10 @@ import '../card/add_by_id_dialog.dart';
 import '../../widgets/business_card/business_card.dart';
 import '../../widgets/business_card/card_background.dart';
 
-/// Custom widget for swipe-to-reveal delete button
+/// Custom widget for swipe-to-reveal delete button with expandable card
 class _SwipeDeleteCard extends StatefulWidget {
   final CardInfo card;
   final String cardIdKey;
-  final VoidCallback onCardTap;
   final VoidCallback onDeleteConfirmed;
   final AppLocalizations l10n;
 
@@ -29,7 +28,6 @@ class _SwipeDeleteCard extends StatefulWidget {
     required Key key,
     required this.card,
     required this.cardIdKey,
-    required this.onCardTap,
     required this.onDeleteConfirmed,
     required this.l10n,
   }) : super(key: key);
@@ -42,7 +40,12 @@ class _SwipeDeleteCardState extends State<_SwipeDeleteCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   double _dragOffset = 0;
+  double _verticalDragOffset = 0;
   final double _deleteButtonWidth = 80;
+  final double _verticalDragThreshold = 50;
+  bool _isExpanded = false;
+  DateTime _lastTap = DateTime.now();
+  bool _isVerticalDragging = false;
 
   @override
   void initState() {
@@ -60,6 +63,7 @@ class _SwipeDeleteCardState extends State<_SwipeDeleteCard>
   }
 
   void _handleDragUpdate(DragUpdateDetails details) {
+    if (_isExpanded) return; // Disable swipe when expanded
     setState(() {
       _dragOffset =
           (_dragOffset + details.delta.dx).clamp(-_deleteButtonWidth, 0);
@@ -67,6 +71,7 @@ class _SwipeDeleteCardState extends State<_SwipeDeleteCard>
   }
 
   void _handleDragEnd(DragEndDetails details) {
+    if (_isExpanded) return; // Disable swipe when expanded
     final threshold = _deleteButtonWidth * 0.5;
     if (_dragOffset.abs() > threshold) {
       _animationController.forward();
@@ -79,6 +84,40 @@ class _SwipeDeleteCardState extends State<_SwipeDeleteCard>
         _dragOffset = 0;
       });
     }
+  }
+
+  void _handleVerticalDragStart(DragStartDetails details) {
+    setState(() {
+      _isVerticalDragging = true;
+    });
+  }
+
+  void _handleVerticalDragUpdate(DragUpdateDetails details) {
+    setState(() {
+      _verticalDragOffset += details.delta.dy;
+    });
+  }
+
+  void _handleVerticalDragEnd(DragEndDetails details) {
+    // Slide down to expand (positive offset > threshold)
+    if (!_isExpanded && _verticalDragOffset > _verticalDragThreshold) {
+      setState(() {
+        _isExpanded = true;
+        _dragOffset = 0;
+      });
+    }
+    // Slide up to collapse (negative offset < -threshold)
+    else if (_isExpanded && _verticalDragOffset < -_verticalDragThreshold) {
+      setState(() {
+        _isExpanded = false;
+        _dragOffset = 0;
+      });
+    }
+
+    setState(() {
+      _verticalDragOffset = 0;
+      _isVerticalDragging = false;
+    });
   }
 
   void _showDeleteConfirmation() async {
@@ -114,64 +153,212 @@ class _SwipeDeleteCardState extends State<_SwipeDeleteCard>
     }
   }
 
+  void _handleCardTap() {
+    final now = DateTime.now();
+    final timeSinceLastTap = now.difference(_lastTap).inMilliseconds;
+    _lastTap = now;
+
+    // Ignore if it's a potential double-tap (will be handled by the card's double-tap)
+    if (timeSinceLastTap < 300) return;
+
+    // Toggle expand/collapse
+    setState(() {
+      _isExpanded = !_isExpanded;
+      _dragOffset = 0; // Reset drag when expanding/collapsing
+    });
+  }
+
+  void _handleEdit() {
+    Navigator.of(context)
+        .pushNamed(
+      AppRoutes.editCard,
+      arguments: widget.card,
+    )
+        .then((updatedCard) {
+      if (updatedCard is CardInfo) {
+        context.read<CardCubit>().updateCard(updatedCard);
+      }
+    });
+  }
+
+  void _handleShare() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ShowQrCodeScreen(card: widget.card),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final compactHeight = 180.0;
+    final expandedHeight = 280.0; // Use default BusinessCard height
+    final currentHeight = _isExpanded ? expandedHeight : compactHeight;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
       margin: const EdgeInsets.only(bottom: AppSpacing.lg),
-      height: 180,
-      decoration: BoxDecoration(
-        color: Colors.red,
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Stack(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Delete button area (20% width on right, behind card, fills available space)
-          Positioned(
-            right: 0,
-            top: 0,
-            bottom: 0,
-            width: _deleteButtonWidth,
-            child: GestureDetector(
-              onTap: _showDeleteConfirmation,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(24),
-                    bottomRight: Radius.circular(24),
+          // Card Container with swipe (only in compact mode)
+          Container(
+            height: currentHeight,
+            decoration: _isExpanded
+                ? null
+                : BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(24),
                   ),
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                    size: 32,
+            child: _isExpanded
+                ? GestureDetector(
+                    onTap: _handleCardTap,
+                    onVerticalDragStart: _handleVerticalDragStart,
+                    onVerticalDragUpdate: _handleVerticalDragUpdate,
+                    onVerticalDragEnd: _handleVerticalDragEnd,
+                    child: BusinessCard(
+                      name: widget.card.name,
+                      organization: widget.card.organization,
+                      jobTitle: widget.card.jobTitle,
+                      email: widget.card.email,
+                      phone: widget.card.phone,
+                      location: widget.card.location,
+                      about: widget.card.about,
+                      website: widget.card.website,
+                      background: widget.card.background ??
+                          CardBackground.defaultGradient,
+                      compactCard: false,
+                      width: double.infinity,
+                    ),
+                  )
+                : Stack(
+                    children: [
+                      // Delete button area (only in compact mode)
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: _deleteButtonWidth,
+                        child: GestureDetector(
+                          onTap: _showDeleteConfirmation,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(24),
+                                bottomRight: Radius.circular(24),
+                              ),
+                            ),
+                            child: const Center(
+                              child: Icon(
+                                Icons.delete,
+                                color: Colors.white,
+                                size: 32,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Card with drag handler
+                      GestureDetector(
+                        onHorizontalDragUpdate: _handleDragUpdate,
+                        onHorizontalDragEnd: _handleDragEnd,
+                        child: Transform.translate(
+                          offset: Offset(_dragOffset, 0),
+                          child: GestureDetector(
+                            onTap: _handleCardTap,
+                            onVerticalDragStart: _handleVerticalDragStart,
+                            onVerticalDragUpdate: _handleVerticalDragUpdate,
+                            onVerticalDragEnd: _handleVerticalDragEnd,
+                            child: BusinessCard(
+                              name: widget.card.name,
+                              organization: widget.card.organization,
+                              jobTitle: widget.card.jobTitle,
+                              background: widget.card.background ??
+                                  CardBackground.defaultGradient,
+                              compactCard: true,
+                              width: double.infinity,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
+          ),
+          // Action buttons (only show when expanded)
+          if (_isExpanded)
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.md),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _ActionButton(
+                    icon: Icons.edit,
+                    label: widget.l10n.edit,
+                    onTap: _handleEdit,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  _ActionButton(
+                    icon: Icons.share,
+                    label: widget.l10n.share,
+                    onTap: _handleShare,
+                    color: Colors.blue,
+                  ),
+                  _ActionButton(
+                    icon: Icons.delete,
+                    label: widget.l10n.delete,
+                    onTap: _showDeleteConfirmation,
+                    color: Colors.red,
+                  ),
+                ],
               ),
             ),
-          ),
-          // Card with drag handler (on top) - use BusinessCard directly without CardListItem padding
-          GestureDetector(
-            onHorizontalDragUpdate: _handleDragUpdate,
-            onHorizontalDragEnd: _handleDragEnd,
-            child: Transform.translate(
-              offset: Offset(_dragOffset, 0),
-              child: GestureDetector(
-                onTap: widget.onCardTap,
-                child: BusinessCard(
-                  name: widget.card.name,
-                  organization: widget.card.organization,
-                  jobTitle: widget.card.jobTitle,
-                  background:
-                      widget.card.background ?? CardBackground.defaultGradient,
-                  compactCard: true,
-                  width: double.infinity,
-                ),
-              ),
-            ),
-          ),
         ],
+      ),
+    );
+  }
+}
+
+/// Action button widget for edit/share/delete
+class _ActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final Color color;
+
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.sm,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 28),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -493,7 +680,6 @@ class _HomePageState extends State<HomePage> {
           key: Key(cardIdKey),
           card: card,
           cardIdKey: cardIdKey,
-          onCardTap: () => _openCardDetails(card),
           onDeleteConfirmed: () {
             // Remove from UI immediately
             context.read<CardCubit>().removeCardFromState(cardIdKey);

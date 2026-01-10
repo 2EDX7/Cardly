@@ -10,7 +10,7 @@ enum CardSide { front, back }
 class BusinessCard extends StatefulWidget {
   // Common properties
   final String name;
-  
+
   // Single background parameter
   final CardBackground? background;
 
@@ -62,7 +62,8 @@ class BusinessCard extends StatefulWidget {
   State<BusinessCard> createState() => _BusinessCardState();
 }
 
-class _BusinessCardState extends State<BusinessCard> with SingleTickerProviderStateMixin {
+class _BusinessCardState extends State<BusinessCard>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
   bool _isFront = true;
@@ -116,7 +117,7 @@ class _BusinessCardState extends State<BusinessCard> with SingleTickerProviderSt
         builder: (context, child) {
           final angle = _animation.value * math.pi;
           final isUnder = angle > math.pi / 2;
-          
+
           return Transform(
             alignment: Alignment.center,
             transform: Matrix4.identity()
@@ -157,7 +158,7 @@ class _BusinessCardState extends State<BusinessCard> with SingleTickerProviderSt
           children: [
             // Background layer
             bg.build(),
-            
+
             // Content layer
             Padding(
               padding: const EdgeInsets.all(AppSpacing.xl),
