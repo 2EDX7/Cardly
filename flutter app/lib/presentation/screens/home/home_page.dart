@@ -14,6 +14,168 @@ import '../../../routes/routes.dart';
 import '../qr/show_qr_code_screen.dart';
 import '../qr/scan_qr_screen.dart';
 import '../card/add_by_id_dialog.dart';
+import '../../widgets/business_card/business_card.dart';
+import '../../widgets/business_card/card_background.dart';
+
+/// Custom widget for swipe-to-reveal delete button
+class _SwipeDeleteCard extends StatefulWidget {
+  final CardInfo card;
+  final String cardIdKey;
+  final VoidCallback onCardTap;
+  final VoidCallback onDeleteConfirmed;
+  final AppLocalizations l10n;
+
+  const _SwipeDeleteCard({
+    required Key key,
+    required this.card,
+    required this.cardIdKey,
+    required this.onCardTap,
+    required this.onDeleteConfirmed,
+    required this.l10n,
+  }) : super(key: key);
+
+  @override
+  State<_SwipeDeleteCard> createState() => _SwipeDeleteCardState();
+}
+
+class _SwipeDeleteCardState extends State<_SwipeDeleteCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  double _dragOffset = 0;
+  final double _deleteButtonWidth = 80;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _handleDragUpdate(DragUpdateDetails details) {
+    setState(() {
+      _dragOffset =
+          (_dragOffset + details.delta.dx).clamp(-_deleteButtonWidth, 0);
+    });
+  }
+
+  void _handleDragEnd(DragEndDetails details) {
+    final threshold = _deleteButtonWidth * 0.5;
+    if (_dragOffset.abs() > threshold) {
+      _animationController.forward();
+      setState(() {
+        _dragOffset = -_deleteButtonWidth;
+      });
+    } else {
+      _animationController.reverse();
+      setState(() {
+        _dragOffset = 0;
+      });
+    }
+  }
+
+  void _showDeleteConfirmation() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(widget.l10n.deleteCard),
+          content: Text(widget.l10n.areYouSureDeleteCard(widget.card.name)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(widget.l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.red,
+              ),
+              child: Text(widget.l10n.delete),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      widget.onDeleteConfirmed();
+      _animationController.reverse();
+      setState(() {
+        _dragOffset = 0;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.lg),
+      height: 180,
+      decoration: BoxDecoration(
+        color: Colors.red,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Stack(
+        children: [
+          // Delete button area (20% width on right, behind card, fills available space)
+          Positioned(
+            right: 0,
+            top: 0,
+            bottom: 0,
+            width: _deleteButtonWidth,
+            child: GestureDetector(
+              onTap: _showDeleteConfirmation,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(24),
+                    bottomRight: Radius.circular(24),
+                  ),
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                    size: 32,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Card with drag handler (on top) - use BusinessCard directly without CardListItem padding
+          GestureDetector(
+            onHorizontalDragUpdate: _handleDragUpdate,
+            onHorizontalDragEnd: _handleDragEnd,
+            child: Transform.translate(
+              offset: Offset(_dragOffset, 0),
+              child: GestureDetector(
+                onTap: widget.onCardTap,
+                child: BusinessCard(
+                  name: widget.card.name,
+                  organization: widget.card.organization,
+                  jobTitle: widget.card.jobTitle,
+                  background:
+                      widget.card.background ?? CardBackground.defaultGradient,
+                  compactCard: true,
+                  width: double.infinity,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -25,7 +187,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
   bool _showCategories = false;
-  
+
   // Category expansion state
   final Map<String, bool> _expandedCategories = {};
 
@@ -185,13 +347,14 @@ class _HomePageState extends State<HomePage> {
                       child: CircularProgressIndicator(),
                     );
                   }
-                  
+
                   if (state is CardError) {
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                          const Icon(Icons.error_outline,
+                              size: 48, color: Colors.red),
                           const SizedBox(height: 16),
                           Text(
                             state.message,
@@ -200,20 +363,21 @@ class _HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(height: 16),
                           ElevatedButton(
-                            onPressed: () => context.read<CardCubit>().loadCards(),
+                            onPressed: () =>
+                                context.read<CardCubit>().loadCards(),
                             child: Text(l10n.retry),
                           ),
                         ],
                       ),
                     );
                   }
-                  
+
                   if (state is CardLoaded) {
                     // Check if user has any cards at all
                     if (state.cards.isEmpty) {
                       return _buildEmptyState(context, l10n);
                     }
-                    
+
                     // User has cards but filtered list is empty
                     if (state.filteredCards.isEmpty) {
                       return Center(
@@ -223,26 +387,30 @@ class _HomePageState extends State<HomePage> {
                             Icon(
                               Icons.search_off,
                               size: 64,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                             ),
                             const SizedBox(height: AppSpacing.lg),
                             Text(
                               l10n.noCardsFound,
                               style: TextStyle(
                                 fontSize: 18,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
                               ),
                             ),
                           ],
                         ),
                       );
                     }
-                    
-                    return _showCategories 
-                        ? _buildCategorizedView(state, l10n) 
+
+                    return _showCategories
+                        ? _buildCategorizedView(state, l10n)
                         : _buildListView(state, l10n);
                   }
-                  
+
                   // Handle CardInitial and any other state - show empty state
                   return _buildEmptyState(context, l10n);
                 },
@@ -319,76 +487,48 @@ class _HomePageState extends State<HomePage> {
       itemCount: cards.length,
       itemBuilder: (context, index) {
         final card = cards[index];
-        
-        final cardIdKey = card.id?.toString() ?? card.email;
+        final cardIdKey = card.backendId ?? card.id?.toString() ?? card.email;
 
-        return Dismissible(
+        return _SwipeDeleteCard(
           key: Key(cardIdKey),
-          direction: DismissDirection.endToStart,
-          background: Container(
-            alignment: Alignment.centerRight,
-            padding: const EdgeInsets.only(right: AppSpacing.lg),
-            margin: const EdgeInsets.only(bottom: AppSpacing.lg),
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.delete,
-              color: Colors.white,
-              size: 32,
-            ),
-          ),
-          confirmDismiss: (direction) async {
-            return await showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text(l10n.deleteCard),
-                  content: Text(l10n.areYouSureDeleteCard(card.name)),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(false),
-                      child: Text(l10n.cancel),
+          card: card,
+          cardIdKey: cardIdKey,
+          onCardTap: () => _openCardDetails(card),
+          onDeleteConfirmed: () {
+            // Remove from UI immediately
+            context.read<CardCubit>().removeCardFromState(cardIdKey);
+
+            bool undoPressed = false;
+
+            // Show snackbar for 5 seconds
+            ScaffoldMessenger.of(context)
+                .showSnackBar(
+                  SnackBar(
+                    content: Text(l10n.cardDeleted(card.name)),
+                    duration: const Duration(seconds: 5),
+                    action: SnackBarAction(
+                      label: l10n.undo,
+                      onPressed: () {
+                        undoPressed = true;
+                        context.read<CardCubit>().addCardToState(card);
+                      },
                     ),
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(true),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
-                      ),
-                      child: Text(l10n.delete),
-                    ),
-                  ],
-                );
-              },
-            );
+                  ),
+                )
+                .closed
+                .then((_) {
+              if (!undoPressed) {
+                final backendId = card.backendId;
+                final id = card.id;
+                if (backendId != null && backendId.isNotEmpty) {
+                  context.read<CardCubit>().deleteCardByBackendId(backendId);
+                } else if (id != null) {
+                  context.read<CardCubit>().deleteCard(id);
+                }
+              }
+            });
           },
-          onDismissed: (direction) {
-            final id = card.id;
-            if (id == null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.noCardsFound)),
-              );
-              return;
-            }
-            context.read<CardCubit>().deleteCard(id);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(l10n.cardDeleted(card.name)),
-                action: SnackBarAction(
-                  label: l10n.undo,
-                  onPressed: () {
-                    // Re-add the card
-                    context.read<CardCubit>().addCard(card);
-                  },
-                ),
-              ),
-            );
-          },
-          child: CardListItem(
-            card: card,
-            onTap: () => _openCardDetails(card),
-          ),
+          l10n: l10n,
         );
       },
     );
@@ -438,7 +578,9 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () {
                         Navigator.of(dialogContext).pop();
                         if (cardToDelete.id != null) {
-                          context.read<CardCubit>().deleteCard(cardToDelete.id!);
+                          context
+                              .read<CardCubit>()
+                              .deleteCard(cardToDelete.id!);
                         }
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -469,7 +611,6 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-
 class _CardDetailSheet extends StatelessWidget {
   final CardInfo card;
   final VoidCallback onEdit;
@@ -488,7 +629,8 @@ class _CardDetailSheet extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xl),
+        padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -501,11 +643,14 @@ class _CardDetailSheet extends StatelessWidget {
                   children: [
                     Text(
                       card.name,
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: AppSpacing.xs),
-                    Text(card.jobTitle, style: TextStyle(color: cs.onSurfaceVariant)),
-                    Text(card.organization, style: TextStyle(color: cs.onSurfaceVariant)),
+                    Text(card.jobTitle,
+                        style: TextStyle(color: cs.onSurfaceVariant)),
+                    Text(card.organization,
+                        style: TextStyle(color: cs.onSurfaceVariant)),
                   ],
                 ),
                 IconButton(
@@ -518,10 +663,13 @@ class _CardDetailSheet extends StatelessWidget {
             _InfoRow(icon: Icons.email_outlined, label: card.email),
             _InfoRow(icon: Icons.phone_outlined, label: card.phone),
             _InfoRow(icon: Icons.location_on_outlined, label: card.location),
-            if (card.website.isNotEmpty) _InfoRow(icon: Icons.link, label: card.website),
-            if (card.shareableId != null && card.shareableId!.isNotEmpty) 
-              _InfoRow(icon: Icons.share, label: 'Share ID: ${card.shareableId}'),
-            if (card.id != null) _InfoRow(icon: Icons.badge_outlined, label: 'ID: ${card.id}'),
+            if (card.website.isNotEmpty)
+              _InfoRow(icon: Icons.link, label: card.website),
+            if (card.shareableId != null && card.shareableId!.isNotEmpty)
+              _InfoRow(
+                  icon: Icons.share, label: 'Share ID: ${card.shareableId}'),
+            if (card.id != null)
+              _InfoRow(icon: Icons.badge_outlined, label: 'ID: ${card.id}'),
             const SizedBox(height: AppSpacing.md),
             Text(card.about, style: TextStyle(color: cs.onSurface)),
             const SizedBox(height: AppSpacing.lg),
@@ -540,7 +688,8 @@ class _CardDetailSheet extends StatelessWidget {
                     onPressed: onDelete,
                     icon: const Icon(Icons.delete, color: Colors.red),
                     label: Text(l10n.deleteCard),
-                    style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+                    style:
+                        OutlinedButton.styleFrom(foregroundColor: Colors.red),
                   ),
                 ),
               ],

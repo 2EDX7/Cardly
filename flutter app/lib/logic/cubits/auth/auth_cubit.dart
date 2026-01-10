@@ -2,6 +2,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 import '../../../data/models/user.dart';
 import '../../../data/repositories/user_repository.dart';
+import '../../../data/repositories/api_user_repository.dart';
 import '../../../data/api/api_exception.dart';
 import '../../../data/services/notification_service.dart';
 import 'auth_state.dart';
@@ -93,12 +94,20 @@ class AuthCubit extends HydratedCubit<AuthState> {
   /// Register FCM token with backend
   Future<void> _registerFCMToken() async {
     try {
+      print('🔔 Attempting to register FCM token...');
+
+      // Check if repository supports FCM token registration
+      if (_repository is! ApiUserRepository) {
+        print('⚠️ Repository does not support FCM token registration');
+        return;
+      }
+
+      final apiRepo = _repository as ApiUserRepository;
+
       await NotificationService().registerToken((token) async {
-        // Type check to call registerFCMToken if it's ApiUserRepository
-        if (_repository is dynamic &&
-            _repository.runtimeType.toString().contains('ApiUserRepository')) {
-          await (_repository as dynamic).registerFCMToken(token);
-        }
+        print('📱 Got FCM token: $token');
+        await apiRepo.registerFCMToken(token);
+        print('✅ FCM token registered successfully');
       });
     } catch (e) {
       // Don't fail login if token registration fails
@@ -107,17 +116,20 @@ class AuthCubit extends HydratedCubit<AuthState> {
   }
 
   Future<void> logout() async {
-    // Clear token from storage (handled by repository)
-    // If using ApiUserRepository, call logout method
     try {
-      // Type check to call logout if it's ApiUserRepository
-      if (_repository is dynamic &&
-          _repository.runtimeType.toString().contains('ApiUserRepository')) {
-        await (_repository as dynamic).logout();
+      // Remove FCM token before logout
+      if (_repository is ApiUserRepository) {
+        print('🔔 Removing FCM token...');
+        final apiRepo = _repository as ApiUserRepository;
+        await NotificationService().registerToken((token) async {
+          await apiRepo.removeFCMToken(token);
+          print('✅ FCM token removed');
+        });
       }
     } catch (e) {
-      // Ignore logout errors
+      print('⚠️ Failed to remove FCM token: $e');
     }
+
     emit(AuthState.unauthenticated());
   }
 

@@ -43,7 +43,7 @@ class CardCubit extends Cubit<CardState> {
   /// Load all cards from repository
   Future<void> loadCards() async {
     emit(CardLoading());
-    
+
     try {
       final cards = await _repository.getAllCards(userId: _userId);
       emit(CardLoaded(cards: cards));
@@ -70,7 +70,7 @@ class CardCubit extends Cubit<CardState> {
   /// Add a new card
   Future<void> addCard(CardInfo card) async {
     emit(CardLoading());
-    
+
     try {
       await _repository.addCard(card, userId: _userId);
       await loadCards();
@@ -90,7 +90,7 @@ class CardCubit extends Cubit<CardState> {
   /// Update an existing card
   Future<void> updateCard(CardInfo card) async {
     emit(CardLoading());
-    
+
     try {
       await _repository.updateCard(card, userId: _userId);
       await loadCards();
@@ -106,13 +106,54 @@ class CardCubit extends Cubit<CardState> {
     }
   }
 
+  /// Remove card from UI state only (for optimistic deletion)
+  void removeCardFromState(String cardKey) {
+    if (state is CardLoaded) {
+      final currentCards = List<CardInfo>.from((state as CardLoaded).cards);
+      currentCards.removeWhere(
+          (c) => (c.backendId ?? c.id?.toString() ?? c.email) == cardKey);
+      emit(CardLoaded(cards: currentCards));
+    }
+  }
+
+  /// Re-add card to UI state (for undo)
+  void addCardToState(CardInfo card) {
+    if (state is CardLoaded) {
+      final currentCards = List<CardInfo>.from((state as CardLoaded).cards);
+      currentCards.add(card);
+      emit(CardLoaded(cards: currentCards));
+    }
+  }
+
   /// Delete a card
   Future<void> deleteCard(int id) async {
     emit(CardLoading());
-    
+
     try {
       await _repository.deleteCard(id, userId: _userId);
       await loadCards();
+    } on NetworkException catch (e) {
+      emit(CardError(e.message));
+      await loadCards();
+    } catch (e) {
+      emit(CardError('Failed to delete card: ${e.toString()}'));
+      await loadCards();
+    }
+  }
+
+  /// Delete a card by backend ID (MongoDB _id)
+  /// Only works with ApiCardRepository
+  Future<void> deleteCardByBackendId(String backendId) async {
+    emit(CardLoading());
+
+    try {
+      if (_repository is dynamic &&
+          _repository.runtimeType.toString().contains('ApiCardRepository')) {
+        await (_repository as dynamic).deleteCardByBackendId(backendId);
+        await loadCards();
+      } else {
+        throw UnimplementedError('Backend deletion requires API repository');
+      }
     } on NetworkException catch (e) {
       emit(CardError(e.message));
       await loadCards();
@@ -128,9 +169,9 @@ class CardCubit extends Cubit<CardState> {
       await loadCards();
       return;
     }
-    
+
     emit(CardLoading());
-    
+
     try {
       final cards = await _repository.searchCards(query, userId: _userId);
       emit(CardLoaded(cards: cards));
@@ -144,9 +185,10 @@ class CardCubit extends Cubit<CardState> {
   /// Filter cards by category
   Future<void> filterByCategory(String category) async {
     emit(CardLoading());
-    
+
     try {
-      final cards = await _repository.getCardsByCategory(category, userId: _userId);
+      final cards =
+          await _repository.getCardsByCategory(category, userId: _userId);
       emit(CardLoaded(cards: cards));
     } on NetworkException catch (e) {
       emit(CardError(e.message));
@@ -159,9 +201,9 @@ class CardCubit extends Cubit<CardState> {
   /// Only works with ApiCardRepository
   Future<void> collectCardByShareableId(String shareableId) async {
     emit(CardLoading());
-    
+
     try {
-      if (_repository is dynamic && 
+      if (_repository is dynamic &&
           _repository.runtimeType.toString().contains('ApiCardRepository')) {
         await (_repository as dynamic).collectCardByShareableId(shareableId);
         await loadCards();

@@ -49,7 +49,7 @@ async function sendNotification(tokens, notification, data = {}) {
   };
 
   try {
-    const response = await admin.messaging().sendEachForMultitoken(message);
+    const response = await admin.messaging().sendEachForMulticast(message);
     
     console.log(`📤 Sent ${response.successCount} notifications, ${response.failureCount} failed`);
     

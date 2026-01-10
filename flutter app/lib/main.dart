@@ -98,115 +98,108 @@ class CardlyApp extends StatelessWidget {
 
     final dbHelper = DatabaseHelper();
 
-    return MultiBlocProvider(
-      providers: [
-        // Auth Cubit with API repository
-        BlocProvider(
-          create: (context) => AuthCubit(repository: userRepository),
-        ),
+    return FutureBuilder<void>(
+      future: _restoreAuthToken(apiClient, tokenStorage),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const MaterialApp(
+            debugShowCheckedModeBanner: false,
+            home: Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            ),
+          );
+        }
 
-        // Theme Cubit
-        BlocProvider(
-          create: (context) => ThemeCubit(
-            dbHelper: dbHelper,
-            userRepository: userRepository,
-            userId: null, // Will be set after login
-          ),
-        ),
-
-        // Card Cubit with API repository
-        BlocProvider(
-          create: (context) => CardCubit(
-            repository: cardRepository,
-            initialUserId: null, // Will be set after login
-          ),
-        ),
-
-        // Profile Card Cubit with API repository
-        BlocProvider(
-          create: (context) => ProfileCardCubit(
-            repository: profileCardRepository,
-            initialUserId: null, // Will be set after login
-          ),
-        ),
-
-        // Language Cubit
-        BlocProvider(
-          create: (context) => LanguageCubit(
-            dbHelper: dbHelper,
-            userRepository: userRepository,
-            userId: null, // Will be set after login
-          ),
-        ),
-      ],
-      child: BlocBuilder<AuthCubit, dynamic>(
-        builder: (context, authState) {
-          // When user logs in, set user context for other cubits
-          if (authState.user != null) {
-            final userId = authState.user.id;
-
-            // Set user for cubits that need it
-            Future.microtask(() {
-              try {
-                context.read<CardCubit>().setUser(userId);
-                context.read<ProfileCardCubit>().setUser(userId);
-                context.read<ThemeCubit>().setUser(userId);
-                context.read<LanguageCubit>().setUser(userId);
-              } catch (e) {
-                debugPrint('Error setting user context: $e');
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => AuthCubit(repository: userRepository),
+            ),
+            BlocProvider(
+              create: (context) => ThemeCubit(
+                dbHelper: dbHelper,
+                userRepository: userRepository,
+                userId: null,
+              ),
+            ),
+            BlocProvider(
+              create: (context) => CardCubit(
+                repository: cardRepository,
+                initialUserId: null,
+              ),
+            ),
+            BlocProvider(
+              create: (context) => ProfileCardCubit(
+                repository: profileCardRepository,
+                initialUserId: null,
+              ),
+            ),
+            BlocProvider(
+              create: (context) => LanguageCubit(
+                dbHelper: dbHelper,
+                userRepository: userRepository,
+                userId: null,
+              ),
+            ),
+          ],
+          child: BlocBuilder<AuthCubit, dynamic>(
+            builder: (context, authState) {
+              if (authState.user != null) {
+                final userId = authState.user.id;
+                Future.microtask(() {
+                  try {
+                    context.read<CardCubit>().setUser(userId);
+                    context.read<ProfileCardCubit>().setUser(userId);
+                    context.read<ThemeCubit>().setUser(userId);
+                    context.read<LanguageCubit>().setUser(userId);
+                  } catch (e) {
+                    debugPrint('Error setting user context: $e');
+                  }
+                });
               }
-            });
-          }
 
-          return BlocBuilder<ThemeCubit, ThemeState>(
-            builder: (context, themeState) {
-              return BlocBuilder<LanguageCubit, LanguageState>(
-                builder: (context, languageState) {
-                  return MaterialApp(
-                    title: 'Cardly',
-                    debugShowCheckedModeBanner: false,
-
-                    // Localization delegates
-                    localizationsDelegates: const [
-                      AppLocalizations.delegate,
-                      GlobalMaterialLocalizations.delegate,
-                      GlobalWidgetsLocalizations.delegate,
-                      GlobalCupertinoLocalizations.delegate,
-                    ],
-
-                    // Supported locales
-                    supportedLocales: const [
-                      Locale('en'), // English
-                      Locale('fr'), // French
-                      Locale('ar'), // Arabic
-                    ],
-
-                    // Current locale
-                    locale: languageState.locale,
-
-                    // Locale resolution callback
-                    localeResolutionCallback: (locale, supportedLocales) {
-                      for (var supportedLocale in supportedLocales) {
-                        if (supportedLocale.languageCode ==
-                            locale?.languageCode) {
-                          return supportedLocale;
-                        }
-                      }
-                      return supportedLocales.first;
+              return BlocBuilder<ThemeCubit, ThemeState>(
+                builder: (context, themeState) {
+                  return BlocBuilder<LanguageCubit, LanguageState>(
+                    builder: (context, languageState) {
+                      return MaterialApp(
+                        title: 'Cardly',
+                        debugShowCheckedModeBanner: false,
+                        localizationsDelegates: const [
+                          AppLocalizations.delegate,
+                          GlobalMaterialLocalizations.delegate,
+                          GlobalWidgetsLocalizations.delegate,
+                          GlobalCupertinoLocalizations.delegate,
+                        ],
+                        supportedLocales: const [
+                          Locale('en'),
+                          Locale('fr'),
+                          Locale('ar'),
+                        ],
+                        locale: languageState.locale,
+                        localeResolutionCallback: (locale, supportedLocales) {
+                          for (var supportedLocale in supportedLocales) {
+                            if (supportedLocale.languageCode ==
+                                locale?.languageCode) {
+                              return supportedLocale;
+                            }
+                          }
+                          return supportedLocales.first;
+                        },
+                        theme: AppTheme.lightTheme,
+                        darkTheme: AppTheme.darkTheme,
+                        themeMode: themeState.themeMode,
+                        initialRoute: AppRoutes.splash,
+                        onGenerateRoute: RouteGenerator.generateRoute,
+                      );
                     },
-
-                    theme: AppTheme.lightTheme,
-                    darkTheme: AppTheme.darkTheme,
-                    themeMode: themeState.themeMode,
-                    initialRoute: AppRoutes.splash,
-                    onGenerateRoute: RouteGenerator.generateRoute,
                   );
                 },
               );
             },
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 

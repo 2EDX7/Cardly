@@ -4,8 +4,8 @@ class AppConfig {
   static const String apiBaseUrl = String.fromEnvironment(
     'API_URL',
     defaultValue:
-        'http://10.229.150.61:3000/api', // Physical device - use PC IP
-    // Use 'http://10.229.150.61:3000/api' for Android emulator
+        'http://10.80.22.18:3000/api', // Physical device - use PC IP
+    // Use 'http://localhost:3000/api' for Android emulator
     // Use 'http://localhost:3000/api' for iOS simulator
   );
 
