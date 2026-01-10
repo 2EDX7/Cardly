@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cardly/presentation/theme/spacing.dart';
 import 'package:cardly/presentation/theme/typography.dart';
 import 'package:cardly/data/models/card_info.dart';
+import 'package:cardly/data/models/user.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../logic/cubits/card/card_cubit.dart';
+import '../../../logic/cubits/card/card_state.dart';
+
 /// Edit card page where user can update card information
 class EditCardPage extends StatefulWidget {
   final CardInfo cardInfo;
+  final bool isProfileCard;
+  final User? currentUser;
 
   const EditCardPage({
     super.key,
     required this.cardInfo,
+    this.isProfileCard = false,
+    this.currentUser,
   });
 
   @override
@@ -18,7 +27,7 @@ class EditCardPage extends StatefulWidget {
 
 class _EditCardPageState extends State<EditCardPage> {
   final _formKey = GlobalKey<FormState>();
-  
+
   late TextEditingController _nameController;
   // late TextEditingController _logoTextController;
   late TextEditingController _organizationController;
@@ -28,19 +37,38 @@ class _EditCardPageState extends State<EditCardPage> {
   late TextEditingController _locationController;
   late TextEditingController _aboutController;
   late TextEditingController _websiteController;
+  late TextEditingController _otherCategoryController;
+
+  String? _selectedCategory;
+  final Set<String> _customCategories = {};
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.cardInfo.name);
+
+    // Auto-fill name and email from user account if this is a new profile card
+    String initialName = widget.cardInfo.name;
+    String initialEmail = widget.cardInfo.email;
+
+    if (widget.isProfileCard &&
+        widget.currentUser != null &&
+        widget.cardInfo.name.isEmpty) {
+      initialName = widget.currentUser!.fullName;
+      initialEmail = widget.currentUser!.email;
+    }
+
+    _nameController = TextEditingController(text: initialName);
     // _logoTextController = TextEditingController(text: widget.cardInfo.logoText);
-    _organizationController = TextEditingController(text: widget.cardInfo.organization);
+    _organizationController =
+        TextEditingController(text: widget.cardInfo.organization);
     _jobTitleController = TextEditingController(text: widget.cardInfo.jobTitle);
-    _emailController = TextEditingController(text: widget.cardInfo.email);
+    _emailController = TextEditingController(text: initialEmail);
     _phoneController = TextEditingController(text: widget.cardInfo.phone);
     _locationController = TextEditingController(text: widget.cardInfo.location);
     _aboutController = TextEditingController(text: widget.cardInfo.about);
     _websiteController = TextEditingController(text: widget.cardInfo.website);
+    _otherCategoryController = TextEditingController();
+    _selectedCategory = widget.cardInfo.category;
   }
 
   @override
@@ -54,11 +82,34 @@ class _EditCardPageState extends State<EditCardPage> {
     _locationController.dispose();
     _aboutController.dispose();
     _websiteController.dispose();
+    _otherCategoryController.dispose();
     super.dispose();
   }
 
   void _saveChanges() {
     if (_formKey.currentState!.validate()) {
+      // Determine final category (only for collected cards, not profile cards)
+      String? finalCategory;
+
+      if (!widget.isProfileCard) {
+        finalCategory = _selectedCategory;
+        if (_selectedCategory == 'Other') {
+          final newCat = _otherCategoryController.text.trim();
+          if (newCat.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Please enter a category name'),
+                backgroundColor: Colors.orange,
+              ),
+            );
+            return;
+          }
+          finalCategory = newCat;
+          _customCategories.add(newCat);
+        }
+        finalCategory ??= AppLocalizations.of(context)!.uncategorized;
+      }
+
       final updatedCardInfo = widget.cardInfo.copyWith(
         name: _nameController.text,
         organization: _organizationController.text,
@@ -68,7 +119,13 @@ class _EditCardPageState extends State<EditCardPage> {
         location: _locationController.text,
         about: _aboutController.text,
         website: _websiteController.text,
+        category: finalCategory,
       );
+      // Preserve backend identifiers so update works for collected cards
+      updatedCardInfo.backendId = widget.cardInfo.backendId;
+      updatedCardInfo.id = widget.cardInfo.id;
+      updatedCardInfo.shareableId = widget.cardInfo.shareableId;
+      updatedCardInfo.isProfileCard = widget.cardInfo.isProfileCard;
 
       Navigator.of(context).pop(updatedCardInfo);
     }
@@ -103,13 +160,45 @@ class _EditCardPageState extends State<EditCardPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    // Build category list from existing cards + custom selections
+    final state = context.watch<CardCubit>().state;
+    final existing = <String>{
+      l10n.uncategorized,
+      ..._customCategories,
+    };
+
+    if (state is CardLoaded) {
+      existing.addAll(state.cards
+          .map((c) => c.category ?? l10n.uncategorized)
+          .where((c) => c.trim().isNotEmpty));
+    }
+
+    // Always include the current card's category if it exists
+    if (widget.cardInfo.category != null &&
+        widget.cardInfo.category!.trim().isNotEmpty) {
+      existing.add(widget.cardInfo.category!);
+    }
+
+    // Always include the selected category if it exists and is not "Other"
+    if (_selectedCategory != null &&
+        _selectedCategory != 'Other' &&
+        _selectedCategory!.trim().isNotEmpty) {
+      existing.add(_selectedCategory!);
+    }
+
+    final categories = existing.toList()..sort();
+    categories.add('Other');
+
+    // Initialize _selectedCategory if null
+    _selectedCategory ??= widget.cardInfo.category ?? l10n.uncategorized;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onBackground),
+          icon: Icon(Icons.arrow_back,
+              color: Theme.of(context).colorScheme.onBackground),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -277,6 +366,82 @@ class _EditCardPageState extends State<EditCardPage> {
                 prefixIcon: Icons.info_outline,
                 maxLines: 4,
               ),
+              const SizedBox(height: AppSpacing.lg),
+
+              // Category Section (only for collected cards, not profile cards)
+              if (!widget.isProfileCard) ...[
+                Text(
+                  'Category',
+                  style: AppTextStyles.overline(context).copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                DropdownButtonFormField<String>(
+                  value: _selectedCategory,
+                  decoration: InputDecoration(
+                    labelText: l10n.categoryOptional,
+                    labelStyle: TextStyle(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onBackground
+                          .withOpacity(0.7),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onBackground
+                            .withOpacity(0.3),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: Theme.of(context).colorScheme.surface,
+                  ),
+                  dropdownColor: Theme.of(context).colorScheme.surface,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onBackground,
+                    fontSize: 16,
+                  ),
+                  items: categories.map((String category) {
+                    return DropdownMenuItem<String>(
+                      value: category,
+                      child: Text(category),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedCategory = newValue;
+                      if (newValue != 'Other') {
+                        _otherCategoryController.clear();
+                      }
+                    });
+                  },
+                ),
+                if (_selectedCategory == 'Other') ...[
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _otherCategoryController,
+                    decoration: const InputDecoration(
+                      labelText: 'New category name',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ],
+              ], // Close the if (!widget.isProfileCard) block
+
               const SizedBox(height: AppSpacing.xxl),
 
               // Save Button

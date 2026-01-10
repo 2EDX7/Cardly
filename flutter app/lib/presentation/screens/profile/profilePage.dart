@@ -10,7 +10,9 @@ import "package:cardly/presentation/screens/profile/widgets/background_picker_wi
 import "package:cardly/presentation/screens/profile/widgets/profile_action_buttons.dart";
 import "package:cardly/presentation/screens/profile/widgets/custom_color_picker_dialog.dart";
 import "package:cardly/presentation/screens/profile/edit_card_page.dart";
+import "package:cardly/presentation/screens/profile/edit_appearance_page.dart";
 import "package:cardly/data/models/card_info.dart";
+import "package:cardly/data/models/user.dart";
 import '../../../logic/cubits/profile_card/profile_card_cubit.dart';
 import '../../../logic/cubits/profile_card/profile_card_state.dart';
 import '../../../logic/cubits/card/card_cubit.dart';
@@ -18,10 +20,12 @@ import '../../../logic/cubits/theme/theme_cubit.dart';
 import '../../../logic/cubits/theme/theme_state.dart';
 import '../../../logic/cubits/language/language_cubit.dart';
 import '../../../logic/cubits/auth/auth_cubit.dart';
+import '../../../logic/cubits/auth/auth_state.dart';
 import './widgets/LanguageSection_widget.dart';
 // import 'package:cardly/src/generated/l10n/app_localizations.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../routes/routes.dart';
+import '../qr/show_qr_code_screen.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -54,7 +58,16 @@ class _ProfilePageState extends State<ProfilePage>
     const Color(0xFFFF0000), // Red
     const Color(0xFF8B00FF), // Purple
     const Color(0xFF00FF00), // Green
-    // const Color(0xFF00B8FF), // Blue
+    const Color(0xFF00B8FF), // Blue
+    const Color(0xFFFFD700), // Gold
+    const Color(0xFFFF69B4), // Pink
+    const Color(0xFFFF8C00), // Orange
+    const Color(0xFF00CED1), // Turquoise
+    const Color(0xFFDC143C), // Crimson
+    const Color(0xFF4B0082), // Indigo
+    const Color(0xFF32CD32), // Lime
+    const Color(0xFFFF1493), // Deep Pink
+    const Color(0xFF1E90FF), // Dodger Blue
   ];
 
   // Background options using predefined CardBackground
@@ -64,7 +77,16 @@ class _ProfilePageState extends State<ProfilePage>
     CardBackground.green,
     CardBackground.grey,
     CardBackground.purple,
-    // CardBackground.blue,
+    CardBackground.blue,
+    CardBackground.goldSilver,
+    CardBackground.purpleBlue,
+    CardBackground.orangePink,
+    CardBackground.greenBlue,
+    CardBackground.sunset,
+    CardBackground.primarySolid,
+    CardBackground.secondarySolid,
+    CardBackground.darkSolid,
+    CardBackground.blueSolid,
   ];
 
   @override
@@ -286,138 +308,125 @@ class _ProfilePageState extends State<ProfilePage>
                     background: displayBackground,
                     textColor: displayFontColor,
                     onCardTap: _flipCard,
+                    shareableId: card.shareableId,
+                  ),
+
+                // Action buttons under card (Edit Info, Edit Appearance, Share)
+                if (hasCard)
+                  Padding(
+                    padding: const EdgeInsets.only(top: AppSpacing.md),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _ProfileActionButton(
+                          icon: Icons.edit,
+                          label: 'Edit Info',
+                          onTap: () async {
+                            final CardInfo? updatedCardInfo =
+                                await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => EditCardPage(
+                                  cardInfo: card,
+                                  isProfileCard: true,
+                                ),
+                              ),
+                            );
+
+                            if (updatedCardInfo != null) {
+                              debugPrint(
+                                  ' Saving card: name=${updatedCardInfo.name}, bg=${updatedCardInfo.background}, fontColor=${updatedCardInfo.fontColor}');
+                              await context
+                                  .read<ProfileCardCubit>()
+                                  .saveProfileCard(updatedCardInfo);
+
+                              setState(() {
+                                _cardInfo = updatedCardInfo;
+                              });
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(l10n.cardInformationUpdated),
+                                  backgroundColor: AppColors.success,
+                                ),
+                              );
+                            }
+                          },
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        _ProfileActionButton(
+                          icon: Icons.palette,
+                          label: 'Edit Appearance',
+                          onTap: () async {
+                            final CardInfo? updatedCardInfo =
+                                await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    EditAppearancePage(card: card),
+                              ),
+                            );
+
+                            if (updatedCardInfo != null) {
+                              await context
+                                  .read<ProfileCardCubit>()
+                                  .saveProfileCard(updatedCardInfo);
+
+                              setState(() {
+                                _cardInfo = updatedCardInfo;
+                                _selectedBackground =
+                                    updatedCardInfo.background ??
+                                        CardBackground.defaultGradient;
+                                _selectedFontColor =
+                                    updatedCardInfo.fontColor ?? Colors.white;
+                              });
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content:
+                                      Text('Appearance updated successfully'),
+                                  backgroundColor: AppColors.success,
+                                ),
+                              );
+                            }
+                          },
+                          color: Colors.purple,
+                        ),
+                        _ProfileActionButton(
+                          icon: Icons.share,
+                          label: l10n.share,
+                          onTap: () {
+                            if (card.shareableId != null &&
+                                card.shareableId!.isNotEmpty) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => ShowQrCodeScreen(card: card),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      "Card not saved or ID missing. Please save first."),
+                                ),
+                              );
+                            }
+                          },
+                          color: Colors.blue,
+                        ),
+                      ],
+                    ),
                   ),
 
                 const SizedBox(height: AppSpacing.xl),
-
-                // Only show color and background pickers if user has a card
-                if (hasCard) ...[
-                  ColorPickerWidget(
-                    selectedColor: displayFontColor,
-                    colors: _fontColors,
-                    onColorSelected: (color) {
-                      setState(() {
-                        _selectedFontColor = color;
-                        _userChangedFontColor = true;
-                      });
-                    },
-                    onCustomColorPressed: () async {
-                      final Color? color = await showCustomColorPicker(
-                        context,
-                        initialColor: _selectedFontColor,
-                      );
-                      if (color != null) {
-                        setState(() {
-                          _selectedFontColor = color;
-                          _userChangedFontColor = true;
-                        });
-                      }
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  BackgroundPickerWidget(
-                    selectedBackground: displayBackground,
-                    backgrounds: _backgrounds,
-                    onBackgroundSelected: (bg) {
-                      setState(() {
-                        _selectedBackground = bg;
-                        _userChangedBackground = true;
-                      });
-                    },
-                    onCustomBackgroundPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(AppLocalizations.of(context)!
-                              .customBackgroundPicker),
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.xl),
-                ],
 
                 _buildThemeSection(context),
 
                 const SizedBox(height: AppSpacing.xl),
 
+                _buildNotificationSection(context),
+
+                const SizedBox(height: AppSpacing.xl),
+
                 const LanguagesectionWidget(),
-
-                const SizedBox(height: AppSpacing.xxl),
-
-                // Only show action buttons if user has a card
-                if (hasCard)
-                  BlocBuilder<ProfileCardCubit, ProfileCardState>(
-                    builder: (context, cardState) {
-                      final isLoading = cardState is ProfileCardLoading;
-                      final currentCard = cardState is ProfileCardLoaded
-                          ? cardState.card
-                          : _cardInfo;
-
-                      return ProfileActionButtons(
-                        onEditPressed: () async {
-                          final CardInfo? updatedCardInfo =
-                              await Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  EditCardPage(cardInfo: currentCard),
-                            ),
-                          );
-
-                          if (updatedCardInfo != null) {
-                            debugPrint(
-                                '💾 Saving card: name=${updatedCardInfo.name}, bg=${updatedCardInfo.background}, fontColor=${updatedCardInfo.fontColor}');
-                            await context
-                                .read<ProfileCardCubit>()
-                                .saveProfileCard(updatedCardInfo);
-
-                            setState(() {
-                              _cardInfo = updatedCardInfo;
-                            });
-
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(AppLocalizations.of(context)!
-                                    .cardInformationUpdated),
-                                backgroundColor: AppColors.success,
-                              ),
-                            );
-                          }
-                        },
-                        onSavePressed: isLoading
-                            ? null
-                            : () {
-                                // Use the currently loaded card (from cubit state), not the default
-                                final updatedCard = card.copyWith(
-                                  background: _selectedBackground,
-                                  fontColor: _selectedFontColor,
-                                );
-
-                                debugPrint(
-                                    '💾 Save button: saving card=${updatedCard.name}, bg=${updatedCard.background}, fontColor=${updatedCard.fontColor}');
-                                context
-                                    .read<ProfileCardCubit>()
-                                    .saveProfileCard(updatedCard);
-
-                                setState(() {
-                                  _cardInfo = updatedCard;
-                                  _selectedBackground = _selectedBackground;
-                                  _selectedFontColor = _selectedFontColor;
-                                  // Reset change flags after save
-                                  _userChangedBackground = false;
-                                  _userChangedFontColor = false;
-                                });
-
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(AppLocalizations.of(context)!
-                                        .cardSavedSuccessfully),
-                                    backgroundColor: theme.colorScheme.primary,
-                                  ),
-                                );
-                              },
-                      );
-                    },
-                  ),
 
                 const SizedBox(height: AppSpacing.lg),
               ],
@@ -462,25 +471,39 @@ class _ProfilePageState extends State<ProfilePage>
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.xl),
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.of(context)
-                    .push(
-                  MaterialPageRoute(
-                    builder: (_) => EditCardPage(cardInfo: CardInfo.empty()),
-                  ),
-                )
-                    .then((value) {
-                  if (value is CardInfo) {
-                    context.read<ProfileCardCubit>().saveProfileCard(value);
-                    setState(() {
-                      _cardInfo = value;
+            BlocBuilder<AuthCubit, AuthState>(
+              builder: (context, authState) {
+                return ElevatedButton.icon(
+                  onPressed: () {
+                    // Get user info for auto-fill
+                    User? currentUser;
+                    if (authState.status == AuthStatus.authenticated) {
+                      currentUser = authState.user;
+                    }
+
+                    Navigator.of(context)
+                        .push(
+                      MaterialPageRoute(
+                        builder: (_) => EditCardPage(
+                          cardInfo: CardInfo.empty(),
+                          isProfileCard: true,
+                          currentUser: currentUser,
+                        ),
+                      ),
+                    )
+                        .then((value) {
+                      if (value is CardInfo) {
+                        context.read<ProfileCardCubit>().saveProfileCard(value);
+                        setState(() {
+                          _cardInfo = value;
+                        });
+                      }
                     });
-                  }
-                });
+                  },
+                  icon: const Icon(Icons.add),
+                  label: Text(l10n.addCard),
+                );
               },
-              icon: const Icon(Icons.add),
-              label: Text(l10n.addCard),
             ),
           ],
         ),
@@ -582,6 +605,117 @@ class _ProfilePageState extends State<ProfilePage>
           },
         ),
       ],
+    );
+  }
+
+  /// Build Notification Section
+  Widget _buildNotificationSection(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.notifications,
+          style: AppTextStyles.heading3(context).copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        BlocBuilder<AuthCubit, AuthState>(
+          builder: (context, authState) {
+            if (authState.status != AuthStatus.authenticated ||
+                authState.user == null) {
+              return const SizedBox.shrink();
+            }
+
+            final receiveNotifications = authState.user!.receiveNotifications;
+
+            return Container(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: theme.colorScheme.outline.withOpacity(0.2),
+                ),
+              ),
+              child: ListTile(
+                leading: Icon(
+                  Icons.notifications_active,
+                  color: theme.colorScheme.primary,
+                ),
+                title: Text(
+                  l10n.receiveNotifications,
+                  style: AppTextStyles.body(context),
+                ),
+                subtitle: Text(
+                  l10n.receiveNotificationsDesc,
+                  style: AppTextStyles.caption(context),
+                ),
+                trailing: Switch(
+                  value: receiveNotifications,
+                  onChanged: (value) {
+                    context
+                        .read<AuthCubit>()
+                        .updateNotificationPreference(value);
+                  },
+                  activeColor: theme.colorScheme.primary,
+                ),
+                onTap: () {
+                  context
+                      .read<AuthCubit>()
+                      .updateNotificationPreference(!receiveNotifications);
+                },
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+/// Action button widget for edit/share in profile
+class _ProfileActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final Color color;
+
+  const _ProfileActionButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.sm,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 28),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

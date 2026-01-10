@@ -21,35 +21,45 @@ class ColorPickerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
-    return Center(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SectionLabel(text: l10n.changeFontColor),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              // Color options
-              ...colors.map((color) {
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SectionLabel(text: l10n.changeFontColor),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 56,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: colors.length + (onCustomColorPressed != null ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index < colors.length) {
+                final color = colors[index];
                 final isSelected = color == selectedColor;
-                return _ColorOption(
-                  color: color,
-                  isSelected: isSelected,
-                  onTap: () => onColorSelected(color),
+                return Padding(
+                  padding: EdgeInsets.only(
+                    right: 12,
+                    left: index == 0 ? 0 : 0,
+                  ),
+                  child: _ColorOption(
+                    color: color,
+                    isSelected: isSelected,
+                    onTap: () => onColorSelected(color),
+                  ),
                 );
-              }),
-              // Custom color picker button
-              if (onCustomColorPressed != null)
-                _CustomPickerButton(
-                  onTap: onCustomColorPressed!,
-                ),
-            ],
+              } else {
+                // Custom color picker button
+                return Padding(
+                  padding: const EdgeInsets.only(right: 0),
+                  child: _CustomPickerButton(
+                    onTap: onCustomColorPressed!,
+                  ),
+                );
+              }
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

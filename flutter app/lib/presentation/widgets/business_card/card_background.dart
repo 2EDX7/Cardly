@@ -100,6 +100,8 @@ class CardBackground {
   static CardBackground get blueSolid =>
       CardBackground._(color: const Color(0xFF3B82F6));
 
+  static CardBackground get blackSolid => CardBackground._(color: Colors.black);
+
   /// Get a readable name for this background
   String getBackgroundName() {
     if (assetPath != null) {
@@ -110,25 +112,27 @@ class CardBackground {
       if (assetPath!.contains('Rectangle.png')) return 'blue';
       if (assetPath!.contains('gold_silver.jpg')) return 'goldSilver';
     }
-    
+
     if (gradient != null) {
-      final colors = gradient is LinearGradient 
-          ? (gradient as LinearGradient).colors 
+      final colors = gradient is LinearGradient
+          ? (gradient as LinearGradient).colors
           : <Color>[];
-      if (_sameColors(colors, defaultGradient.gradient!.colors)) return 'defaultGradient';
+      if (_sameColors(colors, defaultGradient.gradient!.colors))
+        return 'defaultGradient';
       if (_sameColors(colors, purpleBlue.gradient!.colors)) return 'purpleBlue';
       if (_sameColors(colors, orangePink.gradient!.colors)) return 'orangePink';
       if (_sameColors(colors, greenBlue.gradient!.colors)) return 'greenBlue';
       if (_sameColors(colors, sunset.gradient!.colors)) return 'sunset';
     }
-    
+
     if (color != null) {
       if (color!.value == primarySolid.color!.value) return 'primarySolid';
       if (color!.value == secondarySolid.color!.value) return 'secondarySolid';
       if (color!.value == darkSolid.color!.value) return 'darkSolid';
       if (color!.value == blueSolid.color!.value) return 'blueSolid';
+      if (color!.value == blackSolid.color!.value) return 'blackSolid';
     }
-    
+
     return 'unknown';
   }
 

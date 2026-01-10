@@ -15,6 +15,8 @@
   "delete": "حذف",
   "edit": "تعديل",
   "close": "إغلاق",
+  "call": "اتصال",
+  "email": "بريد إلكتروني",
   "yes": "نعم",
   "no": "لا",
   "confirm": "تأكيد",
@@ -233,6 +235,7 @@
 
   "cardPreview": "معاينة البطاقة",
   "tapToFlip": "اضغط لتقليب",
+  "swipeToFlip": "اسحب لتقليب",
   "changeFontColor": "تغيير لون الخط",
   "changeBackground": "تغيير الخلفية",
   "red": "أحمر",
@@ -282,6 +285,12 @@
   "uncategorized": "غير مصنف",
   
   "yourTitle": "مسماك الوظيفي",
+  "yourName": "اسمك",
+  "yourCompany": "شركتك",
+  "yourEmail": "بريدك.الإلكتروني@مثال.com",
+  "yourPhone": "0000000000",
+  "yourLocation": "موقعك",
+  "exampleWebsite": "www.مثال.com",
   "customBackgroundPicker": "منتقي الخلفية المخصص - سيتم تنفيذه",
 
   "apply": "تطبيق",
@@ -298,6 +307,9 @@
   "darkMode": "الوضع الداكن",
   "lightMode": "الوضع الفاتح",
   "useSystemTheme": "استخدم سمة النظام",
+  "notifications": "الإشعارات",
+  "receiveNotifications": "تلقي الإشعارات",
+  "receiveNotificationsDesc": "احصل على إشعار عندما يجمع شخص ما بطاقتك",
 
   "personalInformation": "المعلومات الشخصية",
   "pleaseEnterYourJobTitle": "الرجاء إدخال المسمى الوظيفي",

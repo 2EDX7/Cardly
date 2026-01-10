@@ -33,13 +33,13 @@ class DatabaseHelper {
       // Set the database factory
       databaseFactory = databaseFactoryFfi;
     }
-    
+
     final databasePath = await getDatabasesPath();
     final path = join(databasePath, 'cardly.db');
 
     final db = await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -62,6 +62,7 @@ class DatabaseHelper {
         passwordHash TEXT NOT NULL,
         themeMode TEXT DEFAULT 'system',
         language TEXT DEFAULT 'en',
+        receiveNotifications INTEGER DEFAULT 1,
         createdAt TEXT NOT NULL,
         updatedAt TEXT NOT NULL
       )
@@ -103,6 +104,13 @@ class DatabaseHelper {
         category TEXT,
         background TEXT,
         userId TEXT NOT NULL DEFAULT '$defaultUserId',
+        backendId TEXT,
+        shareableId TEXT,
+        customCategory TEXT,
+        tags TEXT,
+        notes TEXT,
+        needsSync INTEGER DEFAULT 0,
+        lastSyncedAt TEXT,
         createdAt TEXT NOT NULL,
         updatedAt TEXT NOT NULL
       )
@@ -151,18 +159,73 @@ class DatabaseHelper {
       final columns = await db.rawQuery('PRAGMA table_info(cards);');
       final hasUserId = columns.any((col) => col['name'] == 'userId');
       if (!hasUserId) {
-        await db.execute("ALTER TABLE cards ADD COLUMN userId TEXT NOT NULL DEFAULT '$defaultUserId'");
+        await db.execute(
+            "ALTER TABLE cards ADD COLUMN userId TEXT NOT NULL DEFAULT '$defaultUserId'");
       }
-      
+
       // Add theme and language columns to existing users table
       final userColumns = await db.rawQuery('PRAGMA table_info(users);');
       final hasTheme = userColumns.any((col) => col['name'] == 'themeMode');
       final hasLanguage = userColumns.any((col) => col['name'] == 'language');
       if (!hasTheme) {
-        await db.execute("ALTER TABLE users ADD COLUMN themeMode TEXT DEFAULT 'system'");
+        await db.execute(
+            "ALTER TABLE users ADD COLUMN themeMode TEXT DEFAULT 'system'");
       }
       if (!hasLanguage) {
-        await db.execute("ALTER TABLE users ADD COLUMN language TEXT DEFAULT 'en'");
+        await db
+            .execute("ALTER TABLE users ADD COLUMN language TEXT DEFAULT 'en'");
+      }
+    }
+
+    if (oldVersion < 3) {
+      // Add sync-related columns for offline/online synchronization
+      final columns = await db.rawQuery('PRAGMA table_info(cards);');
+
+      final hasBackendId = columns.any((col) => col['name'] == 'backendId');
+      if (!hasBackendId) {
+        await db.execute("ALTER TABLE cards ADD COLUMN backendId TEXT");
+      }
+
+      final hasShareableId = columns.any((col) => col['name'] == 'shareableId');
+      if (!hasShareableId) {
+        await db.execute("ALTER TABLE cards ADD COLUMN shareableId TEXT");
+      }
+
+      final hasCustomCategory =
+          columns.any((col) => col['name'] == 'customCategory');
+      if (!hasCustomCategory) {
+        await db.execute("ALTER TABLE cards ADD COLUMN customCategory TEXT");
+      }
+
+      final hasTags = columns.any((col) => col['name'] == 'tags');
+      if (!hasTags) {
+        await db.execute("ALTER TABLE cards ADD COLUMN tags TEXT");
+      }
+
+      final hasNotes = columns.any((col) => col['name'] == 'notes');
+      if (!hasNotes) {
+        await db.execute("ALTER TABLE cards ADD COLUMN notes TEXT");
+      }
+
+      final hasNeedsSync = columns.any((col) => col['name'] == 'needsSync');
+      if (!hasNeedsSync) {
+        await db.execute(
+            "ALTER TABLE cards ADD COLUMN needsSync INTEGER DEFAULT 0");
+      }
+
+      final hasLastSyncedAt =
+          columns.any((col) => col['name'] == 'lastSyncedAt');
+      if (!hasLastSyncedAt) {
+        await db.execute("ALTER TABLE cards ADD COLUMN lastSyncedAt TEXT");
+      }
+
+      // Add receiveNotifications column to users table
+      final userColumns = await db.rawQuery('PRAGMA table_info(users);');
+      final hasReceiveNotifications =
+          userColumns.any((col) => col['name'] == 'receiveNotifications');
+      if (!hasReceiveNotifications) {
+        await db.execute(
+            "ALTER TABLE users ADD COLUMN receiveNotifications INTEGER DEFAULT 1");
       }
     }
   }
@@ -186,11 +249,19 @@ class DatabaseHelper {
       // Ensure theme and language columns exist
       final hasTheme = columns.any((col) => col['name'] == 'themeMode');
       final hasLanguage = columns.any((col) => col['name'] == 'language');
+      final hasReceiveNotifications =
+          columns.any((col) => col['name'] == 'receiveNotifications');
       if (!hasTheme) {
-        await db.execute("ALTER TABLE users ADD COLUMN themeMode TEXT DEFAULT 'system'");
+        await db.execute(
+            "ALTER TABLE users ADD COLUMN themeMode TEXT DEFAULT 'system'");
       }
       if (!hasLanguage) {
-        await db.execute("ALTER TABLE users ADD COLUMN language TEXT DEFAULT 'en'");
+        await db
+            .execute("ALTER TABLE users ADD COLUMN language TEXT DEFAULT 'en'");
+      }
+      if (!hasReceiveNotifications) {
+        await db.execute(
+            "ALTER TABLE users ADD COLUMN receiveNotifications INTEGER DEFAULT 1");
       }
     }
   }
@@ -199,7 +270,8 @@ class DatabaseHelper {
     final columns = await db.rawQuery('PRAGMA table_info(cards);');
     final hasUserId = columns.any((col) => col['name'] == 'userId');
     if (!hasUserId) {
-      await db.execute("ALTER TABLE cards ADD COLUMN userId TEXT NOT NULL DEFAULT '$defaultUserId'");
+      await db.execute(
+          "ALTER TABLE cards ADD COLUMN userId TEXT NOT NULL DEFAULT '$defaultUserId'");
     }
   }
 
@@ -238,7 +310,7 @@ class DatabaseHelper {
   /// Insert sample data for initial setup
   Future<void> _insertSampleData(Database db) async {
     final now = DateTime.now().toIso8601String();
-    
+
     final sampleCards = [
       {
         'name': 'Imed Bouchrika',
@@ -247,7 +319,8 @@ class DatabaseHelper {
         'email': 'imed.bouchrika@ensia.edu.dz',
         'phone': '0557317584',
         'location': 'Sidi Abdellah - Algiers',
-        'about': 'Professor Bouchrika has been actively involved in launching start-ups.',
+        'about':
+            'Professor Bouchrika has been actively involved in launching start-ups.',
         'website': 'www.ensia.edu.dz',
         'category': 'School',
         'background': 'purple',
@@ -262,7 +335,8 @@ class DatabaseHelper {
         'email': 'karim.lounis@ensia.edu.dz',
         'phone': '0661234567',
         'location': 'Sidi Abdellah - Algiers',
-        'about': 'Experienced IT professor specializing in software engineering.',
+        'about':
+            'Experienced IT professor specializing in software engineering.',
         'website': 'www.ensia.edu.dz',
         'category': 'School',
         'background': 'gold',
@@ -310,7 +384,7 @@ class DatabaseHelper {
   /// Convert background string to CardBackground enum
   static CardBackground? _stringToBackground(String? backgroundStr) {
     if (backgroundStr == null) return null;
-    
+
     switch (backgroundStr.toLowerCase()) {
       case 'purple':
         return CardBackground.purple;
@@ -364,13 +438,16 @@ class DatabaseHelper {
     // Gradient-based backgrounds
     final grad = background.gradient;
     if (grad != null) {
-      if (_sameColors(grad.colors, CardBackground.defaultGradient.gradient!.colors)) {
+      if (_sameColors(
+          grad.colors, CardBackground.defaultGradient.gradient!.colors)) {
         return 'defaultGradient';
       }
-      if (_sameColors(grad.colors, CardBackground.purpleBlue.gradient!.colors)) {
+      if (_sameColors(
+          grad.colors, CardBackground.purpleBlue.gradient!.colors)) {
         return 'purpleBlue';
       }
-      if (_sameColors(grad.colors, CardBackground.orangePink.gradient!.colors)) {
+      if (_sameColors(
+          grad.colors, CardBackground.orangePink.gradient!.colors)) {
         return 'orangePink';
       }
       if (_sameColors(grad.colors, CardBackground.greenBlue.gradient!.colors)) {
@@ -384,10 +461,14 @@ class DatabaseHelper {
     // Solid color backgrounds
     final color = background.color;
     if (color != null) {
-      if (color.value == CardBackground.primarySolid.color!.value) return 'primarySolid';
-      if (color.value == CardBackground.secondarySolid.color!.value) return 'secondarySolid';
-      if (color.value == CardBackground.darkSolid.color!.value) return 'darkSolid';
-      if (color.value == CardBackground.blueSolid.color!.value) return 'blueSolid';
+      if (color.value == CardBackground.primarySolid.color!.value)
+        return 'primarySolid';
+      if (color.value == CardBackground.secondarySolid.color!.value)
+        return 'secondarySolid';
+      if (color.value == CardBackground.darkSolid.color!.value)
+        return 'darkSolid';
+      if (color.value == CardBackground.blueSolid.color!.value)
+        return 'blueSolid';
     }
 
     // Fallback
@@ -428,7 +509,7 @@ class DatabaseHelper {
       whereArgs: [userId],
       orderBy: 'createdAt DESC',
     );
-    
+
     return List.generate(maps.length, (i) {
       return CardInfo(
         id: maps[i]['id'] as int?,
@@ -444,6 +525,17 @@ class DatabaseHelper {
         category: maps[i]['category'],
         background: _stringToBackground(maps[i]['background']),
         userId: maps[i]['userId'] ?? defaultUserId,
+        backendId: maps[i]['backendId'],
+        shareableId: maps[i]['shareableId'],
+        customCategory: maps[i]['customCategory'],
+        tags: maps[i]['tags'] != null
+            ? (maps[i]['tags'] as String).split(',')
+            : null,
+        notes: maps[i]['notes'],
+        needsSync: (maps[i]['needsSync'] as int?) == 1,
+        lastSyncedAt: maps[i]['lastSyncedAt'] != null
+            ? DateTime.tryParse(maps[i]['lastSyncedAt'])
+            : null,
       );
     });
   }
@@ -473,6 +565,17 @@ class DatabaseHelper {
       category: maps[0]['category'],
       background: _stringToBackground(maps[0]['background']),
       userId: maps[0]['userId'] ?? defaultUserId,
+      backendId: maps[0]['backendId'],
+      shareableId: maps[0]['shareableId'],
+      customCategory: maps[0]['customCategory'],
+      tags: maps[0]['tags'] != null
+          ? (maps[0]['tags'] as String).split(',')
+          : null,
+      notes: maps[0]['notes'],
+      needsSync: (maps[0]['needsSync'] as int?) == 1,
+      lastSyncedAt: maps[0]['lastSyncedAt'] != null
+          ? DateTime.tryParse(maps[0]['lastSyncedAt'])
+          : null,
     );
   }
 
@@ -502,6 +605,17 @@ class DatabaseHelper {
       category: maps[0]['category'],
       background: _stringToBackground(maps[0]['background']),
       userId: maps[0]['userId'] ?? defaultUserId,
+      backendId: maps[0]['backendId'],
+      shareableId: maps[0]['shareableId'],
+      customCategory: maps[0]['customCategory'],
+      tags: maps[0]['tags'] != null
+          ? (maps[0]['tags'] as String).split(',')
+          : null,
+      notes: maps[0]['notes'],
+      needsSync: (maps[0]['needsSync'] as int?) == 1,
+      lastSyncedAt: maps[0]['lastSyncedAt'] != null
+          ? DateTime.tryParse(maps[0]['lastSyncedAt'])
+          : null,
     );
   }
 
@@ -509,7 +623,7 @@ class DatabaseHelper {
   Future<int> insertCard(CardInfo card, {String userId = defaultUserId}) async {
     final db = await database;
     final now = DateTime.now().toIso8601String();
-    
+
     final cardMap = {
       'name': card.name,
       'organization': card.organization,
@@ -523,18 +637,26 @@ class DatabaseHelper {
       'category': card.category ?? 'Uncategorized',
       'background': _backgroundToString(card.background),
       'userId': userId,
+      'backendId': card.backendId,
+      'shareableId': card.shareableId,
+      'customCategory': card.customCategory,
+      'tags': card.tags?.join(','),
+      'notes': card.notes,
+      'needsSync': card.needsSync ? 1 : 0,
+      'lastSyncedAt': card.lastSyncedAt?.toIso8601String(),
       'createdAt': now,
       'updatedAt': now,
     };
 
-    return await db.insert('cards', cardMap, conflictAlgorithm: ConflictAlgorithm.replace);
+    return await db.insert('cards', cardMap,
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   /// Update an existing card
   Future<int> updateCard(CardInfo card, {String userId = defaultUserId}) async {
     final db = await database;
     final now = DateTime.now().toIso8601String();
-    
+
     final cardMap = {
       'name': card.name,
       'organization': card.organization,
@@ -547,6 +669,13 @@ class DatabaseHelper {
       'logoText': card.logoText,
       'category': card.category ?? 'Uncategorized',
       'background': _backgroundToString(card.background),
+      'backendId': card.backendId,
+      'shareableId': card.shareableId,
+      'customCategory': card.customCategory,
+      'tags': card.tags?.join(','),
+      'notes': card.notes,
+      'needsSync': card.needsSync ? 1 : 0,
+      'lastSyncedAt': card.lastSyncedAt?.toIso8601String(),
       'updatedAt': now,
     };
 
@@ -573,15 +702,17 @@ class DatabaseHelper {
   }
 
   /// Search cards by query
-  Future<List<CardInfo>> searchCards(String query, {String userId = defaultUserId}) async {
+  Future<List<CardInfo>> searchCards(String query,
+      {String userId = defaultUserId}) async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
       'cards',
-      where: 'userId = ? AND (name LIKE ? OR organization LIKE ? OR jobTitle LIKE ?)',
+      where:
+          'userId = ? AND (name LIKE ? OR organization LIKE ? OR jobTitle LIKE ?)',
       whereArgs: [userId, '%$query%', '%$query%', '%$query%'],
       orderBy: 'createdAt DESC',
     );
-    
+
     return List.generate(maps.length, (i) {
       return CardInfo(
         id: maps[i]['id'] as int?,
@@ -597,12 +728,24 @@ class DatabaseHelper {
         category: maps[i]['category'],
         background: _stringToBackground(maps[i]['background']),
         userId: maps[i]['userId'] ?? defaultUserId,
+        backendId: maps[i]['backendId'],
+        shareableId: maps[i]['shareableId'],
+        customCategory: maps[i]['customCategory'],
+        tags: maps[i]['tags'] != null
+            ? (maps[i]['tags'] as String).split(',')
+            : null,
+        notes: maps[i]['notes'],
+        needsSync: (maps[i]['needsSync'] as int?) == 1,
+        lastSyncedAt: maps[i]['lastSyncedAt'] != null
+            ? DateTime.tryParse(maps[i]['lastSyncedAt'])
+            : null,
       );
     });
   }
 
   /// Get cards by category
-  Future<List<CardInfo>> getCardsByCategory(String category, {String userId = defaultUserId}) async {
+  Future<List<CardInfo>> getCardsByCategory(String category,
+      {String userId = defaultUserId}) async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
       'cards',
@@ -610,7 +753,7 @@ class DatabaseHelper {
       whereArgs: [userId, category],
       orderBy: 'createdAt DESC',
     );
-    
+
     return List.generate(maps.length, (i) {
       return CardInfo(
         id: maps[i]['id'] as int?,
@@ -626,6 +769,17 @@ class DatabaseHelper {
         category: maps[i]['category'],
         background: _stringToBackground(maps[i]['background']),
         userId: maps[i]['userId'] ?? defaultUserId,
+        backendId: maps[i]['backendId'],
+        shareableId: maps[i]['shareableId'],
+        customCategory: maps[i]['customCategory'],
+        tags: maps[i]['tags'] != null
+            ? (maps[i]['tags'] as String).split(',')
+            : null,
+        notes: maps[i]['notes'],
+        needsSync: (maps[i]['needsSync'] as int?) == 1,
+        lastSyncedAt: maps[i]['lastSyncedAt'] != null
+            ? DateTime.tryParse(maps[i]['lastSyncedAt'])
+            : null,
       );
     });
   }
@@ -645,7 +799,8 @@ class DatabaseHelper {
       'createdAt': user.createdAt.toIso8601String(),
       'updatedAt': user.updatedAt.toIso8601String(),
     };
-    await db.insert('users', userMap, conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert('users', userMap,
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<User?> getUserByEmail(String email) async {
@@ -666,12 +821,13 @@ class DatabaseHelper {
       LEFT JOIN user_cards uc ON u.id = uc.userId
       WHERE u.email = ?
     ''', [email]);
-    
+
     if (result.isEmpty) return null;
     return User.fromMap(result.first);
   }
 
-  Future<User?> getUserByCredentials({required String email, required String passwordHash}) async {
+  Future<User?> getUserByCredentials(
+      {required String email, required String passwordHash}) async {
     debugPrint('🔍 getUserByCredentials: querying for $email');
     final db = await database;
     await _ensureUserTable(db);
@@ -692,9 +848,10 @@ class DatabaseHelper {
     ''', [email, passwordHash]);
     debugPrint('🔍 Query result count: ${result.length}');
     if (result.isNotEmpty) {
-      debugPrint('🔍 Query result cardName: ${result.first['cardName']}, cardBackground: ${result.first['cardBackground']}');
+      debugPrint(
+          '🔍 Query result cardName: ${result.first['cardName']}, cardBackground: ${result.first['cardBackground']}');
     }
-    
+
     if (result.isEmpty) return null;
     return User.fromMap(result.first);
   }
@@ -707,12 +864,12 @@ class DatabaseHelper {
   }) async {
     final db = await database;
     await _ensureUserTable(db);
-    
+
     final Map<String, dynamic> updates = {};
     if (themeMode != null) updates['themeMode'] = themeMode;
     if (language != null) updates['language'] = language;
     updates['updatedAt'] = DateTime.now().toIso8601String();
-    
+
     await db.update(
       'users',
       updates,
@@ -737,7 +894,8 @@ class DatabaseHelper {
     if (maps.isEmpty) return null;
 
     final row = maps.first;
-    debugPrint('🔍 getUserCard: row background=${row['background']}, fontColor=${row['fontColor']}');
+    debugPrint(
+        '🔍 getUserCard: row background=${row['background']}, fontColor=${row['fontColor']}');
     return CardInfo(
       id: row['id'] as int?,
       name: row['name'] as String? ?? '',
@@ -756,8 +914,10 @@ class DatabaseHelper {
     );
   }
 
-  Future<int> upsertUserCard(CardInfo card, {String userId = defaultUserId}) async {
-    debugPrint('💾 upsertUserCard called: name=${card.name}, bg=${card.background}, fontColor=${card.fontColor}');
+  Future<int> upsertUserCard(CardInfo card,
+      {String userId = defaultUserId}) async {
+    debugPrint(
+        '💾 upsertUserCard called: name=${card.name}, bg=${card.background}, fontColor=${card.fontColor}');
     final db = await database;
     await _ensureUserCardTable(db);
     final now = DateTime.now().toIso8601String();
@@ -792,7 +952,8 @@ class DatabaseHelper {
       'createdAt': createdAt,
       'updatedAt': now,
     };
-    debugPrint('💾 Storing in DB: background=${cardMap['background']}, fontColor=${cardMap['fontColor']}');
+    debugPrint(
+        '💾 Storing in DB: background=${cardMap['background']}, fontColor=${cardMap['fontColor']}');
 
     // REPLACE allows upsert by unique userId constraint.
     return await db.insert(

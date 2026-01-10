@@ -22,35 +22,46 @@ class BackgroundPickerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
-    return Center(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SectionLabel(text: l10n.changeBackground),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              // Background options
-              ...backgrounds.map((background) {
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SectionLabel(text: l10n.changeBackground),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 56,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: backgrounds.length +
+                (onCustomBackgroundPressed != null ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index < backgrounds.length) {
+                final background = backgrounds[index];
                 final isSelected = background == selectedBackground;
-                return _BackgroundOption(
-                  background: background,
-                  isSelected: isSelected,
-                  onTap: () => onBackgroundSelected(background),
+                return Padding(
+                  padding: EdgeInsets.only(
+                    right: 12,
+                    left: index == 0 ? 0 : 0,
+                  ),
+                  child: _BackgroundOption(
+                    background: background,
+                    isSelected: isSelected,
+                    onTap: () => onBackgroundSelected(background),
+                  ),
                 );
-              }),
-              // Custom background picker button
-              if (onCustomBackgroundPressed != null)
-                _CustomPickerButton(
-                  onTap: onCustomBackgroundPressed!,
-                ),
-            ],
+              } else {
+                // Custom background picker button
+                return Padding(
+                  padding: const EdgeInsets.only(right: 0),
+                  child: _CustomPickerButton(
+                    onTap: onCustomBackgroundPressed!,
+                  ),
+                );
+              }
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

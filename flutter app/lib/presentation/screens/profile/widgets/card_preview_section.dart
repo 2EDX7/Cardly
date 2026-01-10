@@ -7,7 +7,6 @@ import 'package:cardly/presentation/screens/profile/widgets/section_label.dart';
 // import 'package:cardly/src/generated/l10n/app_localizations.dart';
 import '../../../../l10n/app_localizations.dart';
 
-
 /// Widget that displays the business card preview with flip functionality
 class CardPreviewSection extends StatelessWidget {
   final String name;
@@ -22,6 +21,7 @@ class CardPreviewSection extends StatelessWidget {
   final CardBackground background;
   final Color textColor;
   final VoidCallback onCardTap;
+  final String? shareableId;
 
   const CardPreviewSection({
     super.key,
@@ -37,12 +37,13 @@ class CardPreviewSection extends StatelessWidget {
     required this.background,
     required this.textColor,
     required this.onCardTap,
+    this.shareableId,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -52,30 +53,28 @@ class CardPreviewSection extends StatelessWidget {
 
         // Business Card with Flip Animation
         Center(
-          child: GestureDetector(
-            onTap: onCardTap,
-            child: BusinessCard(
-              name: name,
-              // logoText: logoText,
-              organization: organization,
-              jobTitle: jobTitle,
-              email: email,
-              phone: phone,
-              location: location,
-              about: about,
-              website: website,
-              background: background,
-              textColor: textColor,
-            ),
+          child: BusinessCard(
+            name: name,
+            // logoText: logoText,
+            organization: organization,
+            jobTitle: jobTitle,
+            email: email,
+            phone: phone,
+            location: location,
+            about: about,
+            website: website,
+            background: background,
+            textColor: textColor,
+            enableSwipeFlip: true,
           ),
         ),
 
         const SizedBox(height: AppSpacing.sm),
 
-        // "tap to flip" text
+        // "swipe to flip" text
         Center(
           child: Text(
-            l10n.tapToFlip,
+            l10n.swipeToFlip,
             style: AppTextStyles.caption(context).copyWith(
               color: Theme.of(context).colorScheme.onBackground,
               fontWeight: FontWeight.bold,

@@ -3,6 +3,7 @@ import '../../../presentation/widgets/business_card/card_background.dart';
 
 /// Model class representing a business card with all its information
 class CardInfo {
+  // Local fields (SQLite)
   int? id;
   String name;
   String organization;
@@ -17,6 +18,23 @@ class CardInfo {
   CardBackground? background;
   String? userId;
   Color? fontColor;
+
+  // Backend API fields
+  String? backendId; // MongoDB _id
+  String? shareableId; // For profile cards only (immutable)
+  bool? isProfileCard; // true = profile card, false = collected card
+  bool? isPublic; // Sharing visibility (profile cards only)
+  DateTime? collectedAt; // When card was collected
+  String? customCategory; // User's custom category for collected cards
+  List<String>? tags; // User's tags for collected cards
+  String? notes; // User's notes for collected cards
+  String? sourceCardId; // Link to original profile card
+  DateTime? createdAt; // Backend timestamps
+  DateTime? updatedAt;
+  
+  // Sync fields for offline support
+  bool needsSync; // true if card has local changes not synced to backend
+  DateTime? lastSyncedAt; // Last successful sync timestamp
 
   CardInfo({
     this.id,
@@ -33,6 +51,21 @@ class CardInfo {
     this.background,
     this.userId,
     this.fontColor,
+    // Backend fields
+    this.backendId,
+    this.shareableId,
+    this.isProfileCard,
+    this.isPublic,
+    this.collectedAt,
+    this.customCategory,
+    this.tags,
+    this.notes,
+    this.sourceCardId,
+    this.createdAt,
+    this.updatedAt,
+    // Sync fields
+    this.needsSync = false,
+    this.lastSyncedAt,
   });
 
   /// Create a copy of this card with some fields updated
@@ -87,6 +120,7 @@ class CardInfo {
       'background': background?.toString(),
       'userId': userId,
       'fontColor': fontColor != null ? '#${fontColor!.value.toRadixString(16).padLeft(8, '0')}' : null,
+      'shareableId': shareableId,
     };
   }
 
@@ -141,6 +175,7 @@ class CardInfo {
           : null,
       userId: map['userId'],
       fontColor: map['fontColor'] != null ? _parseColor(map['fontColor']) : null,
+      shareableId: map['shareableId'], // Add this
     );
   }
 

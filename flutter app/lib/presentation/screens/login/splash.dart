@@ -9,7 +9,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../logic/cubits/auth/auth_cubit.dart';
 import '../../../logic/cubits/auth/auth_state.dart';
 import '../../../logic/cubits/card/card_cubit.dart';
-import '../../../logic/cubits/profile_card/profile_card_cubit.dart';
 import '../../../logic/cubits/theme/theme_cubit.dart';
 import '../../../logic/cubits/language/language_cubit.dart';
 
@@ -32,27 +31,29 @@ class _IntroSplashState extends State<IntroSplash> {
 
   Future<void> _initializeUser() async {
     final authState = context.read<AuthCubit>().state;
-    if (authState.status == AuthStatus.authenticated && authState.user != null) {
+    if (authState.status == AuthStatus.authenticated &&
+        authState.user != null) {
       final user = authState.user!;
-      
-      // Set user context
+
+      // Set user context and load cards in background
       context.read<CardCubit>().setUser(user.id);
-      
-      // Load card data from user object (already fetched from DB with LEFT JOIN)
-      context.read<ProfileCardCubit>().loadCardFromUser(user);
-      
+
       // Load user preferences for theme and language
       final themeMode = ThemeCubit.themeModeFromString(user.themeMode);
       final locale = LanguageCubit.localeFromString(user.language);
-      
-      await context.read<ThemeCubit>().setUser(user.id, initialTheme: themeMode);
-      await context.read<LanguageCubit>().setUser(user.id, initialLocale: locale);
-      
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.main, (route) => false);
-        }
-      });
+
+      await context
+          .read<ThemeCubit>()
+          .setUser(user.id, initialTheme: themeMode);
+      await context
+          .read<LanguageCubit>()
+          .setUser(user.id, initialLocale: locale);
+
+      // Navigate immediately without waiting for post frame callback
+      if (mounted) {
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil(AppRoutes.main, (route) => false);
+      }
     }
   }
 
@@ -86,7 +87,8 @@ class _IntroSplashState extends State<IntroSplash> {
                     email: 'imed.bouchrika@ensia.edu.dz',
                     phone: '0557317584',
                     location: 'Sidi Abdellah - Algiers',
-                    about: 'Professor Bouchrika has been actively involved in launching a number of start-up companies in the IT and academic sectors. Motivated by feedback and recommendations from leading scientists around the world.',
+                    about:
+                        'Professor Bouchrika has been actively involved in launching a number of start-up companies in the IT and academic sectors. Motivated by feedback and recommendations from leading scientists around the world.',
                     website: 'www.google.com',
                     background: CardBackground.purple,
                   ),
@@ -146,7 +148,8 @@ class _IntroSplashState extends State<IntroSplash> {
                             context,
                             icon: Icons.credit_card,
                             title: AppLocalizations.of(context)!.splashTitle,
-                            subtitle: AppLocalizations.of(context)!.splashSubtitle,
+                            subtitle:
+                                AppLocalizations.of(context)!.splashSubtitle,
                             description:
                                 AppLocalizations.of(context)!.splashDescription,
                           ),
@@ -156,9 +159,10 @@ class _IntroSplashState extends State<IntroSplash> {
                             context,
                             icon: Icons.qr_code_2,
                             title: AppLocalizations.of(context)!.shareInstantly,
-                            subtitle: AppLocalizations.of(context)!.connectWithTap,
-                            description:
-                                AppLocalizations.of(context)!.shareInstantlyDescription,
+                            subtitle:
+                                AppLocalizations.of(context)!.connectWithTap,
+                            description: AppLocalizations.of(context)!
+                                .shareInstantlyDescription,
                           ),
 
                           // Page 3: Eco-Friendly
@@ -166,9 +170,10 @@ class _IntroSplashState extends State<IntroSplash> {
                             context,
                             icon: Icons.eco,
                             title: AppLocalizations.of(context)!.ecoFriendly,
-                            subtitle: AppLocalizations.of(context)!.goGreenGoDigital,
-                            description:
-                                AppLocalizations.of(context)!.ecoFriendlyDescription,
+                            subtitle:
+                                AppLocalizations.of(context)!.goGreenGoDigital,
+                            description: AppLocalizations.of(context)!
+                                .ecoFriendlyDescription,
                           ),
                         ],
                       ),
@@ -221,54 +226,54 @@ class _IntroSplashState extends State<IntroSplash> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-          // Icon
-          Container(
-            padding: const EdgeInsets.all(AppSpacing.xl),
-            decoration: BoxDecoration(
-              color: cs.primary.withOpacity(0.1),
-              shape: BoxShape.circle,
+            // Icon
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              decoration: BoxDecoration(
+                color: cs.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                size: 64,
+                color: cs.primary,
+              ),
             ),
-            child: Icon(
-              icon,
-              size: 64,
-              color: cs.primary,
+
+            const SizedBox(height: AppSpacing.xl),
+
+            // Title
+            Text(
+              title,
+              style: AppTextStyles.heading1(context).copyWith(
+                color: cs.onSurface,
+              ),
+              textAlign: TextAlign.center,
             ),
-          ),
 
-          const SizedBox(height: AppSpacing.xl),
+            const SizedBox(height: AppSpacing.sm),
 
-          // Title
-          Text(
-            title,
-            style: AppTextStyles.heading1(context).copyWith(
-              color: cs.onSurface,
+            // Subtitle
+            Text(
+              subtitle,
+              style: AppTextStyles.heading3(context).copyWith(
+                color: cs.onSurface.withOpacity(0.7),
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
 
-          const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: AppSpacing.lg),
 
-          // Subtitle
-          Text(
-            subtitle,
-            style: AppTextStyles.heading3(context).copyWith(
-              color: cs.onSurface.withOpacity(0.7),
-            ),
-            textAlign: TextAlign.center,
-          ),
-
-          const SizedBox(height: AppSpacing.lg),
-
-          // // Description
-          // Text(
-          //   description,
-          //   style: AppTextStyles.body(context).copyWith(
-          //     color: cs.onSurface.withOpacity(0.6),
-          //     height: 1.6,
-          //   ),
-          //   textAlign: TextAlign.center,
-          // ),
-        ],
+            // // Description
+            // Text(
+            //   description,
+            //   style: AppTextStyles.body(context).copyWith(
+            //     color: cs.onSurface.withOpacity(0.6),
+            //     height: 1.6,
+            //   ),
+            //   textAlign: TextAlign.center,
+            // ),
+          ],
         ),
       ),
     );

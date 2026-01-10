@@ -1,8 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/models/card_info.dart';
 import '../../theme/spacing.dart';
+import '../../../logic/cubits/card/card_cubit.dart';
+import '../../../logic/cubits/card/card_state.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../../routes/routes.dart';
 
 class ScanQrScreen extends StatefulWidget {
   const ScanQrScreen({super.key});
@@ -14,11 +19,87 @@ class ScanQrScreen extends StatefulWidget {
 class _ScanQrScreenState extends State<ScanQrScreen> {
   MobileScannerController cameraController = MobileScannerController();
   bool _isProcessing = false;
+  final TextEditingController _newCategoryController = TextEditingController();
 
   @override
   void dispose() {
     cameraController.dispose();
+    _newCategoryController.dispose();
     super.dispose();
+  }
+
+  Future<String?> _pickCategory(CardInfo card) async {
+    final l10n = AppLocalizations.of(context)!;
+    final state = context.read<CardCubit>().state;
+    final categories = <String>{l10n.uncategorized};
+    if (state is CardLoaded) {
+      categories.addAll(state.cards
+          .map((c) => c.category ?? l10n.uncategorized)
+          .where((c) => c.trim().isNotEmpty));
+    }
+    categories.add('New Category');
+
+    String? selected = card.category ?? l10n.uncategorized;
+    bool creating = false;
+    _newCategoryController.clear();
+
+    return showDialog<String>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: Text('Select Category'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ...categories.map((cat) => RadioListTile<String>(
+                        value: cat,
+                        groupValue: selected,
+                        title: Text(cat),
+                        onChanged: (v) {
+                          setDialogState(() {
+                            selected = v;
+                            creating = v == 'New Category';
+                            if (!creating) {
+                              _newCategoryController.clear();
+                            }
+                          });
+                        },
+                      )),
+                  if (creating)
+                    TextField(
+                      controller: _newCategoryController,
+                      decoration: const InputDecoration(
+                        labelText: 'Category name',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(null),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (creating) {
+                      final name = _newCategoryController.text.trim();
+                      if (name.isEmpty) return;
+                      Navigator.of(dialogContext).pop(name);
+                    } else {
+                      Navigator.of(dialogContext).pop(selected);
+                    }
+                  },
+                  child: const Text('Confirm'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   void _onDetect(BarcodeCapture capture) async {
@@ -37,27 +118,99 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
     });
 
     try {
-      // Parse JSON
-      final decodedMap = jsonDecode(rawValue) as Map<String, dynamic>;
-      
-      // Convert to CardInfo
-      final card = CardInfo.fromJson(decodedMap);
-      
-      // Return the card
-      if (mounted) {
-        Navigator.pop(context, card);
+      // Check if it's a JSON (legacy or offline) or a simple ID string
+      if (rawValue.trim().startsWith('{')) {
+        // Handle as JSON (fallback)
+        try {
+          final decodedMap = jsonDecode(rawValue) as Map<String, dynamic>;
+          final card = CardInfo.fromJson(decodedMap);
+          if (mounted) {
+            Navigator.pop(context, card);
+          }
+        } catch (e) {
+          throw Exception('Invalid card data format');
+        }
+      } else {
+        // Assume it's a shareable ID - Collect via API
+        if (mounted) {
+          final collected = await context
+              .read<CardCubit>()
+              .collectCardByShareableId(rawValue);
+
+          if (collected == null) {
+            // Check if it's a duplicate error
+            final cubitState = context.read<CardCubit>().state;
+            if (cubitState is CardError &&
+                cubitState.message.contains('already have')) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content:
+                      Text('You already have this card in your collection'),
+                  backgroundColor: Colors.orange,
+                ),
+              );
+            }
+            setState(() {
+              _isProcessing = false;
+            });
+            return;
+          }
+
+          if (mounted) {
+            // Wait a bit for the state to settle
+            await Future.delayed(const Duration(milliseconds: 100));
+
+            final chosen = await _pickCategory(collected);
+            final l10n = AppLocalizations.of(context)!;
+            final category = chosen ?? l10n.uncategorized;
+            // Create updated card with category
+            final updatedCard = collected.copyWith(category: category);
+            // Preserve backend identifiers so update works
+            updatedCard.backendId = collected.backendId;
+            updatedCard.id = collected.id;
+            updatedCard.shareableId = collected.shareableId;
+            await context.read<CardCubit>().updateCard(updatedCard);
+
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Card collected as "$category"'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                AppRoutes.home,
+                (route) => false,
+              );
+            }
+          }
+        }
       }
     } catch (e) {
       if (mounted) {
+        String errorMessage = 'Error scanning: ${e.toString()}';
+
+        // Improve error message if it's from our API Exceptions
+        if (e.toString().contains('Card not found')) {
+          errorMessage = 'Card not found with this ID';
+        } else if (e.toString().contains('already collected')) {
+          errorMessage = 'You have already collected this card';
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Invalid QR code: ${e.toString()}'),
+            content: Text(errorMessage),
             backgroundColor: Colors.red,
           ),
         );
-        setState(() {
-          _isProcessing = false;
-        });
+
+        // Wait a bit before processing again to avoid rapid-fire errors
+        await Future.delayed(const Duration(seconds: 2));
+        if (mounted) {
+          setState(() {
+            _isProcessing = false;
+          });
+        }
       }
     }
   }
