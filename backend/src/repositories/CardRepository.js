@@ -198,6 +198,7 @@ class CardRepository {
   async updateCollectedCard(cardId, userId, updateData) {
     // User can only update certain fields of collected cards
     const allowedUpdates = {
+      category: updateData.category,
       customCategory: updateData.customCategory,
       tags: updateData.tags,
       notes: updateData.notes,

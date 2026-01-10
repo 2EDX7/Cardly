@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../widgets/business_card/business_card.dart';
 import '../../../widgets/business_card/card_background.dart';
-import '../../../theme/colors.dart';
 import '../../../theme/spacing.dart';
 import '../../../../data/models/card_info.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../qr/show_qr_code_screen.dart';
 
 class CategorySection extends StatefulWidget {
   final String category;
@@ -12,6 +13,8 @@ class CategorySection extends StatefulWidget {
   final bool isExpanded;
   final VoidCallback onToggle;
   final Function(CardInfo card)? onDeleteConfirmed;
+  final Function(CardInfo card)? onEditTapped;
+  final Function(CardInfo card)? onShareTapped;
   final AppLocalizations l10n;
 
   const CategorySection({
@@ -22,6 +25,8 @@ class CategorySection extends StatefulWidget {
     required this.onToggle,
     required this.l10n,
     this.onDeleteConfirmed,
+    this.onEditTapped,
+    this.onShareTapped,
   });
 
   @override
@@ -136,6 +141,12 @@ class _CategorySectionState extends State<CategorySection>
       onDeleteConfirmed: widget.onDeleteConfirmed != null
           ? () => widget.onDeleteConfirmed!(card)
           : () {},
+      onEditTapped: widget.onEditTapped != null
+          ? () => widget.onEditTapped!(card)
+          : () {},
+      onShareTapped: widget.onShareTapped != null
+          ? () => widget.onShareTapped!(card)
+          : () {},
       l10n: widget.l10n,
     );
   }
@@ -146,6 +157,8 @@ class _CategorySwipeDeleteCard extends StatefulWidget {
   final CardInfo card;
   final String cardIdKey;
   final VoidCallback onDeleteConfirmed;
+  final VoidCallback onEditTapped;
+  final VoidCallback onShareTapped;
   final AppLocalizations l10n;
 
   const _CategorySwipeDeleteCard({
@@ -153,6 +166,8 @@ class _CategorySwipeDeleteCard extends StatefulWidget {
     required this.card,
     required this.cardIdKey,
     required this.onDeleteConfirmed,
+    required this.onEditTapped,
+    required this.onShareTapped,
     required this.l10n,
   }) : super(key: key);
 
@@ -165,12 +180,9 @@ class _CategorySwipeDeleteCardState extends State<_CategorySwipeDeleteCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   double _dragOffset = 0;
-  double _verticalDragOffset = 0;
   final double _deleteButtonWidth = 80;
-  final double _verticalDragThreshold = 50;
   bool _isExpanded = false;
   DateTime _lastTap = DateTime.now();
-  bool _isVerticalDragging = false;
 
   @override
   void initState() {
@@ -209,37 +221,6 @@ class _CategorySwipeDeleteCardState extends State<_CategorySwipeDeleteCard>
         _dragOffset = 0;
       });
     }
-  }
-
-  void _handleVerticalDragStart(DragStartDetails details) {
-    setState(() {
-      _isVerticalDragging = true;
-    });
-  }
-
-  void _handleVerticalDragUpdate(DragUpdateDetails details) {
-    setState(() {
-      _verticalDragOffset += details.delta.dy;
-    });
-  }
-
-  void _handleVerticalDragEnd(DragEndDetails details) {
-    if (!_isExpanded && _verticalDragOffset > _verticalDragThreshold) {
-      setState(() {
-        _isExpanded = true;
-        _dragOffset = 0;
-      });
-    } else if (_isExpanded && _verticalDragOffset < -_verticalDragThreshold) {
-      setState(() {
-        _isExpanded = false;
-        _dragOffset = 0;
-      });
-    }
-
-    setState(() {
-      _verticalDragOffset = 0;
-      _isVerticalDragging = false;
-    });
   }
 
   void _showDeleteConfirmation() async {
@@ -289,13 +270,65 @@ class _CategorySwipeDeleteCardState extends State<_CategorySwipeDeleteCard>
   }
 
   void _handleEdit() {
-    // Note: Navigation would need context from parent
-    // For now, this is a placeholder
+    widget.onEditTapped();
   }
 
   void _handleShare() {
-    // Note: Navigation would need context from parent
-    // For now, this is a placeholder
+    widget.onShareTapped();
+  }
+
+  Future<void> _handleCall() async {
+    final phone = widget.card.phone;
+    if (phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No phone number available')),
+      );
+      return;
+    }
+
+    final uri = Uri(scheme: 'tel', path: phone);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Cannot open phone app')),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleEmail() async {
+    final email = widget.card.email;
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No email address available')),
+      );
+      return;
+    }
+
+    final uri = Uri(
+      scheme: 'mailto',
+      path: email,
+    );
+    try {
+      final canLaunch = await canLaunchUrl(uri);
+      if (canLaunch) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Cannot open email app')),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Cannot open email app')),
+        );
+      }
+    }
   }
 
   @override
@@ -320,25 +353,21 @@ class _CategorySwipeDeleteCardState extends State<_CategorySwipeDeleteCard>
                     borderRadius: BorderRadius.circular(24),
                   ),
             child: _isExpanded
-                ? GestureDetector(
+                ? BusinessCard(
+                    name: widget.card.name,
+                    organization: widget.card.organization,
+                    jobTitle: widget.card.jobTitle,
+                    email: widget.card.email,
+                    phone: widget.card.phone,
+                    location: widget.card.location,
+                    about: widget.card.about,
+                    website: widget.card.website,
+                    background: widget.card.background ??
+                        CardBackground.defaultGradient,
+                    compactCard: false,
+                    width: double.infinity,
+                    enableSwipeFlip: true,
                     onTap: _handleCardTap,
-                    onVerticalDragStart: _handleVerticalDragStart,
-                    onVerticalDragUpdate: _handleVerticalDragUpdate,
-                    onVerticalDragEnd: _handleVerticalDragEnd,
-                    child: BusinessCard(
-                      name: widget.card.name,
-                      organization: widget.card.organization,
-                      jobTitle: widget.card.jobTitle,
-                      email: widget.card.email,
-                      phone: widget.card.phone,
-                      location: widget.card.location,
-                      about: widget.card.about,
-                      website: widget.card.website,
-                      background: widget.card.background ??
-                          CardBackground.defaultGradient,
-                      compactCard: false,
-                      width: double.infinity,
-                    ),
                   )
                 : Stack(
                     children: [
@@ -374,9 +403,6 @@ class _CategorySwipeDeleteCardState extends State<_CategorySwipeDeleteCard>
                           offset: Offset(_dragOffset, 0),
                           child: GestureDetector(
                             onTap: _handleCardTap,
-                            onVerticalDragStart: _handleVerticalDragStart,
-                            onVerticalDragUpdate: _handleVerticalDragUpdate,
-                            onVerticalDragEnd: _handleVerticalDragEnd,
                             child: BusinessCard(
                               name: widget.card.name,
                               organization: widget.card.organization,
@@ -399,16 +425,28 @@ class _CategorySwipeDeleteCardState extends State<_CategorySwipeDeleteCard>
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _CategoryActionButton(
-                    icon: Icons.edit,
-                    label: widget.l10n.edit,
-                    onTap: _handleEdit,
-                    color: Theme.of(context).colorScheme.primary,
+                    icon: Icons.call,
+                    label: widget.l10n.call,
+                    onTap: _handleCall,
+                    color: Colors.green,
+                  ),
+                  _CategoryActionButton(
+                    icon: Icons.email,
+                    label: widget.l10n.email,
+                    onTap: _handleEmail,
+                    color: Colors.orange,
                   ),
                   _CategoryActionButton(
                     icon: Icons.share,
                     label: widget.l10n.share,
                     onTap: _handleShare,
                     color: Colors.blue,
+                  ),
+                  _CategoryActionButton(
+                    icon: Icons.edit,
+                    label: widget.l10n.edit,
+                    onTap: _handleEdit,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   _CategoryActionButton(
                     icon: Icons.delete,
@@ -445,19 +483,19 @@ class _CategoryActionButton extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
+          horizontal: AppSpacing.sm,
           vertical: AppSpacing.sm,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(height: AppSpacing.xs),
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 4),
             Text(
               label,
               style: TextStyle(
                 color: color,
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: FontWeight.w600,
               ),
             ),

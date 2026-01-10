@@ -3,8 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/models/card_info.dart';
 import '../../../logic/cubits/card/card_cubit.dart';
+import '../../../logic/cubits/card/card_state.dart';
 import '../../../logic/cubits/profile_card/profile_card_cubit.dart';
 import '../../theme/spacing.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../../routes/routes.dart';
 
 class AddByIdDialog extends StatefulWidget {
   const AddByIdDialog({super.key});
@@ -15,6 +18,7 @@ class AddByIdDialog extends StatefulWidget {
 
 class _AddByIdDialogState extends State<AddByIdDialog> {
   final TextEditingController _idController = TextEditingController();
+  final TextEditingController _newCategoryController = TextEditingController();
   CardInfo? _previewCard;
   bool _isLoading = false;
   String? _errorMessage;
@@ -22,7 +26,80 @@ class _AddByIdDialogState extends State<AddByIdDialog> {
   @override
   void dispose() {
     _idController.dispose();
+    _newCategoryController.dispose();
     super.dispose();
+  }
+
+  Future<String?> _pickCategory(CardInfo card) async {
+    final l10n = AppLocalizations.of(context)!;
+    final state = context.read<CardCubit>().state;
+    final categories = <String>{l10n.uncategorized};
+    if (state is CardLoaded) {
+      categories.addAll(state.cards
+          .map((c) => c.category ?? l10n.uncategorized)
+          .where((c) => c.trim().isNotEmpty));
+    }
+    categories.add('New Category');
+
+    String? selected = card.category ?? l10n.uncategorized;
+    bool creating = false;
+    _newCategoryController.clear();
+
+    return showDialog<String>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Select Category'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ...categories.map((cat) => RadioListTile<String>(
+                        value: cat,
+                        groupValue: selected,
+                        title: Text(cat),
+                        onChanged: (v) {
+                          setDialogState(() {
+                            selected = v;
+                            creating = v == 'New Category';
+                            if (!creating) _newCategoryController.clear();
+                          });
+                        },
+                      )),
+                  if (creating)
+                    TextField(
+                      controller: _newCategoryController,
+                      decoration: const InputDecoration(
+                        labelText: 'Category name',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(null),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (creating) {
+                      final name = _newCategoryController.text.trim();
+                      if (name.isEmpty) return;
+                      Navigator.of(dialogContext).pop(name);
+                    } else {
+                      Navigator.of(dialogContext).pop(selected);
+                    }
+                  },
+                  child: const Text('Confirm'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   Future<void> _fetchCard() async {
@@ -43,7 +120,8 @@ class _AddByIdDialogState extends State<AddByIdDialog> {
     try {
       // Use ProfileCardCubit to preview the public profile card
       // We are "searching" for a card by shareable ID
-      final card = await context.read<ProfileCardCubit>().getCardByShareableId(idText);
+      final card =
+          await context.read<ProfileCardCubit>().getCardByShareableId(idText);
 
       if (card == null) {
         if (mounted) {
@@ -81,10 +159,29 @@ class _AddByIdDialogState extends State<AddByIdDialog> {
 
     try {
       // Collect the card using its shareable ID
-      await context.read<CardCubit>().collectCardByShareableId(idText);
-      
-      if (mounted) {
-        Navigator.of(context).pop(true);
+      final collected =
+          await context.read<CardCubit>().collectCardByShareableId(idText);
+
+      if (collected != null && mounted) {
+        final chosen = await _pickCategory(collected);
+        final l10n = AppLocalizations.of(context)!;
+        final category = chosen ?? l10n.uncategorized;
+        await context
+            .read<CardCubit>()
+            .updateCard(collected.copyWith(category: category));
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Card added as "$category"'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            AppRoutes.home,
+            (route) => false,
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -160,7 +257,8 @@ class _AddByIdDialogState extends State<AddByIdDialog> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.error_outline, color: Colors.red, size: 20),
+                    const Icon(Icons.error_outline,
+                        color: Colors.red, size: 20),
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
@@ -213,19 +311,28 @@ class _AddByIdDialogState extends State<AddByIdDialog> {
                             children: [
                               Text(
                                 _previewCard!.name,
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
                               ),
                               Text(
                                 _previewCard!.jobTitle,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
                                       color: cs.onSurfaceVariant,
                                     ),
                               ),
                               Text(
                                 _previewCard!.organization,
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
                                       color: cs.onSurfaceVariant,
                                     ),
                               ),
@@ -239,7 +346,8 @@ class _AddByIdDialogState extends State<AddByIdDialog> {
                     const SizedBox(height: AppSpacing.sm),
                     _InfoItem(icon: Icons.email, text: _previewCard!.email),
                     _InfoItem(icon: Icons.phone, text: _previewCard!.phone),
-                    _InfoItem(icon: Icons.location_on, text: _previewCard!.location),
+                    _InfoItem(
+                        icon: Icons.location_on, text: _previewCard!.location),
                   ],
                 ),
               ),

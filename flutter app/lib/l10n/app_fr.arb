@@ -15,6 +15,8 @@
   "delete": "Supprimer",
   "edit": "Modifier",
   "close": "Fermer",
+  "call": "Appeler",
+  "email": "Email",
   "yes": "Oui",
   "no": "Non",
   "confirm": "Confirmer",
@@ -233,6 +235,7 @@
 
   "cardPreview": "APERÇU DE LA CARTE",
   "tapToFlip": "appuyez pour retourner",
+  "swipeToFlip": "glissez pour retourner",
   "changeFontColor": "CHANGER LA COULEUR DE LA POLICE",
   "changeBackground": "CHANGER L'ARRIÈRE-PLAN",
   "red": "Rouge",
@@ -298,6 +301,9 @@
   "darkMode": "Mode sombre",
   "lightMode": "Mode clair",
   "useSystemTheme": "Utiliser le thème du système",
+  "notifications": "Notifications",
+  "receiveNotifications": "Recevoir des notifications",
+  "receiveNotificationsDesc": "Soyez informé lorsque quelqu'un collecte votre carte",
 
   "personalInformation": "INFORMATIONS PERSONNELLES",
   "pleaseEnterYourJobTitle": "Veuillez entrer votre titre de poste",

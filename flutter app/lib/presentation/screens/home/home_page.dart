@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../logic/cubits/card/card_cubit.dart';
 import '../../../logic/cubits/card/card_state.dart';
 import '../../theme/spacing.dart';
@@ -40,12 +41,9 @@ class _SwipeDeleteCardState extends State<_SwipeDeleteCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   double _dragOffset = 0;
-  double _verticalDragOffset = 0;
   final double _deleteButtonWidth = 80;
-  final double _verticalDragThreshold = 50;
   bool _isExpanded = false;
   DateTime _lastTap = DateTime.now();
-  bool _isVerticalDragging = false;
 
   @override
   void initState() {
@@ -84,40 +82,6 @@ class _SwipeDeleteCardState extends State<_SwipeDeleteCard>
         _dragOffset = 0;
       });
     }
-  }
-
-  void _handleVerticalDragStart(DragStartDetails details) {
-    setState(() {
-      _isVerticalDragging = true;
-    });
-  }
-
-  void _handleVerticalDragUpdate(DragUpdateDetails details) {
-    setState(() {
-      _verticalDragOffset += details.delta.dy;
-    });
-  }
-
-  void _handleVerticalDragEnd(DragEndDetails details) {
-    // Slide down to expand (positive offset > threshold)
-    if (!_isExpanded && _verticalDragOffset > _verticalDragThreshold) {
-      setState(() {
-        _isExpanded = true;
-        _dragOffset = 0;
-      });
-    }
-    // Slide up to collapse (negative offset < -threshold)
-    else if (_isExpanded && _verticalDragOffset < -_verticalDragThreshold) {
-      setState(() {
-        _isExpanded = false;
-        _dragOffset = 0;
-      });
-    }
-
-    setState(() {
-      _verticalDragOffset = 0;
-      _isVerticalDragging = false;
-    });
   }
 
   void _showDeleteConfirmation() async {
@@ -189,6 +153,60 @@ class _SwipeDeleteCardState extends State<_SwipeDeleteCard>
     );
   }
 
+  Future<void> _handleCall() async {
+    final phone = widget.card.phone;
+    if (phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No phone number available')),
+      );
+      return;
+    }
+
+    final uri = Uri(scheme: 'tel', path: phone);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Cannot open phone app')),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleEmail() async {
+    final email = widget.card.email;
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No email address available')),
+      );
+      return;
+    }
+
+    final uri = Uri(
+      scheme: 'mailto',
+      path: email,
+    );
+    try {
+      final canLaunch = await canLaunchUrl(uri);
+      if (canLaunch) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Cannot open email app')),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Cannot open email app')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final compactHeight = 180.0;
@@ -212,25 +230,21 @@ class _SwipeDeleteCardState extends State<_SwipeDeleteCard>
                     borderRadius: BorderRadius.circular(24),
                   ),
             child: _isExpanded
-                ? GestureDetector(
+                ? BusinessCard(
+                    name: widget.card.name,
+                    organization: widget.card.organization,
+                    jobTitle: widget.card.jobTitle,
+                    email: widget.card.email,
+                    phone: widget.card.phone,
+                    location: widget.card.location,
+                    about: widget.card.about,
+                    website: widget.card.website,
+                    background: widget.card.background ??
+                        CardBackground.defaultGradient,
+                    compactCard: false,
+                    width: double.infinity,
+                    enableSwipeFlip: true,
                     onTap: _handleCardTap,
-                    onVerticalDragStart: _handleVerticalDragStart,
-                    onVerticalDragUpdate: _handleVerticalDragUpdate,
-                    onVerticalDragEnd: _handleVerticalDragEnd,
-                    child: BusinessCard(
-                      name: widget.card.name,
-                      organization: widget.card.organization,
-                      jobTitle: widget.card.jobTitle,
-                      email: widget.card.email,
-                      phone: widget.card.phone,
-                      location: widget.card.location,
-                      about: widget.card.about,
-                      website: widget.card.website,
-                      background: widget.card.background ??
-                          CardBackground.defaultGradient,
-                      compactCard: false,
-                      width: double.infinity,
-                    ),
                   )
                 : Stack(
                     children: [
@@ -268,9 +282,6 @@ class _SwipeDeleteCardState extends State<_SwipeDeleteCard>
                           offset: Offset(_dragOffset, 0),
                           child: GestureDetector(
                             onTap: _handleCardTap,
-                            onVerticalDragStart: _handleVerticalDragStart,
-                            onVerticalDragUpdate: _handleVerticalDragUpdate,
-                            onVerticalDragEnd: _handleVerticalDragEnd,
                             child: BusinessCard(
                               name: widget.card.name,
                               organization: widget.card.organization,
@@ -294,16 +305,28 @@ class _SwipeDeleteCardState extends State<_SwipeDeleteCard>
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _ActionButton(
-                    icon: Icons.edit,
-                    label: widget.l10n.edit,
-                    onTap: _handleEdit,
-                    color: Theme.of(context).colorScheme.primary,
+                    icon: Icons.call,
+                    label: widget.l10n.call,
+                    onTap: _handleCall,
+                    color: Colors.green,
+                  ),
+                  _ActionButton(
+                    icon: Icons.email,
+                    label: widget.l10n.email,
+                    onTap: _handleEmail,
+                    color: Colors.orange,
                   ),
                   _ActionButton(
                     icon: Icons.share,
                     label: widget.l10n.share,
                     onTap: _handleShare,
                     color: Colors.blue,
+                  ),
+                  _ActionButton(
+                    icon: Icons.edit,
+                    label: widget.l10n.edit,
+                    onTap: _handleEdit,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   _ActionButton(
                     icon: Icons.delete,
@@ -341,19 +364,19 @@ class _ActionButton extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
+          horizontal: AppSpacing.sm,
           vertical: AppSpacing.sm,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(height: AppSpacing.xs),
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 4),
             Text(
               label,
               style: TextStyle(
                 color: color,
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -1025,9 +1048,11 @@ class _HomePageState extends State<HomePage> {
                 final backendId = card.backendId;
                 final id = card.id;
                 if (backendId != null && backendId.isNotEmpty) {
-                  context.read<CardCubit>().deleteCardByBackendId(backendId);
+                  context
+                      .read<CardCubit>()
+                      .deleteCardByBackendIdSilently(backendId);
                 } else if (id != null) {
-                  context.read<CardCubit>().deleteCard(id);
+                  context.read<CardCubit>().deleteCardSilently(id);
                 }
               }
             });
@@ -1065,6 +1090,25 @@ class _HomePageState extends State<HomePage> {
             setState(() {
               _expandedCategories[category] = !isExpanded;
             });
+          },
+          onEditTapped: (card) {
+            Navigator.of(context)
+                .pushNamed(
+              AppRoutes.editCard,
+              arguments: card,
+            )
+                .then((updatedCard) {
+              if (updatedCard is CardInfo) {
+                context.read<CardCubit>().updateCard(updatedCard);
+              }
+            });
+          },
+          onShareTapped: (card) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => ShowQrCodeScreen(card: card),
+              ),
+            );
           },
           onDeleteConfirmed: (card) {
             // Remove from UI immediately
@@ -1107,9 +1151,11 @@ class _HomePageState extends State<HomePage> {
                 final backendId = card.backendId;
                 final id = card.id;
                 if (backendId != null && backendId.isNotEmpty) {
-                  context.read<CardCubit>().deleteCardByBackendId(backendId);
+                  context
+                      .read<CardCubit>()
+                      .deleteCardByBackendIdSilently(backendId);
                 } else if (id != null) {
-                  context.read<CardCubit>().deleteCard(id);
+                  context.read<CardCubit>().deleteCardSilently(id);
                 }
               }
             });

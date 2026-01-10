@@ -39,6 +39,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get close => 'Close';
 
   @override
+  String get call => 'Call';
+
+  @override
+  String get email => 'Email';
+
+  @override
   String get yes => 'Yes';
 
   @override
@@ -457,6 +463,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tapToFlip => 'tap to flip';
 
   @override
+  String get swipeToFlip => 'swipe to flip';
+
+  @override
   String get changeFontColor => 'CHANGE FONT COLOR';
 
   @override
@@ -539,9 +548,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get name => 'Name';
 
   @override
-  String get email => 'Email';
-
-  @override
   String get organization => 'Organization';
 
   @override
@@ -597,6 +603,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get useSystemTheme => 'Use System Theme';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get receiveNotifications => 'Receive Notifications';
+
+  @override
+  String get receiveNotificationsDesc =>
+      'Get notified when someone collects your card';
 
   @override
   String get personalInformation => 'PERSONAL INFORMATION';

@@ -95,12 +95,15 @@ class ApiUserRepository implements UserRepository {
   Future<User> updatePreferences({
     String? themeMode,
     String? language,
+    bool? receiveNotifications,
   }) async {
     final response = await apiClient.patch(
       Endpoints.preferences,
       body: {
         if (themeMode != null) 'themeMode': themeMode,
         if (language != null) 'language': language,
+        if (receiveNotifications != null)
+          'receiveNotifications': receiveNotifications,
       },
     );
 

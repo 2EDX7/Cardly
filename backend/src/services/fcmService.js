@@ -82,9 +82,20 @@ async function sendNotificationToUser(userId, notification, data = {}) {
   const User = require('../models/User');
   
   try {
-    const user = await User.findById(userId).select('fcmTokens');
+    const user = await User.findById(userId).select('fcmTokens preferences');
     
-    if (!user || !user.fcmTokens || user.fcmTokens.length === 0) {
+    if (!user) {
+      console.log(`⚠️ User ${userId} not found`);
+      return { successCount: 0, failureCount: 0 };
+    }
+    
+    // Check if user has enabled notifications
+    if (user.preferences?.receiveNotifications === false) {
+      console.log(`⚠️ User ${userId} has disabled notifications`);
+      return { successCount: 0, failureCount: 0 };
+    }
+    
+    if (!user.fcmTokens || user.fcmTokens.length === 0) {
       console.log(`⚠️ No FCM tokens found for user ${userId}`);
       return { successCount: 0, failureCount: 0 };
     }

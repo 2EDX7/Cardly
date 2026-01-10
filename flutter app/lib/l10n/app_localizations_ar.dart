@@ -39,6 +39,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get close => 'إغلاق';
 
   @override
+  String get call => 'Call';
+
+  @override
+  String get email => 'البريد الإلكتروني';
+
+  @override
   String get yes => 'نعم';
 
   @override
@@ -459,6 +465,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tapToFlip => 'اضغط لتقليب';
 
   @override
+  String get swipeToFlip => 'swipe to flip';
+
+  @override
   String get changeFontColor => 'تغيير لون الخط';
 
   @override
@@ -541,9 +550,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get name => 'الاسم';
 
   @override
-  String get email => 'البريد الإلكتروني';
-
-  @override
   String get organization => 'المنظمة';
 
   @override
@@ -598,6 +604,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get useSystemTheme => 'استخدم سمة النظام';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get receiveNotifications => 'Receive Notifications';
+
+  @override
+  String get receiveNotificationsDesc =>
+      'Get notified when someone collects your card';
 
   @override
   String get personalInformation => 'المعلومات الشخصية';

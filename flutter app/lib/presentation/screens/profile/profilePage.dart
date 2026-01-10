@@ -12,6 +12,7 @@ import "package:cardly/presentation/screens/profile/widgets/custom_color_picker_
 import "package:cardly/presentation/screens/profile/edit_card_page.dart";
 import "package:cardly/presentation/screens/profile/edit_appearance_page.dart";
 import "package:cardly/data/models/card_info.dart";
+import "package:cardly/data/models/user.dart";
 import '../../../logic/cubits/profile_card/profile_card_cubit.dart';
 import '../../../logic/cubits/profile_card/profile_card_state.dart';
 import '../../../logic/cubits/card/card_cubit.dart';
@@ -19,6 +20,7 @@ import '../../../logic/cubits/theme/theme_cubit.dart';
 import '../../../logic/cubits/theme/theme_state.dart';
 import '../../../logic/cubits/language/language_cubit.dart';
 import '../../../logic/cubits/auth/auth_cubit.dart';
+import '../../../logic/cubits/auth/auth_state.dart';
 import './widgets/LanguageSection_widget.dart';
 // import 'package:cardly/src/generated/l10n/app_localizations.dart';
 import '../../../l10n/app_localizations.dart';
@@ -323,8 +325,10 @@ class _ProfilePageState extends State<ProfilePage>
                             final CardInfo? updatedCardInfo =
                                 await Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    EditCardPage(cardInfo: card),
+                                builder: (context) => EditCardPage(
+                                  cardInfo: card,
+                                  isProfileCard: true,
+                                ),
                               ),
                             );
 
@@ -418,6 +422,10 @@ class _ProfilePageState extends State<ProfilePage>
 
                 const SizedBox(height: AppSpacing.xl),
 
+                _buildNotificationSection(context),
+
+                const SizedBox(height: AppSpacing.xl),
+
                 const LanguagesectionWidget(),
 
                 const SizedBox(height: AppSpacing.lg),
@@ -463,25 +471,39 @@ class _ProfilePageState extends State<ProfilePage>
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.xl),
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.of(context)
-                    .push(
-                  MaterialPageRoute(
-                    builder: (_) => EditCardPage(cardInfo: CardInfo.empty()),
-                  ),
-                )
-                    .then((value) {
-                  if (value is CardInfo) {
-                    context.read<ProfileCardCubit>().saveProfileCard(value);
-                    setState(() {
-                      _cardInfo = value;
+            BlocBuilder<AuthCubit, AuthState>(
+              builder: (context, authState) {
+                return ElevatedButton.icon(
+                  onPressed: () {
+                    // Get user info for auto-fill
+                    User? currentUser;
+                    if (authState.status == AuthStatus.authenticated) {
+                      currentUser = authState.user;
+                    }
+
+                    Navigator.of(context)
+                        .push(
+                      MaterialPageRoute(
+                        builder: (_) => EditCardPage(
+                          cardInfo: CardInfo.empty(),
+                          isProfileCard: true,
+                          currentUser: currentUser,
+                        ),
+                      ),
+                    )
+                        .then((value) {
+                      if (value is CardInfo) {
+                        context.read<ProfileCardCubit>().saveProfileCard(value);
+                        setState(() {
+                          _cardInfo = value;
+                        });
+                      }
                     });
-                  }
-                });
+                  },
+                  icon: const Icon(Icons.add),
+                  label: Text(l10n.addCard),
+                );
               },
-              icon: const Icon(Icons.add),
-              label: Text(l10n.addCard),
             ),
           ],
         ),
@@ -578,6 +600,73 @@ class _ProfilePageState extends State<ProfilePage>
                     },
                   ),
                 ],
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  /// Build Notification Section
+  Widget _buildNotificationSection(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.notifications,
+          style: AppTextStyles.heading3(context).copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        BlocBuilder<AuthCubit, AuthState>(
+          builder: (context, authState) {
+            if (authState.status != AuthStatus.authenticated ||
+                authState.user == null) {
+              return const SizedBox.shrink();
+            }
+
+            final receiveNotifications = authState.user!.receiveNotifications;
+
+            return Container(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: theme.colorScheme.outline.withOpacity(0.2),
+                ),
+              ),
+              child: ListTile(
+                leading: Icon(
+                  Icons.notifications_active,
+                  color: theme.colorScheme.primary,
+                ),
+                title: Text(
+                  l10n.receiveNotifications,
+                  style: AppTextStyles.body(context),
+                ),
+                subtitle: Text(
+                  l10n.receiveNotificationsDesc,
+                  style: AppTextStyles.caption(context),
+                ),
+                trailing: Switch(
+                  value: receiveNotifications,
+                  onChanged: (value) {
+                    context
+                        .read<AuthCubit>()
+                        .updateNotificationPreference(value);
+                  },
+                  activeColor: theme.colorScheme.primary,
+                ),
+                onTap: () {
+                  context
+                      .read<AuthCubit>()
+                      .updateNotificationPreference(!receiveNotifications);
+                },
               ),
             );
           },

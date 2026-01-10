@@ -133,6 +133,41 @@ class AuthCubit extends HydratedCubit<AuthState> {
     emit(AuthState.unauthenticated());
   }
 
+  /// Update notification preference
+  Future<void> updateNotificationPreference(bool receiveNotifications) async {
+    final currentState = state;
+    if (currentState.status != AuthStatus.authenticated ||
+        currentState.user == null) return;
+
+    try {
+      // Update locally first
+      final updatedUser = currentState.user!.copyWith(
+        receiveNotifications: receiveNotifications,
+      );
+      emit(AuthState.authenticated(updatedUser));
+
+      // Update in local database
+      await _repository.updatePreferences(
+        receiveNotifications: receiveNotifications,
+      );
+
+      // Update in backend if using API repository
+      if (_repository is ApiUserRepository) {
+        final apiRepo = _repository as ApiUserRepository;
+        await apiRepo.updatePreferences(
+          receiveNotifications: receiveNotifications,
+        );
+        print('✅ Notification preference updated in backend');
+      }
+
+      print('✅ Notification preference updated: $receiveNotifications');
+    } catch (e) {
+      print('⚠️ Failed to update notification preference: $e');
+      // Revert on error
+      emit(currentState);
+    }
+  }
+
   /// Reset to guest/unauthenticated state
   void resetToGuest() {
     emit(AuthState.unauthenticated());

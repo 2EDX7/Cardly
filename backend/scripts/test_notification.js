@@ -30,13 +30,29 @@ async function sendNotification(tokens, notification, data = {}) {
     return;
   }
 
+  // Filter out invalid tokens (basic validation)
+  const validTokens = tokens.filter(token => 
+    token && 
+    typeof token === 'string' && 
+    token.trim().length > 20 // FCM tokens are typically 140+ chars
+  );
+
+  if (validTokens.length === 0) {
+    console.log('⚠️ No valid FCM tokens found');
+    return { successCount: 0, failureCount: 0 };
+  }
+
+  if (validTokens.length < tokens.length) {
+    console.log(`⚠️ Filtered out ${tokens.length - validTokens.length} invalid token(s)`);
+  }
+
   const message = {
     notification: {
       title: notification.title,
       body: notification.body,
     },
     data: data,
-    tokens: tokens
+    tokens: validTokens
   };
 
   try {
@@ -46,7 +62,10 @@ async function sendNotification(tokens, notification, data = {}) {
     if (response.failureCount > 0) {
       response.responses.forEach((resp, idx) => {
         if (!resp.success) {
-          console.error(`❌ Failed to send to token ${idx}:`, resp.error);
+          console.error(`❌ Failed to send to token ${idx}:`, resp.error?.message || resp.error);
+          if (resp.error?.code === 'messaging/registration-token-not-registered') {
+            console.log(`   💡 Token ${idx} is expired/invalid - should be removed from database`);
+          }
         }
       });
     }
@@ -79,19 +98,31 @@ async function setupTestNotification() {
     }
     console.log(`✅ Card owner has ${cardOwner.fcmTokens.length} FCM token(s)`);
 
-    // Find or create a test collector user
-    let testCollector = await User.findOne({ email: 'testcollector@example.com' });
+    // Find or create a test collector user using same email for both find and create
+    const testCollectorEmail = 'benbouziane@example.com';
+    let testCollector = await User.findOne({ email: testCollectorEmail });
+    
     if (!testCollector) {
       const bcrypt = require('bcryptjs');
       const hashedPassword = await bcrypt.hash('testpass123', 10);
       
-      testCollector = await User.create({
-        email: 'benbouziane@example.com',
-        passwordHash: hashedPassword,
-        fullName: 'Benbouziane Abdelhak',
-        fcmTokens: []
-      });
-      console.log(`✅ Created test collector: ${testCollector.fullName}`);
+      try {
+        testCollector = await User.create({
+          email: testCollectorEmail,
+          passwordHash: hashedPassword,
+          fullName: 'Benbouziane Abdelhak',
+          fcmTokens: []
+        });
+        console.log(`✅ Created test collector: ${testCollector.fullName}`);
+      } catch (error) {
+        // If creation fails due to duplicate, just find the existing one
+        if (error.code === 11000) {
+          testCollector = await User.findOne({ email: testCollectorEmail });
+          console.log(`✅ Using existing test collector: ${testCollector.fullName}`);
+        } else {
+          throw error;
+        }
+      }
     } else {
       console.log(`✅ Using existing test collector: ${testCollector.fullName}`);
     }

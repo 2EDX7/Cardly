@@ -39,6 +39,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get close => 'Fermer';
 
   @override
+  String get call => 'Appeler';
+
+  @override
+  String get email => 'Email';
+
+  @override
   String get yes => 'Oui';
 
   @override
@@ -461,6 +467,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get tapToFlip => 'appuyez pour retourner';
 
   @override
+  String get swipeToFlip => 'glissez pour retourner';
+
+  @override
   String get changeFontColor => 'CHANGER LA COULEUR DE LA POLICE';
 
   @override
@@ -544,9 +553,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get name => 'Nom';
 
   @override
-  String get email => 'Email';
-
-  @override
   String get organization => 'Organisation';
 
   @override
@@ -602,6 +608,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get useSystemTheme => 'Utiliser le thème du système';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get receiveNotifications => 'Recevoir des notifications';
+
+  @override
+  String get receiveNotificationsDesc =>
+      'Soyez informé lorsque quelqu\'un collecte votre carte';
 
   @override
   String get personalInformation => 'INFORMATIONS PERSONNELLES';

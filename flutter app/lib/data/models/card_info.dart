@@ -31,6 +31,10 @@ class CardInfo {
   String? sourceCardId; // Link to original profile card
   DateTime? createdAt; // Backend timestamps
   DateTime? updatedAt;
+  
+  // Sync fields for offline support
+  bool needsSync; // true if card has local changes not synced to backend
+  DateTime? lastSyncedAt; // Last successful sync timestamp
 
   CardInfo({
     this.id,
@@ -59,6 +63,9 @@ class CardInfo {
     this.sourceCardId,
     this.createdAt,
     this.updatedAt,
+    // Sync fields
+    this.needsSync = false,
+    this.lastSyncedAt,
   });
 
   /// Create a copy of this card with some fields updated

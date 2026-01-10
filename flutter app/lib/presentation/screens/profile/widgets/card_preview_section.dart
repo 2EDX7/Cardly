@@ -53,30 +53,28 @@ class CardPreviewSection extends StatelessWidget {
 
         // Business Card with Flip Animation
         Center(
-          child: GestureDetector(
-            onTap: onCardTap,
-            child: BusinessCard(
-              name: name,
-              // logoText: logoText,
-              organization: organization,
-              jobTitle: jobTitle,
-              email: email,
-              phone: phone,
-              location: location,
-              about: about,
-              website: website,
-              background: background,
-              textColor: textColor,
-            ),
+          child: BusinessCard(
+            name: name,
+            // logoText: logoText,
+            organization: organization,
+            jobTitle: jobTitle,
+            email: email,
+            phone: phone,
+            location: location,
+            about: about,
+            website: website,
+            background: background,
+            textColor: textColor,
+            enableSwipeFlip: true,
           ),
         ),
 
         const SizedBox(height: AppSpacing.sm),
 
-        // "tap to flip" text
+        // "swipe to flip" text
         Center(
           child: Text(
-            l10n.tapToFlip,
+            l10n.swipeToFlip,
             style: AppTextStyles.caption(context).copyWith(
               color: Theme.of(context).colorScheme.onBackground,
               fontWeight: FontWeight.bold,

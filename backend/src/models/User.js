@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema({
       enum: ['en', 'fr', 'ar'],
       default: 'en',
     },
+    receiveNotifications: {
+      type: Boolean,
+      default: true,
+    },
   },
   fcmTokens: [{
     type: String,

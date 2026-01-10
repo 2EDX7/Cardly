@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/models/card_info.dart';
 import '../../../data/repositories/card_repository.dart';
@@ -68,22 +69,26 @@ class CardCubit extends Cubit<CardState> {
   }
 
   /// Add a new card
-  Future<void> addCard(CardInfo card) async {
+  Future<bool> addCard(CardInfo card) async {
     emit(CardLoading());
 
     try {
       await _repository.addCard(card, userId: _userId);
+      emit(CardAdded(card));
       await loadCards();
+      return true;
     } on ValidationException catch (e) {
       emit(CardError(e.message));
-      // Reload to show current state
       await loadCards();
+      return false;
     } on NetworkException catch (e) {
       emit(CardError(e.message));
       await loadCards();
+      return false;
     } catch (e) {
       emit(CardError('Failed to add card: ${e.toString()}'));
       await loadCards();
+      return false;
     }
   }
 
@@ -163,6 +168,29 @@ class CardCubit extends Cubit<CardState> {
     }
   }
 
+  /// Delete a card silently in the background without showing loading state
+  /// Does not reload cards - UI already removed it
+  Future<void> deleteCardSilently(int id) async {
+    try {
+      await _repository.deleteCard(id, userId: _userId);
+    } catch (e) {
+      debugPrint('Error deleting card in background: $e');
+    }
+  }
+
+  /// Delete a card by backend ID silently in the background without showing loading state
+  /// Does not reload cards - UI already removed it
+  Future<void> deleteCardByBackendIdSilently(String backendId) async {
+    try {
+      if (_repository is dynamic &&
+          _repository.runtimeType.toString().contains('ApiCardRepository')) {
+        await (_repository as dynamic).deleteCardByBackendId(backendId);
+      }
+    } catch (e) {
+      debugPrint('Error deleting card in background: $e');
+    }
+  }
+
   /// Search cards
   Future<void> searchCards(String query) async {
     // If state is already loaded, just update search query
@@ -227,29 +255,36 @@ class CardCubit extends Cubit<CardState> {
 
   /// Collect card via shareable ID (QR code or manual entry)
   /// Only works with ApiCardRepository
-  Future<void> collectCardByShareableId(String shareableId) async {
+  Future<CardInfo?> collectCardByShareableId(String shareableId) async {
     emit(CardLoading());
 
     try {
       if (_repository is dynamic &&
           _repository.runtimeType.toString().contains('ApiCardRepository')) {
-        await (_repository as dynamic).collectCardByShareableId(shareableId);
+        final CardInfo card = await (_repository as dynamic)
+            .collectCardByShareableId(shareableId);
+        emit(CardAdded(card));
         await loadCards();
+        return card;
       } else {
         throw UnimplementedError('Shareable ID collection requires API');
       }
     } on ValidationException catch (e) {
       emit(CardError(e.message));
       await loadCards();
+      return null;
     } on NotFoundException catch (e) {
       emit(CardError(e.message));
       await loadCards();
+      return null;
     } on NetworkException catch (e) {
       emit(CardError(e.message));
       await loadCards();
+      return null;
     } catch (e) {
       emit(CardError('Failed to collect card: ${e.toString()}'));
       await loadCards();
+      return null;
     }
   }
 }

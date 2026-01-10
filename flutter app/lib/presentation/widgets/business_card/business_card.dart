@@ -7,6 +7,8 @@ import 'card_back.dart';
 
 enum CardSide { front, back }
 
+enum FlipDirection { left, right }
+
 class BusinessCard extends StatefulWidget {
   // Common properties
   final String name;
@@ -35,6 +37,10 @@ class BusinessCard extends StatefulWidget {
   // Compact mode
   final bool compactCard;
 
+  // Interaction mode
+  final bool enableSwipeFlip; // If true, swipe to flip. If false, tap to flip
+  final VoidCallback? onTap; // Custom tap handler (if swipe flip is enabled)
+
   const BusinessCard({
     super.key,
     required this.name,
@@ -56,6 +62,9 @@ class BusinessCard extends StatefulWidget {
     this.textColor = Colors.white,
     // Compact mode
     this.compactCard = false,
+    // Interaction
+    this.enableSwipeFlip = false,
+    this.onTap,
   });
 
   @override
@@ -67,6 +76,7 @@ class _BusinessCardState extends State<BusinessCard>
   late AnimationController _controller;
   late Animation<double> _animation;
   bool _isFront = true;
+  FlipDirection _lastFlipDirection = FlipDirection.left;
 
   @override
   void initState() {
@@ -86,8 +96,10 @@ class _BusinessCardState extends State<BusinessCard>
     super.dispose();
   }
 
-  void _flipCard() {
+  void _flipCard({FlipDirection direction = FlipDirection.left}) {
     if (widget.compactCard) return;
+
+    _lastFlipDirection = direction;
 
     if (_isFront) {
       _controller.forward();
@@ -97,6 +109,17 @@ class _BusinessCardState extends State<BusinessCard>
     setState(() {
       _isFront = !_isFront;
     });
+  }
+
+  void _handleHorizontalDragEnd(DragEndDetails details) {
+    if (widget.compactCard || !widget.enableSwipeFlip) return;
+
+    final velocity = details.primaryVelocity ?? 0;
+    if (velocity.abs() > 500) {
+      // Determine flip direction based on swipe direction
+      final direction = velocity < 0 ? FlipDirection.left : FlipDirection.right;
+      _flipCard(direction: direction);
+    }
   }
 
   double _calculateHeight() {
@@ -110,30 +133,46 @@ class _BusinessCardState extends State<BusinessCard>
       return _buildCard(CardSide.front);
     }
 
-    return GestureDetector(
-      onTap: _flipCard,
-      child: AnimatedBuilder(
-        animation: _animation,
-        builder: (context, child) {
-          final angle = _animation.value * math.pi;
-          final isUnder = angle > math.pi / 2;
+    Widget cardWidget = AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        // Calculate flip angle based on direction
+        double angle = _animation.value * math.pi;
+        if (_lastFlipDirection == FlipDirection.right) {
+          angle = -angle; // Flip in opposite direction
+        }
 
-          return Transform(
-            alignment: Alignment.center,
-            transform: Matrix4.identity()
-              ..setEntry(3, 2, 0.001)
-              ..rotateY(angle),
-            child: isUnder
-                ? Transform(
-                    alignment: Alignment.center,
-                    transform: Matrix4.identity()..rotateY(math.pi),
-                    child: _buildCard(CardSide.back),
-                  )
-                : _buildCard(CardSide.front),
-          );
-        },
-      ),
+        final isUnder = angle.abs() > math.pi / 2;
+
+        return Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.identity()
+            ..setEntry(3, 2, 0.001)
+            ..rotateY(angle),
+          child: isUnder
+              ? Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()
+                    ..rotateY(angle < 0 ? -math.pi : math.pi),
+                  child: _buildCard(CardSide.back),
+                )
+              : _buildCard(CardSide.front),
+        );
+      },
     );
+
+    if (widget.enableSwipeFlip) {
+      return GestureDetector(
+        onTap: widget.onTap,
+        onHorizontalDragEnd: _handleHorizontalDragEnd,
+        child: cardWidget,
+      );
+    } else {
+      return GestureDetector(
+        onTap: () => _flipCard(),
+        child: cardWidget,
+      );
+    }
   }
 
   Widget _buildCard(CardSide side) {
